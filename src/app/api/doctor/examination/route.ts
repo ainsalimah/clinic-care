@@ -3,6 +3,7 @@ import prisma from "@/lib/prisma";
 import { AppointmentStatus, QueueStatus, PrescriptionStatus, Prisma } from "@prisma/client";
 import { getSession } from "@/lib/auth";
 import { parsePrescriptionItems } from "@/lib/prescription-rules";
+import { createBill } from "@/features/billing/server/create-bill";
 
 export async function POST(req: Request) {
   try {
@@ -143,6 +144,7 @@ export async function POST(req: Request) {
         });
       }
 
+      await createBill(tx, appointment.id);
       return { medicalRecord, prescription, autoCall };
     }, { isolationLevel: Prisma.TransactionIsolationLevel.Serializable });
 

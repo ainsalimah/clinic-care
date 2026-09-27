@@ -132,6 +132,7 @@ model Department {
 }
 
 model Doctor {
+  consultationFee Int @default(100000)
   id             String   @id @default(cuid())
   userId         String   @unique
   departmentId   String
@@ -165,6 +166,7 @@ model Schedule {
 }
 
 model Appointment {
+  bill Bill?
   id              String            @id @default(cuid())
   patientId       String
   doctorId        String
@@ -244,6 +246,7 @@ model MedicalRecord {
 }
 
 model Medicine {
+  reservedStock Int @default(0)
   id           String   @id @default(cuid())
   name         String
   form         String?
@@ -297,4 +300,32 @@ model InventoryTransaction {
   createdAt   DateTime                 @default(now())
 
   medicine Medicine @relation(fields: [medicineId], references: [id])
+}
+
+model Bill {
+  id String @id @default(cuid())
+  appointmentId String @unique
+  appointment Appointment @relation(fields: [appointmentId], references: [id])
+  patientName String
+  medicalRecordNo String
+  total Int
+  paidAt DateTime?
+  paymentMethod String?
+  receivedAmount Int?
+  receivedBy String?
+  completedAt DateTime?
+  createdAt DateTime @default(now())
+  items BillItem[]
+  @@index([paidAt, createdAt])
+}
+
+model BillItem {
+  id String @id @default(cuid())
+  billId String
+  bill Bill @relation(fields: [billId], references: [id], onDelete: Cascade)
+  description String
+  quantity Int
+  unit String
+  unitPrice Int
+  amount Int
 }

@@ -41,8 +41,20 @@ Petugas membuka `/queue/speaker` pada satu komputer yang tersambung ke speaker r
 - **Apoteker:** resep masuk, obat, stok, dan penyerahan.
 - **Admin:** pemantauan operasional dan laporan.
 
-Pengajuan jadwal online tidak langsung membuat antrean. Pasien lama perlu meminta resepsionis memverifikasi dan menghubungkan akun ke data yang sudah ada. Akun baru memakai NIK dan telepon untuk pendaftaran online; resepsionis tetap dapat mendaftarkan pasien tanpa telepon. Portal pasien pada MVP hanya menampilkan dan mengajukan jadwal, belum membuka rekam medis atau resep. Rawat inap, laboratorium, radiologi, pembayaran, verifikasi OTP/email, dan integrasi eksternal belum termasuk MVP.
+Pengajuan jadwal online tidak langsung membuat antrean. Pasien lama perlu meminta resepsionis memverifikasi dan menghubungkan akun ke data yang sudah ada. Akun baru memakai NIK dan telepon untuk pendaftaran online; resepsionis tetap dapat mendaftarkan pasien tanpa telepon. Portal pasien menampilkan jadwal, status kunjungan, dan ringkasan tagihan; rekam medis dan resep belum dibuka di portal. Rawat inap, laboratorium, radiologi, verifikasi OTP/email, dan integrasi eksternal belum termasuk MVP.
 
-## Deployment produksi
+## Kasir apotek dan tagihan kunjungan
+
+Pemeriksaan baru yang diselesaikan dokter menghasilkan satu tagihan berisi konsultasi dan obat (jika ada). Kunjungan lama tidak ditagih ulang. Harga, nama layanan/obat, satuan, jumlah, dan identitas pasien disimpan saat tagihan dibuat.
+
+Admin mengatur tarif per dokter di **Tarif Konsultasi** (`/admin/fees`), dengan nilai awal Rp100.000. Apoteker membuka **Kasir Apotek** pada `/pharmacy`, menyiapkan resep sampai siap diambil, lalu menerima pembayaran tunai atau memverifikasi QRIS secara manual. Pembayaran QRIS ini bukan integrasi payment gateway dan tidak menghasilkan QR pembayaran.
+
+Pembayaran dan penyerahan obat adalah dua langkah terpisah. Pembayaran mengalokasikan stok; penyerahan mengurangi stok fisik satu kali. Pasien tanpa resep cukup melunasi konsultasi. Portal pasien menunjukkan apakah masih menunggu pembayaran, menunggu obat, atau sudah selesai. Struk mencantumkan rincian item, total, metode, uang diterima, kembalian, waktu, dan petugas.
+
+Tagihan bersifat tetap; koreksi, pembatalan tagihan, dan refund belum tersedia. Resep yang sudah masuk tagihan tidak dapat dibatalkan melalui perubahan status resep biasa.
+
+Verifikasi: `npm test` dan `npm run test:billing:integration`. Uji integrasi membutuhkan database yang sudah dimigrasikan; semua data sintetis berada dalam transaksi yang di-rollback.
+
+## Konfigurasi hosting
 
 Atur `DATABASE_URL` dan `AUTH_SECRET` acak minimal 32 karakter pada platform hosting. Jalankan `npm run db:deploy` sebelum `npm run start`; `prestart` menolak konfigurasi kosong atau nilai contoh. Bila memakai reverse proxy dan ingin rate limit berdasarkan IP, set `TRUSTED_CLIENT_IP_HEADER` hanya ke header yang selalu ditimpa oleh proxy tepercaya. Aktifkan HTTPS, backup database, monitoring error tanpa data medis, dan uji restore sebelum menerima pasien nyata.

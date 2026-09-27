@@ -4,14 +4,15 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "prisma generate && next build",
     "start": "next start",
     "prestart": "node scripts/check-production-env.mjs",
     "db:deploy": "prisma migrate deploy",
     "db:generate": "prisma generate",
     "lint": "eslint",
     "typecheck": "tsc --noEmit --incremental false",
-    "test": "node --import tsx --test src/lib/clinic-time.test.ts src/lib/access.test.ts src/lib/rate-limit.test.ts src/lib/prescription-rules.test.ts"
+    "test": "node --import tsx --test src/lib/clinic-time.test.ts src/lib/access.test.ts src/lib/rate-limit.test.ts src/lib/prescription-rules.test.ts src/lib/billing-rules.test.ts",
+    "test:billing:integration": "tsx scripts/test-billing-integration.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.1.0",

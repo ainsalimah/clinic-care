@@ -148,7 +148,7 @@ export default function AppLayout({ children, activeNav, breadcrumbTitle }: AppL
       { label: "Ringkasan", items: [{ href: "/app", label: "Dashboard", icon: LayoutDashboard }] },
       { label: "Pelayanan", items: [{ href: "/patients", label: "Data Pasien", icon: Users }, { href: "/queue", label: "Kunjungan & Antrean", icon: CalendarDays }] },
       { label: "Operasional", items: [{ href: "/medicines", label: "Obat & Stok", icon: Package }] },
-      { label: "Administrasi", items: [{ href: "/admin/reports", label: "Laporan Operasional", icon: BarChart3 }] },
+      { label: "Administrasi", items: [{ href: "/admin/reports", label: "Laporan Operasional", icon: BarChart3 }, { href: "/admin/fees", label: "Tarif Konsultasi", icon: BarChart3 }] },
     ],
     RECEPTIONIST: [
       { label: "Ringkasan", items: [{ href: "/app", label: "Dashboard", icon: LayoutDashboard }] },

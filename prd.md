@@ -98,10 +98,21 @@ Kunjungan dan resep ditandai selesai
 ### 5.5 Admin
 
 - Melihat dashboard dan laporan operasional.
+- Mengatur tarif konsultasi per dokter; perubahan hanya berlaku untuk tagihan baru.
 - Melihat direktori pasien, antrean, dan ketersediaan obat dalam mode baca-saja sesuai kebutuhan pemantauan.
 - Tidak melakukan pendaftaran/check-in, pemeriksaan klinis, pemrosesan resep, atau perubahan katalog/stok obat.
 
 ## 6. Status Utama
+
+### Tagihan dan kasir apotek
+
+- Pemeriksaan selesai membuat satu tagihan konsultasi dan obat, atau konsultasi saja bila tanpa resep.
+- Tarif awal konsultasi Rp100.000 per dokter. Setiap baris menyimpan nama, satuan, jumlah, harga satuan, dan subtotal saat tagihan terbit.
+- Apoteker menerima pembayaran tunai atau memverifikasi QRIS manual setelah resep siap. Kembalian dihitung untuk pembayaran tunai.
+- Pembayaran dicatat sekali, menyimpan metode, waktu, nominal diterima, dan petugas. Struk dapat dicetak.
+- Pembayaran mengalokasikan stok; penyerahan obat mengurangi stok fisik sekali dan menutup kunjungan. Tanpa resep, kunjungan selesai saat pembayaran lunas.
+- Status appointment COMPLETED berarti pemeriksaan selesai; Bill.completedAt menandakan seluruh layanan selesai. Portal pasien membedakan kedua tahap ini.
+- Tagihan lama tidak berubah ketika harga katalog diperbarui. Kunjungan sebelum fitur aktif tidak otomatis ditagih.
 
 ### Appointment
 
@@ -165,7 +176,7 @@ MVP mencakup:
 - Akun keluarga/wali untuk mengelola pasien tanggungan.
 - Reschedule dan pembatalan jadwal mandiri.
 - Pengelolaan akun/role serta CRUD master data dokter dan poli.
-- Pembayaran dan invoice.
+- Integrasi payment gateway, pembatalan tagihan, koreksi, dan refund.
 - Integrasi WhatsApp atau SMS.
 - Hasil laboratorium.
 - Integrasi BPJS/asuransi.

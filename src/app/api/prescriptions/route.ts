@@ -30,7 +30,7 @@ export async function GET(req: Request) {
         doctor: {
           include: { department: true },
         },
-        medicalRecord: true,
+        medicalRecord: { include: { appointment: { select: { bill: { select: { total: true, paidAt: true } } } } } },
         items: {
           include: {
             medicine: true,

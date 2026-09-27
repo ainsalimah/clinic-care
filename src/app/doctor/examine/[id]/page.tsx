@@ -237,7 +237,7 @@ export default function DoctorExaminationPage({
             </div>
             <h2>Pemeriksaan Berhasil Diselesaikan!</h2>
             <p>
-              Rekam medis telah tersimpan permanen dan resep digital telah otomatis diteruskan ke Apotek dengan status <b>PENDING</b>.
+              Rekam medis telah tersimpan. Arahkan pasien ke kasir apotek untuk membayar konsultasi dan obat, termasuk bila tidak ada resep. Resep yang dibuat diteruskan ke apoteker untuk disiapkan.
             </p>
             {autoCall && <AutoCallNotice initialCall={autoCall} appointmentId={appointmentId} />}
 

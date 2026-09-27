@@ -6,6 +6,7 @@ import AppLayout from "@/components/AppLayout";
 import { fetchJson } from "@/lib/http/client";
 import { PrescriptionLabelModal } from "./PrescriptionLabelModal";
 import type { PrescriptionData } from "../types";
+import { BillingPanel } from "@/features/billing/components/BillingPanel";
 import {
   Pill,
   Clock,
@@ -26,6 +27,7 @@ export default function PharmacyPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [submittedQuery, setSubmittedQuery] = useState("");
   const [loading, setLoading] = useState(true);
+  const [billingRevision, setBillingRevision] = useState(0);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
 
@@ -72,6 +74,7 @@ export default function PharmacyPage() {
       });
       const data = await res.json();
       if (res.ok) {
+        setBillingRevision(value => value + 1);
         await fetchPrescriptions();
       } else {
         alert(data.error || "Gagal memperbarui status resep.");
@@ -118,6 +121,7 @@ export default function PharmacyPage() {
           </div>
         </div>
 
+        <BillingPanel revision={billingRevision} onPaid={fetchPrescriptions} />
         {/* Stats */}
         <div className="stats">
           <div className="stat-card">
@@ -272,6 +276,9 @@ export default function PharmacyPage() {
 
                   {/* Body with Medicines Table */}
                   <div className="record-details-box" style={{ background: "#fff" }}>
+                    {rx.medicalRecord.appointment.bill && <p className="portal-notice">
+                      {rx.medicalRecord.appointment.bill.paidAt ? "Tagihan lunas. Obat siap diserahkan setelah persiapan selesai." : "Tagihan belum dibayar. Terima pembayaran melalui Kasir Apotek sebelum menyerahkan obat."}
+                    </p>}
                     {rx.medicalRecord.diagnosis && (
                       <p style={{ margin: "0 0 12px", fontSize: "12px", color: "var(--ink)" }}>
                         Diagnosis Medis: <b>{rx.medicalRecord.diagnosis}</b>
@@ -361,7 +368,8 @@ export default function PharmacyPage() {
                           <button
                             type="button"
                             className="btn-dispense-action"
-                            disabled={isBusy}
+                            disabled={isBusy || Boolean(rx.medicalRecord.appointment.bill && !rx.medicalRecord.appointment.bill.paidAt)}
+                            title={rx.medicalRecord.appointment.bill && !rx.medicalRecord.appointment.bill.paidAt ? "Lunasi melalui Kasir Apotek terlebih dahulu" : undefined}
                             onClick={() => {
                               if (confirm(`Serahkan obat ke pasien ${rx.patient.fullName}? Stok obat akan otomatis dipotong dan dicatat ke mutasi inventaris.`)) {
                                 handleUpdateStatus(rx.id, "COMPLETED");

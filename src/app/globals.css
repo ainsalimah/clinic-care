@@ -1023,6 +1023,29 @@ input:checked + .slider:before { transform:translateX(22px); }
 .speaker-current strong { font:800 clamp(3rem, 8vw, 6rem)/1 'Plus Jakarta Sans',sans-serif; color:var(--teal); }
 .speaker-current span { font:700 clamp(1.25rem, 3vw, 2rem) 'Plus Jakarta Sans',sans-serif; color:var(--ink); }
 .speaker-idle { margin:16px 0 4px; color:var(--muted); font-size:1rem; }
+.billing-panel { padding:24px; margin:24px 0; }
+.billing-panel h2 { font-size:1.25rem; color:var(--teal); }
+.billing-panel p, .billing-row small { color:var(--muted); }
+.billing-filters { display:flex; flex-wrap:wrap; gap:12px; margin:16px 0; }
+.billing-filters input { flex:1; min-width:180px; }
+.billing-row { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:16px; padding:18px 0; border-bottom:1px solid var(--line); }
+.billing-row p { margin:6px 0; font-size:0.8125rem; }
+.billing-row input { max-width:220px; }
+.billing-pagination { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-top:18px; font-size:0.8125rem; }
+.billing-dialog { width:min(760px, calc(100vw - 24px)); max-width:760px; }
+.bill-receipt { line-height:1.8; }
+.bill-receipt h3 { font-size:1.4rem; color:var(--teal); }
+.bill-receipt p { overflow-wrap:anywhere; }
+.billing-table-scroll { overflow-x:auto; }
+.billing-total { display:flex; justify-content:space-between; border-top:1px solid var(--line); padding-top:12px; font-size:1.2rem; }
+.billing-payment { display:grid; gap:14px; margin-top:20px; padding-top:20px; border-top:1px solid var(--line); }
+.billing-payment label:not(.billing-confirm) { display:grid; gap:6px; }
+.billing-confirm { display:flex; gap:10px; align-items:flex-start; }
+.billing-confirm input { margin-top:4px; }
+.billing-payment button:disabled { opacity:0.5; cursor:not-allowed; }
+.billing-payment .form-input { padding:10px 12px; }
+@media print { .modal-backdrop:has(.bill-receipt), .app-shell .billing-dialog { position:absolute; inset:0; max-height:none; height:auto; overflow:visible; width:100%; max-width:none; } }
+@media print { .billing-table-scroll { overflow:visible; } .bill-receipt { padding:20px; background:white; } }
 .speaker-history { list-style:none; margin:0; padding:0; }
 .speaker-history li { display:flex; flex-wrap:wrap; align-items:center; gap:12px; padding:12px 0; border-top:1px solid var(--line); font-size:1rem; }
 .speaker-history strong { min-width:80px; color:var(--teal); }

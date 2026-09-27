@@ -24,6 +24,6 @@ export interface PrescriptionData {
     emergencyContactPhone: string | null;
   };
   doctor: { fullName: string; department: { name: string } };
-  medicalRecord: { diagnosis: string | null; complaint: string | null };
+  medicalRecord: { diagnosis: string | null; complaint: string | null; appointment: { bill: { total: number; paidAt: string | null } | null } };
   items: PrescriptionItem[];
 }

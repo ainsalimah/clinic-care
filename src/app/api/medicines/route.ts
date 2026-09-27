@@ -40,6 +40,10 @@ export async function POST(req: Request) {
     }
 
     const initialStock = Number(stock) || 0;
+    const unitPrice = Number(price ?? 0);
+    if (!Number.isSafeInteger(unitPrice) || unitPrice < 0 || unitPrice > 2000000000) {
+      return NextResponse.json({ error: "Harga obat harus rupiah bulat antara 0 dan 2 miliar." }, { status: 400 });
+    }
 
     const newMedicine = await prisma.$transaction(async (tx) => {
       const med = await tx.medicine.create({
@@ -47,7 +51,7 @@ export async function POST(req: Request) {
           name: name.trim(),
           form: form ? form.trim() : null,
           unit: unit.trim(),
-          price: Number(price) || 0,
+          price: unitPrice,
           stock: initialStock,
           minimumStock: Number(minimumStock) || 10,
         },
@@ -73,4 +77,3 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Gagal menambahkan data obat baru." }, { status: 500 });
   }
 }
-

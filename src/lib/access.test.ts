@@ -13,6 +13,12 @@ test("unknown protected API is denied by default", () => {
 });
 
 test("method and role restrictions are enforced", () => {
+  assert.equal(canAccessApi("/bills/123/pay", "POST", "PHARMACIST"), true);
+  for (const role of ["ADMIN", "PATIENT", "DOCTOR", "RECEPTIONIST"]) {
+    assert.equal(canAccessApi("/bills/123/pay", "POST", role), false);
+  }
+  assert.equal(canAccessApi("/doctor-fees", "PATCH", "ADMIN"), true);
+  assert.equal(canAccessApi("/doctor-fees", "PATCH", "PHARMACIST"), false);
   assert.equal(canAccessApi("/patients", "POST", "RECEPTIONIST"), true);
   assert.equal(canAccessApi("/patients", "POST", "ADMIN"), false);
   assert.equal(canAccessApi("/records", "GET", "PHARMACIST"), false);
