@@ -1,11 +1,14 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { getSession } from "@/lib/auth";
 
 export async function GET(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const session = await getSession();
+    if (!session || session.role !== "DOCTOR") return NextResponse.json({ error: "Akses dokter diperlukan." }, { status: 403 });
     const { id } = await params;
 
     const appointment = await prisma.appointment.findUnique({
@@ -52,6 +55,10 @@ export async function GET(
 
     if (!appointment) {
       return NextResponse.json({ error: "Data janji temu pemeriksaan tidak ditemukan." }, { status: 404 });
+    }
+    const doctor = await prisma.doctor.findUnique({ where: { userId: session.id }, select: { id: true } });
+    if (!doctor || appointment.doctorId !== doctor.id) {
+      return NextResponse.json({ error: "Kunjungan ini bukan milik dokter yang sedang masuk." }, { status: 403 });
     }
 
     return NextResponse.json({ appointment });

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { AppointmentStatus } from "@prisma/client";
+import { AppointmentStatus, Prisma } from "@prisma/client";
 import prisma from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 
@@ -47,9 +47,9 @@ export async function POST(req: Request) {
     const dayEnd = new Date(dayStart.getTime() + 24 * 60 * 60 * 1000);
     const schedule = await prisma.schedule.findUnique({
       where: { id: scheduleId },
-      include: { doctor: true, department: true },
+      include: { doctor: { include: { user: true } }, department: true },
     });
-    if (!schedule || dayStart.getUTCDay() !== schedule.dayOfWeek) {
+    if (!schedule || !schedule.doctor.user.isActive || dayStart.getUTCDay() !== schedule.dayOfWeek) {
       return NextResponse.json({ error: "Jadwal dokter tidak tersedia pada tanggal tersebut." }, { status: 400 });
     }
 
@@ -58,39 +58,47 @@ export async function POST(req: Request) {
     visitStart.setUTCHours(visitStart.getUTCHours() - 7);
     if (visitStart <= new Date()) return NextResponse.json({ error: "Pilih jadwal yang belum terlewat." }, { status: 400 });
 
-    const existing = await prisma.appointment.findFirst({
-      where: {
-        patientId: patient.id,
-        appointmentDate: { gte: dayStart, lt: dayEnd },
-        status: { in: [AppointmentStatus.PENDING, AppointmentStatus.CONFIRMED] },
-      },
-    });
-    if (existing) return NextResponse.json({ error: "Anda sudah memiliki kunjungan aktif pada tanggal tersebut." }, { status: 409 });
+    const result = await prisma.$transaction(async (tx) => {
+      const existing = await tx.appointment.findFirst({
+        where: {
+          patientId: patient.id,
+          appointmentDate: { gte: dayStart, lt: dayEnd },
+          status: { in: [AppointmentStatus.PENDING, AppointmentStatus.CONFIRMED] },
+        },
+      });
+      if (existing) return { error: "Anda sudah memiliki kunjungan aktif pada tanggal tersebut." };
 
-    const bookedCount = await prisma.appointment.count({
-      where: {
-        scheduleId,
-        appointmentDate: { gte: dayStart, lt: dayEnd },
-        status: { not: AppointmentStatus.CANCELLED },
-      },
-    });
-    if (bookedCount >= schedule.quota) return NextResponse.json({ error: "Kuota jadwal ini sudah penuh. Silakan pilih jadwal lain." }, { status: 409 });
+      const bookedCount = await tx.appointment.count({
+        where: {
+          scheduleId,
+          appointmentDate: { gte: dayStart, lt: dayEnd },
+          status: { not: AppointmentStatus.CANCELLED },
+        },
+      });
+      if (bookedCount >= schedule.quota) return { error: "Kuota dokter ini sudah penuh. Silakan pilih dokter atau jadwal lain." };
 
-    const appointment = await prisma.appointment.create({
-      data: {
-        patientId: patient.id,
-        departmentId: schedule.departmentId,
-        doctorId: schedule.doctorId,
-        scheduleId: schedule.id,
-        appointmentDate: dayStart,
-        status: AppointmentStatus.PENDING,
-        notes: typeof notes === "string" && notes.trim() ? notes.trim().slice(0, 500) : null,
-      },
-      include: { department: true, doctor: true, schedule: true },
-    });
+      const appointment = await tx.appointment.create({
+        data: {
+          patientId: patient.id,
+          departmentId: schedule.departmentId,
+          doctorId: schedule.doctorId,
+          scheduleId: schedule.id,
+          appointmentDate: dayStart,
+          status: AppointmentStatus.PENDING,
+          notes: typeof notes === "string" && notes.trim() ? notes.trim().slice(0, 500) : null,
+        },
+        include: { department: true, doctor: true, schedule: true },
+      });
+      return { appointment };
+    }, { isolationLevel: Prisma.TransactionIsolationLevel.Serializable });
+    if (result.error) return NextResponse.json({ error: result.error }, { status: 409 });
+    const appointment = result.appointment;
 
     return NextResponse.json({ success: true, appointment }, { status: 201 });
   } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2034") {
+      return NextResponse.json({ error: "Slot baru saja diambil pasien lain. Silakan pilih dokter atau jadwal lain." }, { status: 409 });
+    }
     console.error("POST /api/patient/appointments error:", error);
     return NextResponse.json({ error: "Pengajuan kunjungan belum berhasil." }, { status: 500 });
   }

@@ -3,11 +3,10 @@ import { cookies } from "next/headers";
 import prisma from "./prisma";
 import bcrypt from "bcryptjs";
 import { Role } from "@prisma/client";
+import { getSessionSecret, SESSION_COOKIE_NAME } from "./session-config";
+import { getUserFromToken } from "./session-store";
+import { randomUUID } from "node:crypto";
 
-const COOKIE_NAME = "cliniccare_session";
-const JWT_SECRET = new TextEncoder().encode(
-  process.env.AUTH_SECRET || "clinic-care-super-secret-key-2026-secure"
-);
 
 export interface SessionUser {
   id: string;
@@ -20,25 +19,22 @@ export interface SessionUser {
  * Sign JWT token
  */
 export async function encryptToken(payload: SessionUser): Promise<string> {
+  const secret = getSessionSecret();
+  const id = randomUUID();
+  await prisma.authSession.create({ data: { id, userId: payload.id, role: payload.role, expiresAt: new Date(Date.now() + 7 * 86400_000) } });
   return await new SignJWT({ ...payload })
+    .setJti(id)
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
     .setExpirationTime("7d")
-    .sign(JWT_SECRET);
+    .sign(secret);
 }
 
 /**
  * Verify JWT token
  */
 export async function decryptToken(token: string): Promise<SessionUser | null> {
-  try {
-    const { payload } = await jwtVerify(token, JWT_SECRET, {
-      algorithms: ["HS256"],
-    });
-    return payload as unknown as SessionUser;
-  } catch {
-    return null;
-  }
+  return getUserFromToken(token);
 }
 
 /**
@@ -47,7 +43,7 @@ export async function decryptToken(token: string): Promise<SessionUser | null> {
 export async function getSession(): Promise<SessionUser | null> {
   try {
     const cookieStore = await cookies();
-    const token = cookieStore.get(COOKIE_NAME)?.value;
+    const token = cookieStore.get(SESSION_COOKIE_NAME)?.value;
     if (!token) return null;
     return await decryptToken(token);
   } catch {
@@ -61,7 +57,7 @@ export async function getSession(): Promise<SessionUser | null> {
 export async function setSession(user: SessionUser) {
   const token = await encryptToken(user);
   const cookieStore = await cookies();
-  cookieStore.set(COOKIE_NAME, token, {
+  cookieStore.set(SESSION_COOKIE_NAME, token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
@@ -75,7 +71,13 @@ export async function setSession(user: SessionUser) {
  */
 export async function clearSession() {
   const cookieStore = await cookies();
-  cookieStore.delete(COOKIE_NAME);
+  const token = cookieStore.get(SESSION_COOKIE_NAME)?.value;
+  if (token) {
+    let id: string | undefined;
+    try { id = (await jwtVerify(token, getSessionSecret(), { algorithms: ["HS256"] })).payload.jti; } catch { /* Invalid cookies can still be removed. */ }
+    if (id) await prisma.authSession.deleteMany({ where: { id } });
+  }
+  cookieStore.delete(SESSION_COOKIE_NAME);
 }
 
 /**
@@ -86,13 +88,9 @@ export async function authenticateWithCredentials(email: string, passwordPlain: 
     where: { email: email.toLowerCase().trim() },
   });
 
-  if (!user || !user.isActive) {
-    return { success: false, error: "Email tidak ditemukan atau akun dinonaktifkan." };
-  }
-
-  const isValid = await bcrypt.compare(passwordPlain, user.passwordHash);
-  if (!isValid) {
-    return { success: false, error: "Kata sandi salah. Silakan coba lagi." };
+  const isValid = await bcrypt.compare(passwordPlain, user?.passwordHash ?? "$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy");
+  if (!user || !user.isActive || !isValid) {
+    return { success: false, error: "Email atau kata sandi tidak valid." };
   }
 
   const sessionUser: SessionUser = {

@@ -1,10 +1,12 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { getClinicDayRange } from "@/lib/clinic-time";
+import { getSession } from "@/lib/auth";
 
-export async function GET(req: Request) {
+export async function GET() {
   try {
-    const { searchParams } = new URL(req.url);
-    const range = searchParams.get("range") || "today"; // today, week, month, all
+    const session = await getSession();
+    if (!session || session.role === "PATIENT") return NextResponse.json({ error: "Akses staf diperlukan." }, { status: 403 });
 
     // 1. Total counts
     const totalPatients = await prisma.patient.count();
@@ -24,11 +26,11 @@ export async function GET(req: Request) {
     });
 
     // 3. Today's start & end
-    const startOfToday = new Date();
-    startOfToday.setHours(0, 0, 0, 0);
+    const { start, end } = getClinicDayRange();
 
     // 4. Queues & Visits
     const allQueues = await prisma.queue.findMany({
+      where: { createdAt: { gte: start, lt: end } },
       include: {
         appointment: {
           include: {
@@ -133,6 +135,7 @@ export async function GET(req: Request) {
         time: new Date(q.createdAt).toLocaleTimeString("id-ID", {
           hour: "2-digit",
           minute: "2-digit",
+          timeZone: "Asia/Jakarta",
         }),
       })),
       recentTransactions: recentTransactions.map((tx) => ({

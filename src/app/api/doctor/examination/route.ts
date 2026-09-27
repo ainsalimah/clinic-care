@@ -1,9 +1,15 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { AppointmentStatus, QueueStatus, PrescriptionStatus } from "@prisma/client";
+import { AppointmentStatus, QueueStatus, PrescriptionStatus, Prisma } from "@prisma/client";
+import { getSession } from "@/lib/auth";
+import { parsePrescriptionItems } from "@/lib/prescription-rules";
 
 export async function POST(req: Request) {
   try {
+    const session = await getSession();
+    if (!session || session.role !== "DOCTOR") {
+      return NextResponse.json({ error: "Akses dokter diperlukan." }, { status: 403 });
+    }
     const body = await req.json();
     const {
       appointmentId,
@@ -11,17 +17,23 @@ export async function POST(req: Request) {
       physicalExam,
       diagnosis,
       treatment,
-      prescriptionItems,
+      prescriptionItems: rawPrescriptionItems,
       prescriptionNotes,
     } = body;
 
-    if (!appointmentId || !diagnosis) {
+    if (typeof appointmentId !== "string" || typeof diagnosis !== "string" || !diagnosis.trim() || diagnosis.length > 5000 ||
+      [complaint, physicalExam, treatment, prescriptionNotes].some((value) => value !== undefined && value !== null && (typeof value !== "string" || value.length > 5000))) {
       return NextResponse.json(
         { error: "ID kunjungan dan Diagnosis wajib diisi." },
         { status: 400 }
       );
     }
 
+    let prescriptionItems;
+    try { prescriptionItems = parsePrescriptionItems(rawPrescriptionItems); }
+    catch (error) { return NextResponse.json({ error: (error as Error).message }, { status: 400 }); }
+    const medicineCount = await prisma.medicine.count({ where: { id: { in: prescriptionItems.map((item) => item.medicineId) } } });
+    if (medicineCount !== prescriptionItems.length) return NextResponse.json({ error: "Obat tidak ditemukan." }, { status: 400 });
     const appointment = await prisma.appointment.findUnique({
       where: { id: appointmentId },
       include: { queue: true, record: true },
@@ -32,6 +44,16 @@ export async function POST(req: Request) {
         { error: "Kunjungan tidak ditemukan." },
         { status: 404 }
       );
+    }
+    const doctor = await prisma.doctor.findUnique({ where: { userId: session.id }, select: { id: true } });
+    if (!doctor || appointment.doctorId !== doctor.id) {
+      return NextResponse.json({ error: "Kunjungan ini bukan milik dokter yang sedang masuk." }, { status: 403 });
+    }
+    if (appointment.status === AppointmentStatus.COMPLETED) {
+      return NextResponse.json({ error: "Pemeriksaan ini sudah selesai." }, { status: 409 });
+    }
+    if (appointment.status !== AppointmentStatus.IN_EXAMINATION || appointment.queue?.status !== QueueStatus.IN_ROOM) {
+      return NextResponse.json({ error: "Mulai pemeriksaan dari antrean dokter sebelum menyelesaikannya." }, { status: 409 });
     }
 
     // Gunakan transaction untuk memastikan integritas
@@ -81,7 +103,7 @@ export async function POST(req: Request) {
               }) => ({
                 medicineId: item.medicineId,
                 dosage: item.dosage,
-                quantity: Number(item.quantity) || 1,
+                quantity: item.quantity,
                 instruction: item.instruction,
               })),
             },
@@ -103,6 +125,7 @@ export async function POST(req: Request) {
       });
 
       // 4. Selesaikan status Queue jika ada
+      let autoCall = null;
       if (appointment.queue) {
         await tx.queue.update({
           where: { id: appointment.queue.id },
@@ -111,17 +134,28 @@ export async function POST(req: Request) {
             completedAt: new Date(),
           },
         });
+        autoCall = await tx.queueAutoCall.create({
+          data: {
+            doctorId: appointment.doctorId,
+            sourceAppointmentId: appointment.id,
+            dueAt: new Date(Date.now() + 10_000),
+          },
+        });
       }
 
-      return { medicalRecord, prescription };
-    });
+      return { medicalRecord, prescription, autoCall };
+    }, { isolationLevel: Prisma.TransactionIsolationLevel.Serializable });
 
     return NextResponse.json({
       success: true,
       medicalRecord: result.medicalRecord,
       prescription: result.prescription,
+      autoCall: result.autoCall,
     }, { status: 201 });
   } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && ["P2002", "P2034"].includes(error.code)) {
+      return NextResponse.json({ error: "Pemeriksaan ini sudah selesai." }, { status: 409 });
+    }
     console.error("POST /api/doctor/examination error:", error);
     return NextResponse.json(
       { error: "Gagal menyimpan rekam medis dan resep." },

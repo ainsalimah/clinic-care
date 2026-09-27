@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
+import { createMedicalRecordNumber } from "@/features/patients/server/medical-record-number";
 
 export async function GET(req: Request) {
   try {
@@ -87,11 +88,7 @@ export async function POST(req: Request) {
       }
     }
 
-    // Generate No. Rekam Medis unik: RM-YYYY-XXXX
-    const currentYear = new Date().getFullYear();
-    const count = await prisma.patient.count();
-    const nextSeq = String(count + 1).padStart(4, "0");
-    const medicalRecordNo = `RM-${currentYear}-${nextSeq}`;
+    const medicalRecordNo = createMedicalRecordNumber();
 
     const newPatient = await prisma.patient.create({
       data: {

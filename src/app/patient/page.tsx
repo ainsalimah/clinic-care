@@ -1,17 +1,17 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import AppLayout from "@/components/AppLayout";
 import { ArrowRight, CalendarDays, Clock3, Loader2, RefreshCw, Stethoscope } from "lucide-react";
 import { getClinicDateKey } from "@/lib/clinic-time";
 
 interface Schedule { id: string; dayOfWeek: number; startTime: string; endTime: string; quota: number }
+interface AvailableSchedule { id: string; doctorId: string; doctorName: string; startTime: string; endTime: string; quota: number; remaining: number; hasPassed: boolean }
 interface Doctor { id: string; fullName: string; specialization: string | null; schedules: Schedule[] }
 interface Department { id: string; name: string; doctors: Doctor[] }
 interface Appointment { id: string; appointmentDate: string; status: string; notes: string | null; department: { name: string }; doctor: { fullName: string }; schedule: { startTime: string; endTime: string } | null; queue: { queueNumber: string } | null }
 interface PatientData { fullName: string; medicalRecordNo: string; appointments: Appointment[] }
 
-const weekdayNames = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
 const appointmentStatus: Record<string, string> = { PENDING: "Menunggu konfirmasi", CONFIRMED: "Dikonfirmasi", CHECKED_IN: "Sudah check-in", IN_EXAMINATION: "Sedang diperiksa", COMPLETED: "Selesai", CANCELLED: "Dibatalkan", NO_SHOW: "Tidak hadir" };
 
 export default function PatientPortalPage() {
@@ -23,6 +23,9 @@ export default function PatientPortalPage() {
   const [notice, setNotice] = useState("");
   const [departmentId, setDepartmentId] = useState("");
   const [scheduleId, setScheduleId] = useState("");
+  const [availableSchedules, setAvailableSchedules] = useState<AvailableSchedule[]>([]);
+  const [availabilityLoading, setAvailabilityLoading] = useState(false);
+  const [availabilityVersion, setAvailabilityVersion] = useState(0);
   const [appointmentDate, setAppointmentDate] = useState("");
   const [notes, setNotes] = useState("");
   const [welcome, setWelcome] = useState(false);
@@ -49,15 +52,22 @@ export default function PatientPortalPage() {
     refresh();
   }, [refresh]);
 
-  const selectedDepartment = departments.find((department) => department.id === departmentId);
-  const availableSchedules = useMemo(() => {
-    if (!selectedDepartment || !appointmentDate) return [];
-    const date = new Date(`${appointmentDate}T00:00:00.000Z`);
-    if (Number.isNaN(date.getTime())) return [];
-    return selectedDepartment.doctors.flatMap((doctor) => doctor.schedules
-      .filter((schedule) => schedule.dayOfWeek === date.getUTCDay())
-      .map((schedule) => ({ ...schedule, doctorName: doctor.fullName, specialization: doctor.specialization })));
-  }, [selectedDepartment, appointmentDate]);
+  useEffect(() => {
+    if (!departmentId || !appointmentDate) { setAvailableSchedules([]); return; }
+    const controller = new AbortController();
+    setAvailabilityLoading(true);
+    fetch(`/api/patient/availability?departmentId=${encodeURIComponent(departmentId)}&date=${appointmentDate}`, { signal: controller.signal })
+      .then(async (res) => {
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Jadwal dokter tidak dapat dimuat.");
+        setAvailableSchedules(data.schedules ?? []);
+      })
+      .catch((cause) => {
+        if (!controller.signal.aborted) setError(cause instanceof Error ? cause.message : "Jadwal dokter tidak dapat dimuat.");
+      })
+      .finally(() => { if (!controller.signal.aborted) setAvailabilityLoading(false); });
+    return () => controller.abort();
+  }, [departmentId, appointmentDate, availabilityVersion]);
 
   const submit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -67,7 +77,11 @@ export default function PatientPortalPage() {
     try {
       const res = await fetch("/api/patient/appointments", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ scheduleId, appointmentDate, notes }) });
       const data = await res.json();
-      if (!res.ok) { setError(data.error || "Pengajuan kunjungan belum berhasil."); return; }
+      if (!res.ok) {
+        setError(data.error || "Pengajuan kunjungan belum berhasil.");
+        if (res.status === 409) { setScheduleId(""); setAvailabilityVersion((value) => value + 1); }
+        return;
+      }
       setNotice("Pengajuan jadwal terkirim. Resepsionis akan memeriksa dan mengonfirmasinya.");
       setScheduleId("");
       setAppointmentDate("");
@@ -99,8 +113,9 @@ export default function PatientPortalPage() {
             <form onSubmit={submit} className="patient-booking-form">
               <label>Poli<select required value={departmentId} onChange={(event) => { setDepartmentId(event.target.value); setScheduleId(""); }}><option value="">Pilih poli</option>{departments.map((department) => <option key={department.id} value={department.id}>{department.name}</option>)}</select></label>
               <label>Tanggal kunjungan<input type="date" required min={getClinicDateKey()} value={appointmentDate} onChange={(event) => { setAppointmentDate(event.target.value); setScheduleId(""); }} /></label>
-              <label>Jadwal dokter<select required value={scheduleId} onChange={(event) => setScheduleId(event.target.value)} disabled={!appointmentDate}><option value="">{appointmentDate ? "Pilih jadwal dokter" : "Pilih tanggal terlebih dahulu"}</option>{availableSchedules.map((schedule) => <option key={schedule.id} value={schedule.id}>{schedule.doctorName} · {schedule.startTime}–{schedule.endTime}</option>)}</select></label>
-              {appointmentDate && availableSchedules.length === 0 && <small className="booking-hint">Belum ada jadwal poli ini pada tanggal yang dipilih. Coba hari lain.</small>}
+              <label>Dokter dan jam praktik<select required value={scheduleId} onChange={(event) => setScheduleId(event.target.value)} disabled={!appointmentDate || availabilityLoading}><option value="">{availabilityLoading ? "Memeriksa ketersediaan..." : appointmentDate ? "Pilih dokter dan jadwal" : "Pilih tanggal terlebih dahulu"}</option>{availableSchedules.map((schedule) => <option key={schedule.id} value={schedule.id} disabled={schedule.remaining === 0 || schedule.hasPassed}>{schedule.doctorName} · {schedule.startTime}–{schedule.endTime} · {schedule.hasPassed ? "Sudah lewat" : schedule.remaining === 0 ? "Penuh" : `${schedule.remaining} slot tersisa`}</option>)}</select></label>
+              {appointmentDate && !availabilityLoading && availableSchedules.length === 0 && <small className="booking-hint">Belum ada jadwal poli ini pada tanggal yang dipilih. Coba hari lain.</small>}
+              {appointmentDate && !availabilityLoading && availableSchedules.length > 0 && availableSchedules.every((schedule) => schedule.remaining === 0 || schedule.hasPassed) && <small className="booking-hint">Semua jadwal sudah penuh atau lewat. Pilih tanggal lain.</small>}
               <label>Catatan untuk resepsionis <span className="optional-label">Opsional</span><textarea rows={3} maxLength={500} value={notes} onChange={(event) => setNotes(event.target.value)} placeholder="Contoh: kunjungan kontrol" /></label>
               <div className="booking-info"><Clock3 size={16} /><span>Pengajuan belum menjadi antrean. Nomor antrean diterbitkan saat Anda check-in pada hari kunjungan.</span></div>
               <button type="submit" className="public-button-primary patient-submit" disabled={submitting || !scheduleId}>{submitting ? <><Loader2 size={16} className="spinner" /> Mengirim…</> : <>Kirim pengajuan <ArrowRight size={16} /></>}</button>

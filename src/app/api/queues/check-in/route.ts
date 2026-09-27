@@ -1,15 +1,9 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { AppointmentStatus, QueueStatus } from "@prisma/client";
+import { AppointmentStatus, Prisma } from "@prisma/client";
 import { getSession } from "@/lib/auth";
 import { getClinicDateKey } from "@/lib/clinic-time";
-
-const deptPrefixes: Record<string, string> = {
-  "Poli Umum": "A",
-  "Poli Anak": "B",
-  "Poli Gigi": "C",
-  "Poli Penyakit Dalam": "D",
-};
+import { createQueue } from "@/features/queue/server/create-queue";
 
 export async function POST(req: Request) {
   try {
@@ -35,16 +29,8 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: "Check-in hanya dapat dilakukan pada tanggal kunjungan." }, { status: 400 });
       }
 
-      const startOfDay = new Date(`${todayKey}T00:00:00.000Z`);
-      startOfDay.setUTCHours(startOfDay.getUTCHours() - 7);
-      const queueNumberCount = await prisma.queue.count({ where: { departmentId: appointment.departmentId, createdAt: { gte: startOfDay } } });
-      const prefix = deptPrefixes[appointment.department.name] || appointment.department.name.charAt(0).toUpperCase() || "Q";
-      const queueNumber = `${prefix}-${String(queueNumberCount + 1).padStart(3, "0")}`;
       const queue = await prisma.$transaction(async (tx) => {
-        const created = await tx.queue.create({
-          data: { appointmentId: appointment.id, departmentId: appointment.departmentId, queueNumber, status: QueueStatus.WAITING },
-          include: { department: true, appointment: { include: { patient: true, doctor: true } } },
-        });
+        const created = await createQueue(tx, appointment.id, appointment.department, now);
         await tx.appointment.update({ where: { id: appointment.id }, data: { status: AppointmentStatus.CHECKED_IN } });
         return created;
       });
@@ -53,7 +39,7 @@ export async function POST(req: Request) {
         success: true,
         queue,
         ticket: {
-          queueNumber,
+          queueNumber: queue.queueNumber,
           patientName: appointment.patient.fullName,
           medicalRecordNo: appointment.patient.medicalRecordNo,
           nik: appointment.patient.nik,
@@ -85,23 +71,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Dokter tidak bertugas di poli yang dipilih." }, { status: 400 });
     }
 
-    // Tanggal hari ini
-    const startOfDay = new Date(`${getClinicDateKey()}T00:00:00.000Z`);
-    startOfDay.setUTCHours(startOfDay.getUTCHours() - 7);
-
-    // Hitung antrean yang sudah ada di poli ini hari ini
-    const existingQueueCount = await prisma.queue.count({
-      where: {
-        departmentId,
-        createdAt: { gte: startOfDay },
-      },
-    });
-
-    const prefix = deptPrefixes[department.name] || department.name.charAt(0).toUpperCase() || "Q";
-    const queueNumber = `${prefix}-${String(existingQueueCount + 1).padStart(3, "0")}`;
-
-    // Buat Appointment baru dengan status CHECKED_IN
-    // Kunjungan dan antrean harus berhasil atau gagal bersama.
+    // Kunjungan dan antrean dibuat dalam satu transaksi.
     const queue = await prisma.$transaction(async (tx) => {
       const appointment = await tx.appointment.create({
         data: {
@@ -114,18 +84,7 @@ export async function POST(req: Request) {
         },
       });
 
-      return tx.queue.create({
-        data: {
-          appointmentId: appointment.id,
-          departmentId,
-          queueNumber,
-          status: QueueStatus.WAITING,
-        },
-        include: {
-          department: true,
-          appointment: { include: { patient: true, doctor: true } },
-        },
-      });
+      return createQueue(tx, appointment.id, department);
     });
 
     return NextResponse.json({
@@ -143,6 +102,9 @@ export async function POST(req: Request) {
       },
     }, { status: 201 });
   } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
+      return NextResponse.json({ error: "Kunjungan ini sudah memiliki nomor antrean." }, { status: 409 });
+    }
     console.error("POST /api/queues/check-in error:", error);
     return NextResponse.json({ error: "Gagal membuat nomor antrean check-in." }, { status: 500 });
   }

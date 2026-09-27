@@ -11,13 +11,14 @@ import {
   UserCheck,
   Stethoscope,
   Pill,
+  UserRound,
   ArrowRight,
   AlertCircle,
   Loader2,
 } from "lucide-react";
 
 type DemoRole = {
-  role: "ADMIN" | "RECEPTIONIST" | "DOCTOR" | "PHARMACIST";
+  role: "ADMIN" | "RECEPTIONIST" | "DOCTOR" | "PHARMACIST" | "PATIENT";
   title: string;
   name: string;
   email: string;
@@ -57,6 +58,14 @@ const demoRoles: DemoRole[] = [
     email: "apoteker@klinikcare.com",
     colorClass: "demo-pharm",
     icon: Pill,
+  },
+  {
+    role: "PATIENT",
+    title: "Pasien",
+    name: "Sari Wulandari",
+    email: "pasien.sari@gmail.com",
+    colorClass: "demo-pat",
+    icon: UserRound,
   },
 ];
 
@@ -151,7 +160,7 @@ function LoginForm() {
         }
       }
 
-      router.push(callbackUrl || "/app");
+      router.push(callbackUrl || (data.user?.role === "PATIENT" ? "/patient" : "/app"));
       router.refresh();
     } catch {
       setErrorMessage("Terjadi gangguan jaringan saat login demo.");
@@ -265,7 +274,7 @@ function LoginForm() {
             })}
           </div>
           <div className="login-foot">
-            <p>Login demo menampilkan empat alur kerja staf: Resepsionis, Dokter, Apoteker, dan Admin.</p>
+            <p>Login demo menampilkan lima alur: Pasien, Resepsionis, Dokter, Apoteker, dan Admin.</p>
           </div>
         </>}
       </div>

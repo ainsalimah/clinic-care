@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import AppLayout from "@/components/AppLayout";
 import {
   Stethoscope,
-  Users,
   Clock,
   CheckCircle2,
   FileText,
@@ -15,7 +14,6 @@ import {
   Volume2,
   RefreshCw,
   Loader2,
-  ShieldAlert,
 } from "lucide-react";
 
 interface QueueItem {
@@ -49,6 +47,7 @@ export default function DoctorDashboardPage() {
   const [queues, setQueues] = useState<QueueItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [actionError, setActionError] = useState("");
 
   const fetchDoctorQueue = async () => {
     setLoading(true);
@@ -71,29 +70,37 @@ export default function DoctorDashboardPage() {
 
   const handleStartExam = async (queue: QueueItem) => {
     setActionLoading(queue.id);
+    setActionError("");
     try {
       if (queue.status !== "IN_ROOM") {
-        await fetch("/api/queues", {
+        const res = await fetch("/api/queues", {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ queueId: queue.id, status: "IN_ROOM" }),
         });
+        if (!res.ok) throw new Error((await res.json()).error || "Gagal membuka pemeriksaan.");
       }
       router.push(`/doctor/examine/${queue.appointment.id}`);
-    } catch {
-      router.push(`/doctor/examine/${queue.appointment.id}`);
+    } catch (cause) {
+      setActionError(cause instanceof Error ? cause.message : "Gagal membuka pemeriksaan.");
+    } finally {
+      setActionLoading(null);
     }
   };
 
   const handleCallPatient = async (queueId: string) => {
     setActionLoading(queueId);
+    setActionError("");
     try {
-      await fetch("/api/queues", {
+      const res = await fetch("/api/queues", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ queueId, status: "CALLED" }),
       });
+      if (!res.ok) throw new Error((await res.json()).error || "Gagal memanggil pasien.");
       await fetchDoctorQueue();
+    } catch (cause) {
+      setActionError(cause instanceof Error ? cause.message : "Gagal memanggil pasien.");
     } finally {
       setActionLoading(null);
     }
@@ -115,6 +122,7 @@ export default function DoctorDashboardPage() {
   return (
     <AppLayout breadcrumbTitle="Ruang Praktik Dokter" activeNav="/doctor">
       <div className="page">
+        {actionError && <div className="data-error" role="alert">{actionError}</div>}
         {/* Header */}
         <div className="section-header-flex">
           <div>
@@ -281,14 +289,14 @@ export default function DoctorDashboardPage() {
                         </td>
                         <td style={{ textAlign: "right" }}>
                           <div className="action-buttons-group">
-                            {q.status === "WAITING" && (
+                            {(q.status === "WAITING" || q.status === "CALLED") && (
                               <button
                                 type="button"
                                 className="btn-action-call"
                                 disabled={isBusy}
                                 onClick={() => handleCallPatient(q.id)}
                               >
-                                <Volume2 size={13} /> Panggil
+                                <Volume2 size={13} /> {q.status === "CALLED" ? "Panggil Ulang" : "Panggil"}
                               </button>
                             )}
                             <button

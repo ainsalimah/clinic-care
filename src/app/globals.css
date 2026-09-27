@@ -4,16 +4,27 @@
 @tailwind components;
 @tailwind utilities;
 
-:root { --ink:#163447; --muted:#72828c; --line:#e8eef0; --teal:#0f9185; --pale:#effaf8; --navy:#123449; }
+:root { --ink:#143c34; --muted:#5e776f; --line:#e2ede6; --teal:#145c4d; --pale:#edf7f3; --navy:#11362e; --field-border:#b9ceca; }
 html { scroll-behavior:smooth; }
 * { box-sizing:border-box; }
 body { margin:0; background:#f7faf9; color:var(--ink); font-family:'DM Sans',sans-serif; }
 button, a, select, input, textarea { font:inherit; transition:color .18s ease, background-color .18s ease, border-color .18s ease, box-shadow .18s ease; }
+:where(input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]), textarea) {
+  border:1px solid var(--field-border);
+  border-radius:8px;
+  padding:9px 11px;
+  background:#fff;
+  color:var(--ink);
+}
+:where(input, select, textarea):focus-visible {
+  outline:2px solid var(--teal);
+  outline-offset:2px;
+}
 button, a { -webkit-tap-highlight-color:transparent; }
 
 .app-shell { display:flex; min-height:100vh; }
 .sidebar { width:254px; background:var(--navy); color:#d2e1e5; padding:27px 16px 18px; display:flex; flex-direction:column; flex-shrink:0; }
-.brand { display:flex; align-items:center; gap:10px; color:#fff; font:800 21px 'Plus Jakarta Sans'; padding:0 10px 39px; }.brand span span{ color:#54d1bd; }.brand-mark{display:grid;place-items:center;width:33px;height:33px;background:#19a899;border-radius:10px;color:#fff;}
+.brand { display:flex; align-items:center; gap:10px; color:#fff; font:800 21px 'Plus Jakarta Sans'; padding:0 10px 39px; }.brand span span{ color:#5dd3b8; }.brand-mark{display:grid;place-items:center;width:33px;height:33px;background:#187560;border-radius:10px;color:#fff;}
 .sidebar-label { color:#8099a5; font-size:10px; font-weight:700; letter-spacing:1.2px; margin:0 10px 11px; }
 .nav-group { margin-bottom:17px; }
 .nav-group .sidebar-label { margin-bottom:6px; }
@@ -32,13 +43,13 @@ button, a { -webkit-tap-highlight-color:transparent; }
   transition:background-color .18s ease, color .18s ease;
 }
 .nav-item:hover {
-  background:#1b465b;
+  background:#17483e;
   color:#fff;
 }
 .nav-item.active {
-  background:#1b465b;
+  background:#17483e;
   color:#fff;
-  box-shadow:inset 3.5px 0 #55d4bd;
+  box-shadow:inset 3.5px 0 #5dd3b8;
 }
 .sidebar-foot { margin-top:auto; }
 .help { display:flex; gap:11px; background:#1c465b; border:1px solid #2b566a; border-radius:10px; padding:11px; color:#6fe0cd; font-size:13px; transition:border-color .2s; }
@@ -50,16 +61,20 @@ button, a { -webkit-tap-highlight-color:transparent; }
 .content { flex:1; min-width:0; }
 .topbar { height:74px; border-bottom:1px solid var(--line); display:flex; align-items:center; justify-content:space-between; padding:0 43px; background:#fff; }
 .crumb, .top-actions, .role-switcher { display:flex; align-items:center; gap:8px; }
-.crumb { font-size:13px; color:#7e8c93; }
-.crumb b { color:var(--ink); }
+.crumb { font-size:13px; color:#7e8c93; min-width:0; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+.crumb b { color:var(--ink); min-width:0; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
 .top-actions { gap:19px; }
 .role-switcher { gap:8px; }
 .role-switcher label { font-size:12px; color:var(--muted); }
-select { border:1px solid #dbe5e7; border-radius:7px; padding:7px 26px 7px 9px; color:var(--ink); background:#fff; font-size:13px; cursor:pointer; }
-select:focus { border-color:var(--teal); outline:none; box-shadow:0 0 0 2px rgba(15,145,133,.12); }
+select { border:1px solid var(--field-border); border-radius:7px; padding:7px 26px 7px 9px; color:var(--ink); background:#fff; font-size:13px; cursor:pointer; }
+select:focus { border-color:var(--teal); outline:none; box-shadow:0 0 0 2px rgba(20,92,77,.12); }
 .bell { width:34px; height:34px; border:0; background:#f2f7f7; border-radius:9px; display:grid; place-items:center; position:relative; color:var(--ink); cursor:pointer; }
 .bell:hover { background:#e5edee; }
 .bell i { position:absolute; width:7px; height:7px; background:#f36b62; border-radius:50%; top:7px; right:8px; border:1px solid #fff; }
+.btn-topbar-logout { display:none; align-items:center; gap:6px; height:34px; padding:0 12px; border:1px solid #dbe5e7; border-radius:8px; background:#fff; color:#c93b2b; font-size:13px; font-weight:600; cursor:pointer; transition:all .15s ease; white-space:nowrap; flex-shrink:0; }
+.btn-topbar-logout:hover { background:#fff5f5; border-color:#fca5a5; color:#b91c1c; }
+@media (max-width:720px) { .btn-topbar-logout { display:inline-flex; } }
+@media (max-width:540px) { .btn-topbar-logout { padding:0 8px; } .btn-topbar-logout span { display:none; } }
 
 @keyframes pageFadeIn {
   from { opacity:0; }
@@ -92,7 +107,7 @@ select:focus { border-color:var(--teal); outline:none; box-shadow:0 0 0 2px rgba
   border-color:#cce4e0;
 }
 .stat-icon { width:38px; height:38px; border-radius:10px; display:grid; place-items:center; }
-.stat-icon.teal { background:#e0f6f1; color:#0f9185; }
+.stat-icon.teal { background:#eaf5f0; color:#145c4d; }
 .stat-icon.blue { background:#e7f1fa; color:#4384b5; }
 .stat-icon.amber { background:#fff3dc; color:#dc981f; }
 .stat-icon.coral { background:#ffebe8; color:#dc685c; }
@@ -101,8 +116,9 @@ select:focus { border-color:var(--teal); outline:none; box-shadow:0 0 0 2px rgba
 .stat-card small { font-size:10px; }
 .positive { color:#16936f; }
 .warn { color:#d07931; }
+.data-error { padding:12px 16px; margin-bottom:16px; border:1px solid #f3b5b5; border-radius:8px; background:#fff5f5; color:#9b2727; }
 
-.grid { display:grid; grid-template-columns:minmax(0,1.65fr) minmax(320px,.85fr); gap:23px; }
+.dashboard-grid { display:grid; grid-template-columns:minmax(0,1.65fr) minmax(320px,.85fr); gap:23px; }
 .panel { background:#fff; border:1px solid var(--line); border-radius:13px; padding:22px; transition:border-color .2s; }
 .panel:hover { border-color:#d5e5e4; }
 .panel-head { display:flex; align-items:start; justify-content:space-between; margin-bottom:17px; }
@@ -131,9 +147,9 @@ td { border-top:1px solid #eff3f3; padding:13px 8px; color:#657780; font-size:12
   transition:background-color .18s ease, color .18s ease, border-color .18s ease;
 }
 .row-btn:hover {
-  background:#0f9185;
+  background:var(--teal);
   color:#fff;
-  border-color:#0f9185;
+  border-color:var(--teal);
 }
 .quick-panel { padding-bottom:17px; }
 .quick {
@@ -155,7 +171,7 @@ td { border-top:1px solid #eff3f3; padding:13px 8px; color:#657780; font-size:12
 .quick:hover {
   border-color:#b7e4dd;
   background:#fbfefe;
-  box-shadow:0 4px 12px rgba(15,145,133,.08);
+  box-shadow:0 4px 12px rgba(20,92,77,.08);
 }
 .quick span { flex:1; }
 .quick b { display:block; color:var(--ink); font-size:12px; transition:color .18s ease; }
@@ -169,7 +185,7 @@ td { border-top:1px solid #eff3f3; padding:13px 8px; color:#657780; font-size:12
 .elder-note b { font-size:11px; }
 .elder-note p { font-size:10px; color:#54717a; line-height:1.4; margin:4px 0 0; }
 
-@media (max-width:1050px){.sidebar{width:210px}.stats{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}.page,.topbar{padding-left:26px;padding-right:26px}}@media (max-width:720px){.sidebar{display:none}.topbar{padding:0 17px}.role-switcher label{display:none}.page{padding:25px 17px}.hero{align-items:flex-start;gap:15px;flex-direction:column}.today{width:100%}.stats{grid-template-columns:1fr 1fr;gap:10px}.stat-card{padding:13px;gap:9px}.stat-card strong{font-size:20px}.panel{padding:16px}.top-actions{gap:7px}}
+@media (max-width:1050px){.sidebar{width:210px}.stats{grid-template-columns:repeat(2,1fr)}.dashboard-grid{grid-template-columns:1fr}.page,.topbar{padding-left:26px;padding-right:26px}}@media (max-width:720px){.sidebar{display:none}.topbar{padding:0 17px}.role-switcher label{display:none}.page{padding:25px 17px}.hero{align-items:flex-start;gap:15px;flex-direction:column}.today{width:100%}.stats{grid-template-columns:1fr 1fr;gap:10px}.stat-card{padding:13px;gap:9px}.panel{padding:16px}.top-actions{gap:7px}}
 
 /* Login Page Styles */
 .login-wrapper { min-height:100vh; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg,#eaf4f4 0%,#f7faf9 50%,#edf2f7 100%); padding:24px; }
@@ -183,23 +199,23 @@ td { border-top:1px solid #eff3f3; padding:13px 8px; color:#657780; font-size:12
 .login-form { display:flex; flex-direction:column; gap:16px; }
 .form-group { display:flex; flex-direction:column; gap:6px; }
 .form-group label { font-size:12px; font-weight:600; color:#3b5260; }
-.input-affix { display:flex; align-items:center; gap:10px; border:1px solid #d5e0e3; border-radius:9px; padding:10px 14px; background:#fafcfc; transition:all .2s ease; }
-.input-affix:focus-within { border-color:var(--teal); background:#fff; box-shadow:0 0 0 3px rgba(15,145,133,.12); }
+.input-affix { display:flex; align-items:center; gap:10px; border:1px solid var(--field-border); border-radius:9px; padding:10px 14px; background:#fafcfc; transition:all .2s ease; }
+.input-affix:focus-within { border-color:var(--teal); background:#fff; box-shadow:0 0 0 3px rgba(20,92,77,.12); }
 .input-affix svg { color:#7b9099; }
-.input-affix input { border:0; background:transparent; outline:none; font-size:14px; color:var(--ink); width:100%; }
+.input-affix input { border:0; padding:0; background:transparent; outline:none; font-size:14px; color:var(--ink); width:100%; }
 .btn-submit { display:flex; align-items:center; justify-content:center; gap:8px; background:var(--teal); color:#fff; border:0; border-radius:9px; padding:12px; font-size:14px; font-weight:600; cursor:pointer; margin-top:4px; transition:background .2s ease; }
-.btn-submit:hover:not(:disabled) { background:#0d7e74; }
+.btn-submit:hover:not(:disabled) { background:#0e483c; }
 .btn-submit:disabled { opacity:.6; cursor:not-allowed; }
 .login-divider { display:flex; align-items:center; text-align:center; margin:24px 0 16px; }
 .login-divider::before, .login-divider::after { content:''; flex:1; border-bottom:1px solid #e5ecee; }
 .login-divider span { padding:0 12px; font-size:10px; font-weight:700; letter-spacing:.8px; color:#92a2a8; }
 .demo-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:8px; }
 .demo-card { display:flex; align-items:center; gap:10px; border:1px solid #e1ebed; background:#fbfdfd; border-radius:10px; padding:10px 12px; cursor:pointer; text-align:left; transition:all .15s ease; }
-.demo-card:hover:not(:disabled) { background:#fff; border-color:#b2d5d0; transform:translateY(-1px); box-shadow:0 3px 8px rgba(0,0,0,.04); }
+.demo-card:hover:not(:disabled) { background:#fff; border-color:#b4dbd3; transform:translateY(-1px); box-shadow:0 3px 8px rgba(0,0,0,.04); }
 .demo-card:last-child:nth-child(odd) { grid-column:span 2; }
 .demo-icon { width:32px; height:32px; border-radius:8px; display:grid; place-items:center; flex-shrink:0; }
 .demo-admin .demo-icon { background:#feebe8; color:#d6453d; }
-.demo-rec .demo-icon { background:#e6f7f4; color:#0d8b7f; }
+.demo-rec .demo-icon { background:#eaf5f0; color:#145c4d; }
 .demo-doc .demo-icon { background:#e5f0fa; color:#2874ad; }
 .demo-pharm .demo-icon { background:#fef4e2; color:#cc8614; }
 .demo-pat .demo-icon { background:#edf2f7; color:#496375; }
@@ -210,7 +226,7 @@ td { border-top:1px solid #eff3f3; padding:13px 8px; color:#657780; font-size:12
 .login-foot { margin-top:18px; text-align:center; }
 .login-foot p { margin:0; font-size:11px; color:#8c9fa8; line-height:1.4; }
 .btn-logout { background:transparent; border:0; color:#9ab4be; cursor:pointer; padding:5px; display:flex; align-items:center; justify-content:center; border-radius:6px; transition:all .15s ease; margin-left:auto; }
-.btn-logout:hover { background:#1b465b; color:#f77c74; }
+.btn-logout:hover { background:#17483e; color:#f77c74; }
 
 /* Stage 3: Patient & Queue Styles */
 .section-header-flex { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:24px; gap:16px; flex-wrap:wrap; }
@@ -250,13 +266,13 @@ td { border-top:1px solid #eff3f3; padding:13px 8px; color:#657780; font-size:12
   padding:10px 16px;
   font-size:13px;
   font-weight:600;
-  box-shadow:0 3px 8px rgba(15,145,133,.2);
+  box-shadow:0 3px 8px rgba(20,92,77,.2);
   cursor:pointer;
   transition:all .18s ease;
 }
 .btn-primary-action:hover {
   background:#0c7c72;
-  box-shadow:0 4px 12px rgba(15,145,133,.28);
+  box-shadow:0 4px 12px rgba(20,92,77,.28);
 }
 
 /* Registration Form Grid */
@@ -271,14 +287,30 @@ td { border-top:1px solid #eff3f3; padding:13px 8px; color:#657780; font-size:12
 .req { color:#e5483f; font-weight:700; }
 .field-hint { font-size:11px; color:var(--muted); line-height:1.4; display:block; margin-top:3px; }
 .form-row-2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.patient-form-grid .form-group > :is(input, select, textarea) {
+  width:100%;
+  min-height:44px;
+  padding:10px 12px;
+  border:1px solid var(--field-border);
+  border-radius:8px;
+  background:#fff;
+  color:var(--ink);
+  font-size:14px;
+}
+.patient-form-grid .form-group textarea { min-height:72px; resize:vertical; }
+.patient-form-grid .form-group > :is(input, select, textarea):focus-visible {
+  outline:2px solid var(--teal);
+  outline-offset:2px;
+  border-color:var(--teal);
+}
 .form-actions { margin-top:auto; padding-top:10px; }
 .btn-submit-patient { width:100%; display:flex; align-items:center; justify-content:center; gap:8px; background:var(--teal); color:#fff; border:0; border-radius:10px; padding:13px; font-size:14px; font-weight:700; cursor:pointer; transition:background .2s; }
-.btn-submit-patient:hover:not(:disabled) { background:#0d7a6f; }
+.btn-submit-patient:hover:not(:disabled) { background:#0e483c; }
 .btn-submit-patient:disabled { opacity:.6; cursor:not-allowed; }
 
 /* Elderly Friendly Toggle */
 .elderly-toggle-box { background:#f0f8f7; border:1.5px dashed #a7dcd4; border-radius:12px; padding:16px 18px; transition:all .2s ease; }
-.elderly-toggle-box.active { background:#e2f4f1; border-color:var(--teal); border-style:solid; box-shadow:0 3px 10px rgba(15,145,133,.08); }
+.elderly-toggle-box.active { background:#e2f4f1; border-color:var(--teal); border-style:solid; box-shadow:0 3px 10px rgba(20,92,77,.08); }
 .elderly-toggle-header { display:flex; justify-content:space-between; align-items:center; gap:16px; }
 .elderly-title { display:flex; align-items:center; gap:12px; }
 .elderly-icon { color:var(--teal); flex-shrink:0; }
@@ -328,7 +360,7 @@ input:checked + .slider:before { transform:translateX(22px); }
 .filter-bar { background:#fff; border:1px solid var(--line); border-radius:12px; padding:14px 18px; margin-bottom:18px; }
 .search-form { display:flex; align-items:center; gap:12px; width:100%; }
 .search-form svg { color:#82949c; flex-shrink:0; }
-.search-form input { flex:1; border:0; outline:none; font-size:14px; color:var(--ink); }
+.search-form input { flex:1; min-width:0; border:1px solid var(--field-border); border-radius:8px; padding:9px 11px; font-size:14px; color:var(--ink); }
 .btn-search { background:var(--teal); color:#fff; border:0; border-radius:7px; padding:8px 16px; font-size:12px; font-weight:600; cursor:pointer; }
 .queue-filter-row { display:flex; gap:14px; margin-bottom:18px; }
 .filter-group { display:flex; align-items:center; gap:8px; background:#fff; border:1px solid var(--line); border-radius:9px; padding:6px 12px; font-size:12px; }
@@ -419,7 +451,7 @@ input:checked + .slider:before { transform:translateX(22px); }
   display:inline-flex;
   align-items:center;
   gap:4px;
-  background:#0f9185;
+  background:var(--teal);
   color:#fff;
   border:0;
   border-radius:6px;
@@ -504,9 +536,10 @@ input:checked + .slider:before { transform:translateX(22px); }
 .history-rx small { color:var(--muted); }
 
 .vitals-grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; }
-.vital-field { display:flex; flex-direction:column; background:#f8fafb; border:1px solid #e1eaed; border-radius:8px; padding:8px 10px; }
+.vital-field { display:flex; flex-direction:column; background:#f8fafb; border:1px solid var(--field-border); border-radius:8px; padding:8px 10px; }
+.vital-field:focus-within { border-color:var(--teal); box-shadow:0 0 0 2px rgba(20,92,77,.12); }
 .vital-field small { font-size:10px; color:var(--muted); font-weight:700; }
-.vital-field input { border:0; background:transparent; outline:none; font-size:14px; font-weight:700; color:var(--ink); width:100%; margin-top:2px; }
+.vital-field input { border:0; padding:0; background:transparent; outline:none; font-size:14px; font-weight:700; color:var(--ink); width:100%; margin-top:2px; }
 .vital-field span { font-size:10px; color:#859ba6; align-self:flex-end; margin-top:-14px; }
 
 .empty-rx-box { border:1.5px dashed #cbdfe1; border-radius:10px; padding:24px; text-align:center; background:#fafcfc; color:var(--muted); }
@@ -516,24 +549,24 @@ input:checked + .slider:before { transform:translateX(22px); }
 .rx-item-row { display:flex; gap:10px; align-items:flex-end; }
 .rx-item-row label { font-size:11px; font-weight:700; color:#3b5260; display:block; margin-bottom:4px; }
 .rx-item-row select, .rx-item-row input, .rx-item-card input { width:100%; border:1px solid #d4e1e4; border-radius:7px; padding:7px 10px; font-size:12px; background:#fff; outline:none; }
-.rx-item-row select:focus, .rx-item-row input:focus, .rx-item-card input:focus { border-color:var(--teal); box-shadow:0 0 0 2px rgba(15,145,133,.12); }
+.rx-item-row select:focus, .rx-item-row input:focus, .rx-item-card input:focus { border-color:var(--teal); box-shadow:0 0 0 2px rgba(20,92,77,.12); }
 .btn-trash { background:transparent; border:1px solid #fecaca; color:#dc2626; padding:7px 9px; border-radius:7px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
 .btn-trash:hover { background:#fee2e2; }
 .rx-allergy-warn { display:flex; align-items:center; gap:5px; color:#b91c1c; font-size:10px; font-weight:700; margin-top:4px; }
-.btn-submit-consultation { display:inline-flex; align-items:center; gap:8px; background:var(--teal); color:#fff; border:0; border-radius:10px; padding:13px 24px; font-size:14px; font-weight:700; cursor:pointer; box-shadow:0 4px 12px rgba(15,145,133,.25); transition:all .2s; }
+.btn-submit-consultation { display:inline-flex; align-items:center; gap:8px; background:var(--teal); color:#fff; border:0; border-radius:10px; padding:13px 24px; font-size:14px; font-weight:700; cursor:pointer; box-shadow:0 4px 12px rgba(20,92,77,.25); transition:all .2s; }
 .btn-submit-consultation:hover:not(:disabled) { background:#0b786e; transform:translateY(-1px); }
 .btn-submit-consultation:disabled { opacity:.6; cursor:not-allowed; }
 
 /* Doctor Practice Dashboard */
 .current-patient-banner { background:linear-gradient(135deg, #123449 0%, #17425c 100%); border-radius:14px; padding:20px 24px; color:#fff; margin-bottom:24px; box-shadow:0 8px 24px rgba(18,52,73,.15); }
-.current-badge { display:inline-block; background:#19a899; color:#fff; font-size:10px; font-weight:800; letter-spacing:1px; padding:3px 8px; border-radius:4px; margin-bottom:12px; }
+.current-badge { display:inline-block; background:#187560; color:#fff; font-size:10px; font-weight:800; letter-spacing:1px; padding:3px 8px; border-radius:4px; margin-bottom:12px; }
 .current-content { display:flex; justify-content:space-between; align-items:center; gap:20px; flex-wrap:wrap; }
 .current-info { display:flex; align-items:center; gap:16px; }
 .queue-big-pill { font:800 28px 'Plus Jakarta Sans',sans-serif; background:rgba(255,255,255,.15); border:1px solid rgba(255,255,255,.25); color:#fff; padding:6px 14px; border-radius:10px; }
 .current-info h2 { font-size:20px; margin:0 0 4px; color:#fff; }
 .current-info p { margin:0; font-size:12px; color:#bcd4dd; }
-.btn-examine-now { display:inline-flex; align-items:center; gap:8px; background:#54d1bd; color:#0b3b33; font-weight:800; font-size:13px; padding:12px 20px; border-radius:9px; border:0; cursor:pointer; transition:all .15s; }
-.btn-examine-now:hover { background:#65e0cb; transform:translateX(2px); }
+.btn-examine-now { display:inline-flex; align-items:center; gap:8px; background:#5dd3b8; color:#0b332b; font-weight:800; font-size:13px; padding:12px 20px; border-radius:9px; border:0; cursor:pointer; transition:all .15s; }
+.btn-examine-now:hover { background:#72deca; transform:translateX(2px); }
 
 /* Records Archive */
 .records-list-container { display:flex; flex-direction:column; gap:14px; }
@@ -588,7 +621,7 @@ input:checked + .slider:before { transform:translateX(22px); }
 }
 .tab-btn.tab-pending.active { color:#b45309; }
 .tab-btn.tab-proc.active { color:#1e6ca3; }
-.tab-btn.tab-ready.active { color:#0f9185; }
+.tab-btn.tab-ready.active { color:#145c4d; }
 
 .stock-danger { color:#dc2626; font-weight:700; background:#fee2e2; padding:2px 6px; border-radius:4px; font-size:11px; }
 .stock-safe { color:#15803d; font-weight:600; font-size:11px; }
@@ -632,7 +665,7 @@ input:checked + .slider:before { transform:translateX(22px); }
   display:inline-flex;
   align-items:center;
   gap:7px;
-  background:linear-gradient(135deg, #0f9185 0%, #15736b 100%);
+  background:linear-gradient(135deg, #145c4d 0%, #0e483c 100%);
   color:#fff;
   border:0;
   border-radius:8px;
@@ -640,12 +673,12 @@ input:checked + .slider:before { transform:translateX(22px); }
   font-size:12px;
   font-weight:700;
   cursor:pointer;
-  box-shadow:0 2px 8px rgba(15,145,133,.2);
+  box-shadow:0 2px 8px rgba(20,92,77,.2);
   transition:background .18s ease, box-shadow .18s ease;
 }
 .btn-dispense-action:hover:not(:disabled) {
-  background:linear-gradient(135deg, #0d8075 0%, #116059 100%);
-  box-shadow:0 4px 12px rgba(15,145,133,.3);
+  background:linear-gradient(135deg, #0e483c 0%, #09332a 100%);
+  box-shadow:0 4px 12px rgba(20,92,77,.3);
 }
 .btn-dispense-action:disabled, .btn-ready-action:disabled, .btn-proc-action:disabled { opacity:.6; cursor:not-allowed; }
 .dispensed-stamp { display:inline-flex; align-items:center; gap:5px; background:#f0fdf4; color:#166534; border:1px solid #bbf7d0; font-size:11px; font-weight:700; padding:6px 12px; border-radius:6px; }
@@ -655,7 +688,7 @@ input:checked + .slider:before { transform:translateX(22px); }
 .etiket-header { display:flex; justify-content:space-between; align-items:center; border-bottom:1.5px solid #1a3644; padding-bottom:4px; font-size:11px; font-weight:800; color:#1a3644; }
 .etiket-meta { display:flex; justify-content:space-between; font-size:10px; color:#546e7a; margin-top:5px; }
 .etiket-patient { font-size:13px; font-weight:700; color:#0e202a; margin:6px 0 2px; }
-.etiket-med { font-size:12px; font-weight:700; color:#0f9185; background:#f0fbf9; padding:4px 8px; border-radius:4px; margin:4px 0; }
+.etiket-med { font-size:12px; font-weight:700; color:#145c4d; background:#edf7f3; padding:4px 8px; border-radius:4px; margin:4px 0; }
 .etiket-signa { font-size:13px; font-weight:800; color:#c2410c; background:#fff7ed; padding:6px 10px; border-radius:5px; border-left:3px solid #f97316; margin:6px 0; }
 .etiket-foot { font-size:10px; text-align:center; color:#78909c; font-style:italic; margin-top:6px; border-top:1px dashed #d1dcde; padding-top:4px; }
 
@@ -922,15 +955,89 @@ input:checked + .slider:before { transform:translateX(22px); }
   .lp-footer-bottom { flex-direction: column; gap: 8px; text-align: center; }
 }
 
+.public-button-primary,
+.patient-submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 46px;
+  padding: 10px 20px;
+  background-color: #0b605a;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+.public-button-primary:hover,
+.patient-submit:hover {
+  background-color: #084843;
+  color: #ffffff;
+}
+.public-button-primary:disabled,
+.patient-submit:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
 /* Patient authentication and portal */
-.patient-auth-page { min-height:100vh; display:grid; grid-template-columns:minmax(320px,.82fr) minmax(480px,1.18fr); background:#fff; }.patient-auth-aside { min-height:100vh; padding:36px clamp(28px,6vw,85px); display:flex; flex-direction:column; justify-content:space-between; color:#fff; background:radial-gradient(circle at 80% 20%,rgba(75,198,173,.25),transparent 30%),linear-gradient(145deg,#12394a,#0b605a); }.patient-auth-aside .public-brand { color:#fff; }.patient-auth-aside .public-brand > span:last-child > span { color:#68ddc4; }.patient-auth-aside .public-brand-icon { background:#27a994; }.patient-auth-message { max-width:420px; }.patient-auth-message .public-eyebrow { color:#7ce2ce; }.patient-auth-message h1 { margin:18px 0 13px; font:700 38px/1.15 'Plus Jakarta Sans'; letter-spacing:-1.5px; }.patient-auth-message > p { margin:0; color:#c2dad9; font-size:13px; line-height:1.8; }.patient-auth-points { display:flex; flex-direction:column; gap:14px; margin-top:26px; color:#e2f2ef; font-size:11px; }.patient-auth-points span { display:flex; align-items:center; gap:10px; }.patient-auth-points svg { color:#73dfca; }.auth-aside-foot { color:#91b3b4; font-size:10px; }.patient-auth-form-area { min-height:100vh; padding:30px clamp(24px,6vw,82px); display:flex; flex-direction:column; justify-content:space-between; }.auth-back-link { display:inline-flex; align-items:center; gap:7px; color:#70848b; text-decoration:none; font-size:11px; }.auth-back-link:hover { color:var(--teal); }.patient-auth-form-wrap { width:100%; max-width:540px; margin:32px auto; }.patient-auth-form-wrap h2 { margin:10px 0 7px; color:#1a3c4e; font-size:27px; }.auth-form-subtitle { margin:0 0 20px; color:#819198; font-size:11px; line-height:1.7; }.patient-register-form { display:flex; flex-direction:column; gap:13px; }.patient-register-form label,.patient-booking-form label { display:flex; flex-direction:column; gap:6px; color:#526b75; font-size:10px; font-weight:700; }.patient-register-form input,.patient-register-form select,.patient-booking-form input,.patient-booking-form select,.patient-booking-form textarea { width:100%; min-height:41px; padding:10px 12px; border:1px solid #dce7e5; border-radius:8px; color:#254353; background:#fff; font-size:12px; outline:none; }.patient-register-form input:focus,.patient-register-form select:focus,.patient-booking-form input:focus,.patient-booking-form select:focus,.patient-booking-form textarea:focus { border-color:#54b9aa; box-shadow:0 0 0 3px rgba(17,141,130,.1); }.patient-form-two { display:grid; grid-template-columns:1fr 1fr; gap:12px; }.patient-data-note { margin:0; padding:10px 12px; color:#658078; background:#f0f9f6; border-radius:8px; font-size:9px; line-height:1.6; }.patient-submit { width:100%; min-height:44px; border:0; cursor:pointer; }.patient-submit:disabled { opacity:.65; cursor:wait; }.auth-existing { margin:17px 0 0; color:#75878d; text-align:center; font-size:11px; }.auth-existing a { color:#10877e; font-weight:700; text-decoration:none; }.patient-form-error { margin:12px 0; padding:11px 13px; color:#a33c34; background:#fff1ef; border:1px solid #f4d0ca; border-radius:8px; font-size:11px; line-height:1.6; }.patient-auth-secure { display:flex; align-items:center; justify-content:center; gap:7px; color:#8b9a9f; font-size:9px; }.patient-auth-secure svg { color:#198e83; }
-.patient-portal-page { max-width:1200px; }.patient-portal-hero { padding:25px 28px; margin-bottom:22px; display:flex; justify-content:space-between; align-items:center; gap:20px; background:linear-gradient(110deg,#e9f7f3,#f5faf9 68%,#f1f5fc); border:1px solid #e2efeb; border-radius:14px; }.patient-portal-hero h1 { margin:8px 0 5px; color:#183a4c; font:700 25px 'Plus Jakarta Sans'; }.patient-portal-hero p { margin:0; color:#71858c; font-size:12px; }.patient-rm-card { padding:12px 16px; background:#fff; border:1px solid #e4eeeb; border-radius:10px; }.patient-rm-card span,.patient-rm-card b { display:block; }.patient-rm-card span { color:#8b999d; font-size:9px; }.patient-rm-card b { margin-top:4px; color:#168b81; font:700 13px 'Plus Jakarta Sans'; }.portal-notice { padding:12px 15px; margin:0 0 16px; border-radius:9px; background:#edf9f4; border:1px solid #ccecdf; color:#317960; font-size:11px; }.portal-notice span { font-weight:700; }.patient-portal-grid { display:grid; grid-template-columns:minmax(0,1.05fr) minmax(330px,.95fr); gap:18px; align-items:start; }.patient-booking-panel,.patient-visits-panel,.online-request-panel { padding:21px; }.patient-panel-intro { margin:-6px 0 18px; color:#7e8f94; font-size:10px; line-height:1.7; }.patient-booking-form { display:flex; flex-direction:column; gap:13px; }.patient-booking-form textarea { resize:vertical; }.optional-label { color:#9aa6a9; font-weight:400; }.booking-hint { color:#a36b2f; font-size:10px; }.booking-info { display:flex; align-items:flex-start; gap:8px; padding:10px; background:#f2f8fa; color:#607983; border-radius:8px; font-size:9px; line-height:1.6; }.booking-info svg { flex:none; color:#5483a1; }.patient-visits-panel .panel-head { align-items:center; }.patient-visit-list { display:flex; flex-direction:column; gap:10px; }.patient-visit-card { padding:13px; border:1px solid #e7efed; border-radius:10px; }.visit-card-top { display:flex; align-items:center; justify-content:space-between; }.patient-visit-card h3 { margin:10px 0 3px; color:#284959; font:700 13px 'Plus Jakarta Sans'; }.patient-visit-card p { margin:0 0 8px; color:#6f8188; font-size:10px; }.patient-visit-card > small { display:flex; gap:6px; align-items:center; color:#829197; font-size:9px; }.patient-visit-card > small svg { color:#159084; }.appointment-status { display:inline-flex; align-items:center; padding:5px 8px; border-radius:20px; font-size:9px; font-weight:700; }.status-pending { color:#98641e; background:#fff4df; }.status-confirmed,.status-checked_in { color:#167963; background:#e6f7ef; }.status-completed { color:#587487; background:#eef3f6; }.status-cancelled,.status-no_show { color:#9f5049; background:#fff0ee; }
+.patient-auth-page { min-height:100vh; display:grid; grid-template-columns:minmax(320px,.82fr) minmax(480px,1.18fr); background:#fff; }.patient-auth-aside { min-height:100vh; padding:36px clamp(28px,6vw,85px); display:flex; flex-direction:column; justify-content:space-between; color:#fff; background:radial-gradient(circle at 80% 20%,rgba(75,198,173,.25),transparent 30%),linear-gradient(145deg,#12394a,#0b605a); }.patient-auth-aside .public-brand { color:#fff; }.patient-auth-aside .public-brand > span:last-child > span { color:#68ddc4; }.patient-auth-aside .public-brand-icon { background:#27a994; }.patient-auth-message { max-width:420px; }.patient-auth-message .public-eyebrow { color:#7ce2ce; }.patient-auth-message h1 { margin:18px 0 13px; font:700 38px/1.15 'Plus Jakarta Sans'; letter-spacing:-1.5px; }.patient-auth-message > p { margin:0; color:#c2dad9; font-size:13px; line-height:1.8; }.patient-auth-points { display:flex; flex-direction:column; gap:14px; margin-top:26px; color:#e2f2ef; font-size:11px; }.patient-auth-points span { display:flex; align-items:center; gap:10px; }.patient-auth-points svg { color:#73dfca; }.auth-aside-foot { color:#91b3b4; font-size:10px; }.patient-auth-form-area { min-height:100vh; padding:30px clamp(24px,6vw,82px); display:flex; flex-direction:column; justify-content:space-between; }.auth-back-link { display:inline-flex; align-items:center; gap:7px; color:#70848b; text-decoration:none; font-size:11px; }.auth-back-link:hover { color:var(--teal); }.patient-auth-form-wrap { width:100%; max-width:540px; margin:32px auto; }.patient-auth-form-wrap h2 { margin:10px 0 7px; color:#1a3c4e; font-size:27px; }.auth-form-subtitle { margin:0 0 20px; color:#819198; font-size:11px; line-height:1.7; }.patient-register-form { display:flex; flex-direction:column; gap:13px; }.patient-register-form label,.patient-booking-form label { display:flex; flex-direction:column; gap:6px; color:#526b75; font-size:10px; font-weight:700; }.patient-register-form input,.patient-register-form select,.patient-booking-form input,.patient-booking-form select,.patient-booking-form textarea { width:100%; min-height:41px; padding:10px 12px; border:1px solid #dce7e5; border-radius:8px; color:#254353; background:#fff; font-size:12px; outline:none; }.patient-register-form input:focus,.patient-register-form select:focus,.patient-booking-form input:focus,.patient-booking-form select:focus,.patient-booking-form textarea:focus { border-color:#54b9aa; box-shadow:0 0 0 3px rgba(17,141,130,.1); }.patient-form-two { display:grid; grid-template-columns:1fr 1fr; gap:12px; }.patient-data-note { margin:0; padding:10px 12px; color:#658078; background:#f0f9f6; border-radius:8px; font-size:9px; line-height:1.6; }.patient-submit:disabled { opacity:.65; cursor:wait; }.auth-existing { margin:17px 0 0; color:#75878d; text-align:center; font-size:11px; }.auth-existing a { color:#145c4d; font-weight:700; text-decoration:none; }.patient-form-error { margin:12px 0; padding:11px 13px; color:#a33c34; background:#fff1ef; border:1px solid #f4d0ca; border-radius:8px; font-size:11px; line-height:1.6; }.patient-auth-secure { display:flex; align-items:center; justify-content:center; gap:7px; color:#8b9a9f; font-size:9px; }.patient-auth-secure svg { color:#198e83; }
+.patient-portal-page { max-width:1200px; }.patient-portal-hero { padding:25px 28px; margin-bottom:22px; display:flex; justify-content:space-between; align-items:center; gap:20px; background:linear-gradient(110deg,#e9f7f3,#f5faf9 68%,#f1f5fc); border:1px solid #e2efeb; border-radius:14px; }.patient-portal-hero h1 { margin:8px 0 5px; color:#183a4c; font:700 25px 'Plus Jakarta Sans'; }.patient-portal-hero p { margin:0; color:#71858c; font-size:12px; }.patient-rm-card { padding:12px 16px; background:#fff; border:1px solid #e4eeeb; border-radius:10px; }.patient-rm-card span,.patient-rm-card b { display:block; }.patient-rm-card span { color:#8b999d; font-size:9px; }.patient-rm-card b { margin-top:4px; color:#145c4d; font:700 13px 'Plus Jakarta Sans'; }.portal-notice { padding:12px 15px; margin:0 0 16px; border-radius:9px; background:#edf9f4; border:1px solid #ccecdf; color:#317960; font-size:11px; }.portal-notice span { font-weight:700; }.patient-portal-grid { display:grid; grid-template-columns:minmax(0,1.05fr) minmax(330px,.95fr); gap:18px; align-items:start; }.patient-booking-panel,.patient-visits-panel,.online-request-panel { padding:21px; }.patient-panel-intro { margin:-6px 0 18px; color:#7e8f94; font-size:10px; line-height:1.7; }.patient-booking-form { display:flex; flex-direction:column; gap:13px; }.patient-booking-form textarea { resize:vertical; }.optional-label { color:#9aa6a9; font-weight:400; }.booking-hint { color:#a36b2f; font-size:10px; }.booking-info { display:flex; align-items:flex-start; gap:8px; padding:10px; background:#f2f8fa; color:#607983; border-radius:8px; font-size:9px; line-height:1.6; }.booking-info svg { flex:none; color:#5483a1; }.patient-visits-panel .panel-head { align-items:center; }.patient-visit-list { display:flex; flex-direction:column; gap:10px; }.patient-visit-card { padding:13px; border:1px solid #e7efed; border-radius:10px; }.visit-card-top { display:flex; align-items:center; justify-content:space-between; }.patient-visit-card h3 { margin:10px 0 3px; color:#284959; font:700 13px 'Plus Jakarta Sans'; }.patient-visit-card p { margin:0 0 8px; color:#6f8188; font-size:10px; }.patient-visit-card > small { display:flex; gap:6px; align-items:center; color:#829197; font-size:9px; }.patient-visit-card > small svg { color:#159084; }.appointment-status { display:inline-flex; align-items:center; padding:5px 8px; border-radius:20px; font-size:9px; font-weight:700; }.status-pending { color:#98641e; background:#fff4df; }.status-confirmed,.status-checked_in { color:#167963; background:#e6f7ef; }.status-completed { color:#587487; background:#eef3f6; }.status-cancelled,.status-no_show { color:#9f5049; background:#fff0ee; }
 
 /* Receptionist review of online appointment requests */
-.online-request-panel { margin-bottom:18px; }.pending-count-badge { display:inline-flex; align-items:center; gap:6px; padding:7px 10px; border-radius:20px; background:#fff4e1; color:#a36e25; font-size:10px; font-weight:700; }.online-appointment-list { display:flex; flex-direction:column; gap:11px; }.online-appointment-card { display:flex; align-items:center; justify-content:space-between; gap:18px; padding:15px; border:1px solid #e7efed; border-radius:11px; }.online-appointment-card.confirmed { background:#fcfefd; }.online-appointment-main { min-width:0; display:flex; align-items:center; gap:15px; }.appointment-date-tile { min-width:132px; padding:11px; display:flex; flex-direction:column; align-items:flex-start; gap:5px; border-radius:9px; color:#168b81; background:#eef8f5; }.appointment-date-tile b { color:#34515d; font-size:9px; line-height:1.4; }.appointment-date-tile small { color:#839198; font-size:9px; }.online-patient-info h3 { margin:7px 0 2px; color:#244657; font:700 13px 'Plus Jakarta Sans'; }.online-patient-info p { margin:0; color:#819097; font-size:10px; }.appointment-doctor-line { display:flex; align-items:center; gap:5px; margin-top:8px; color:#55727c; font-size:10px; }.appointment-doctor-line svg { color:#158d83; }.appointment-note { display:block; margin-top:6px; color:#8b7a61; font-size:9px; }.online-appointment-actions { display:flex; align-items:center; gap:8px; flex:none; }.online-appointment-actions button,.online-appointment-card > button { display:inline-flex; align-items:center; justify-content:center; gap:6px; min-height:36px; padding:8px 11px; border-radius:7px; font-size:10px; }.online-appointment-actions button:disabled,.online-appointment-card > button:disabled { opacity:.6; }.patient-ticket-modal { max-width:450px; }.patient-ticket-modal .modal-footer { display:flex; justify-content:flex-end; gap:8px; }
+.online-request-panel { margin-bottom:18px; }.pending-count-badge { display:inline-flex; align-items:center; gap:6px; padding:7px 10px; border-radius:20px; background:#fff4e1; color:#a36e25; font-size:10px; font-weight:700; }.online-appointment-list { display:flex; flex-direction:column; gap:11px; }.online-appointment-card { display:flex; align-items:center; justify-content:space-between; gap:18px; padding:15px; border:1px solid #e7efed; border-radius:11px; }.online-appointment-card.confirmed { background:#fcfefd; }.online-appointment-main { min-width:0; display:flex; align-items:center; gap:15px; }.appointment-date-tile { min-width:132px; padding:11px; display:flex; flex-direction:column; align-items:flex-start; gap:5px; border-radius:9px; color:#145c4d; background:#eef8f5; }.appointment-date-tile b { color:#34515d; font-size:9px; line-height:1.4; }.appointment-date-tile small { color:#839198; font-size:9px; }.online-patient-info h3 { margin:7px 0 2px; color:#244657; font:700 13px 'Plus Jakarta Sans'; }.online-patient-info p { margin:0; color:#819097; font-size:10px; }.appointment-doctor-line { display:flex; align-items:center; gap:5px; margin-top:8px; color:#55727c; font-size:10px; }.appointment-doctor-line svg { color:#158d83; }.appointment-note { display:block; margin-top:6px; color:#8b7a61; font-size:9px; }.online-appointment-actions { display:flex; align-items:center; gap:8px; flex:none; }.online-appointment-actions button,.online-appointment-card > button { display:inline-flex; align-items:center; justify-content:center; gap:6px; min-height:36px; padding:8px 11px; border-radius:7px; font-size:10px; }.online-appointment-actions button:disabled,.online-appointment-card > button:disabled { opacity:.6; }.patient-ticket-modal { max-width:450px; }.patient-ticket-modal .modal-footer { display:flex; justify-content:flex-end; gap:8px; }
 
 @media (max-width:1240px) { .public-section,.public-faq-section,.public-how-section,.public-stats-strip,.public-footer { margin-left:32px; margin-right:32px; }.public-doctor-section { padding-left:32px; padding-right:32px; } }
 @media (max-width:900px) { .public-hero { gap:20px; min-height:460px; }.public-hero h1 { font-size:47px; }.public-stats-strip { margin-top:4px; }.public-section,.public-doctor-section,.public-faq-section { padding-top:56px; padding-bottom:56px; }.public-department-grid { grid-template-columns:repeat(2,1fr); }.public-doctor-grid { grid-template-columns:repeat(2,1fr); }.public-how-section { gap:35px; }.patient-auth-page { grid-template-columns:minmax(260px,.7fr) minmax(430px,1.3fr); }.patient-auth-aside { padding-left:30px; padding-right:30px; }.patient-auth-message h1 { font-size:31px; } }
 @media (max-width:720px) { .public-header { height:68px; padding:0 18px; }.public-menu-toggle { display:grid; place-items:center; width:37px; height:37px; border:1px solid #e0ebe8; border-radius:9px; background:#fff; color:#254656; }.public-nav { display:none; position:absolute; top:67px; left:0; right:0; padding:14px 18px 18px; background:#fff; border-bottom:1px solid #e7efed; box-shadow:0 10px 18px rgba(30,70,75,.06); }.public-nav.open { display:flex; flex-direction:column; align-items:stretch; gap:0; }.public-nav a { padding:12px 4px; }.public-nav .public-nav-cta { justify-content:center; margin-top:7px; padding:11px; }.public-hero { display:flex; flex-direction:column; align-items:stretch; padding:47px 22px 25px; gap:10px; }.public-hero h1 { font-size:43px; letter-spacing:-1.9px; }.public-hero-copy > p { font-size:13px; }.public-trust-row { gap:10px 16px; }.public-hero-art { min-height:310px; }.hero-heart { width:145px; height:145px; }.hero-heart svg { width:60px; }.hero-orbit-one { width:340px; height:200px; }.hero-orbit-two { width:290px; height:175px; }.hero-float-top { top:24px; right:0; }.hero-float-bottom { left:0; bottom:35px; }.hero-art-label { right:0; bottom:0; }.public-stats-strip { margin:5px 17px 20px; padding:16px 8px; grid-template-columns:1fr 1fr; gap:15px 0; }.public-stats-strip > div:nth-child(2) { border:0; }.public-stats-strip b { font-size:15px; }.public-stats-strip span { font-size:9px; }.public-section,.public-faq-section { margin-left:20px; margin-right:20px; padding:45px 0; }.public-section-heading { display:block; }.public-section-heading h2,.public-how-copy h2 { font-size:25px; }.public-section-heading > p { margin-top:9px; }.public-department-grid,.public-doctor-grid { grid-template-columns:1fr; }.public-doctor-section { padding:45px 20px; }.public-how-section { margin:0 20px; padding:52px 0; display:flex; flex-direction:column; align-items:stretch; gap:25px; }.public-faq-section { padding-top:15px; }.public-footer { margin:0 20px; padding:20px 0; display:grid; grid-template-columns:1fr auto; gap:10px; }.public-footer p { grid-column:1/-1; grid-row:2; }.public-footer > small { grid-column:1/-1; }.patient-auth-page { display:flex; flex-direction:column; }.patient-auth-aside { min-height:auto; padding:22px 22px 27px; gap:34px; }.patient-auth-message { max-width:none; }.patient-auth-message h1 { max-width:450px; font-size:29px; }.patient-auth-message > p { font-size:11px; }.patient-auth-points { gap:10px; margin-top:18px; }.auth-aside-foot { display:none; }.patient-auth-form-area { min-height:auto; padding:21px 20px 27px; }.patient-auth-form-wrap { margin:34px auto; }.patient-form-two { grid-template-columns:1fr; }.patient-auth-secure { margin-top:7px; }.patient-portal-hero { align-items:flex-start; flex-direction:column; padding:19px; }.patient-rm-card { width:100%; }.patient-portal-grid { grid-template-columns:1fr; }.online-appointment-card,.online-appointment-main { align-items:stretch; flex-direction:column; }.online-appointment-actions { justify-content:flex-end; }.appointment-date-tile { min-width:0; flex-direction:row; align-items:center; flex-wrap:wrap; }.online-appointment-card > button { align-self:flex-end; } }
 
 @media print { .public-header,.public-footer,.public-site,.patient-auth-aside,.patient-auth-form-area,.sidebar,.topbar { display:none !important; } }
+
+/* Typography for authenticated dashboards and role workspaces. */
+.app-shell { font-size:0.875rem; line-height:1.5; }
+.app-shell :is(.hero h1, .page-title, .patient-portal-hero h1) { font-size:1.75rem; line-height:1.25; }
+.app-shell :is(.panel h2, .modal-header h3) { font-family:'Plus Jakarta Sans',sans-serif; font-size:1.125rem; line-height:1.35; }
+.app-shell .stat-card strong { font-size:1.625rem; }
+.app-shell :is(.sidebar-label, .eyebrow, .hero p) { font-size:0.75rem; }
+.app-shell :is(.nav-item, td, .patient-name, .patient b, .quick b, .doc-name, .record-patient, .current-info p) { font-size:0.875rem; }
+.app-shell :is(th, .form-group label, .rx-item-row label, .role-switcher label, .stat-card p, .patient-meta, .modal-header p, .field-hint, .history-date, .history-item p, .patient-panel-intro) { font-size:0.8125rem; }
+.app-shell :is(.status, .status-pill, .appointment-status, .stock-warning-badge, .stock-danger-badge, .stock-safe-badge, .allergy-badge) { font-size:0.75rem; }
+.app-shell :is(.row-btn, .btn-checkin, .btn-action-call, .btn-action-enter, .btn-action-done, .btn-action-skip, .btn-action-print, .btn-restock, .btn-proc-action, .btn-ready-action, .btn-dispense-action, .online-appointment-actions button, .online-appointment-card > button) { font-size:0.875rem; }
+.app-shell :is(.btn-primary-action, .btn-secondary, .btn-primary, .btn-refresh, .btn-search, .btn-submit-consultation, .btn-examine-now, .tab-btn, .text-btn) { font-size:0.875rem; }
+.app-shell :is(.form-input, .rx-item-row select, .rx-item-row input, .rx-item-card input, .patient-booking-form select, .patient-booking-form input, .patient-booking-form textarea) { font-size:0.875rem; }
+.app-shell :is(.history-item, .info-list, .soap-box, .rx-table, .booking-info, .patient-visit-card p, .patient-visit-card > small, .online-patient-info p, .appointment-doctor-line) { font-size:0.875rem; }
+.app-shell :is(.patient-visit-card h3, .online-patient-info h3) { font-size:1rem; }
+.app-shell :is(.patient-rm-card span, .booking-hint, .appointment-date-tile b, .appointment-date-tile small, .appointment-note) { font-size:0.75rem; }
+.app-shell .modal-card { max-height:calc(100dvh - 2rem); overflow-y:auto; }
+.app-shell :is(.patient-booking-form label, .form-label, .filter-group, .rx-header, .patient-rm-card b) { font-size:0.875rem; }
+.app-shell :is(.quick small, .stat-card small, .today small, .help small, .profile small, .elder-note p, .patient-portal-hero p, .portal-notice) { font-size:0.8125rem; }
+.app-shell :is(.rx-allergy-warn, .allergy-alert-card small, .record-date, .record-rm, .summary-diagnosis small, .stock-safe, .stock-danger) { font-size:0.8125rem; }
+
+.speaker-current { display:flex; flex-wrap:wrap; align-items:baseline; gap:16px; padding:16px 0; }
+.speaker-current strong { font:800 clamp(3rem, 8vw, 6rem)/1 'Plus Jakarta Sans',sans-serif; color:var(--teal); }
+.speaker-current span { font:700 clamp(1.25rem, 3vw, 2rem) 'Plus Jakarta Sans',sans-serif; color:var(--ink); }
+.speaker-idle { margin:16px 0 4px; color:var(--muted); font-size:1rem; }
+.speaker-history { list-style:none; margin:0; padding:0; }
+.speaker-history li { display:flex; flex-wrap:wrap; align-items:center; gap:12px; padding:12px 0; border-top:1px solid var(--line); font-size:1rem; }
+.speaker-history strong { min-width:80px; color:var(--teal); }
+.speaker-history time { margin-left:auto; color:var(--muted); font-size:0.875rem; }
+.auto-call-notice { display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:12px; margin:20px auto 0; padding:14px; border:1px solid #b9dfd9; border-radius:10px; background:#f4fffd; color:var(--ink); }
+.auto-call-notice p { margin:0; font-size:0.875rem; }
+.speaker-rooms { display:flex; flex-direction:column; gap:10px; }
+.speaker-room-row { display:grid; grid-template-columns:minmax(180px,1fr) minmax(180px,1fr) auto; align-items:center; gap:12px; }
+.speaker-room-row label { display:flex; flex-direction:column; color:var(--ink); font-size:0.875rem; }
+.speaker-room-row label span { color:var(--muted); font-size:0.8125rem; }
+.speaker-room-row input { min-width:0; padding:9px 11px; border:1px solid #dbe5e7; border-radius:8px; background:#fff; font-size:0.875rem; }
+@media (max-width:720px) { .speaker-room-row { grid-template-columns:1fr auto; }.speaker-room-row label { grid-column:1/-1; } }
+
+.patient-register-form :is(input, select),
+.patient-booking-form :is(input, select, textarea),
+.rx-item-row :is(input, select),
+.rx-item-card input,
+.speaker-room-row input { border-color:var(--field-border); }

@@ -39,7 +39,9 @@ export async function PATCH(req: Request) {
       return NextResponse.json({ error: "Tanggal kunjungan sudah lewat. Batalkan pengajuan yang kedaluwarsa." }, { status: 409 });
     }
 
-    const appointment = await prisma.appointment.update({ where: { id: appointmentId }, data: { status } });
+    const changed = await prisma.appointment.updateMany({ where: { id: appointmentId, status: AppointmentStatus.PENDING }, data: { status } });
+    if (changed.count !== 1) return NextResponse.json({ error: "Pengajuan sudah diproses petugas lain." }, { status: 409 });
+    const appointment = await prisma.appointment.findUnique({ where: { id: appointmentId } });
     return NextResponse.json({ success: true, appointment });
   } catch (error) {
     console.error("PATCH /api/appointments error:", error);

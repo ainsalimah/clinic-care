@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import AppLayout from "@/components/AppLayout";
 import {
-  BarChart3,
   Users,
   CalendarDays,
   Pill,
@@ -14,12 +13,8 @@ import {
   Loader2,
   AlertTriangle,
   CheckCircle2,
-  Clock,
-  ArrowUpRight,
   TrendingDown,
   TrendingUp,
-  HeartPulse,
-  Activity,
 } from "lucide-react";
 
 interface ReportData {
@@ -204,7 +199,7 @@ export default function AdminReportsPage() {
             </div>
 
             {/* Grid 2 Columns: Departments Breakdown & Low Stock Alert */}
-            <div className="grid" style={{ marginBottom: "24px" }}>
+            <div className="dashboard-grid" style={{ marginBottom: "24px" }}>
               {/* Department Breakdown */}
               <div className="panel">
                 <div className="panel-head">
@@ -382,7 +377,7 @@ export default function AdminReportsPage() {
             </div>
 
             {/* Bottom Row: Recent Queue Activity & Inventory Log */}
-            <div className="grid">
+            <div className="dashboard-grid">
               {/* Today's Queue Activity */}
               <div className="panel">
                 <div className="panel-head">

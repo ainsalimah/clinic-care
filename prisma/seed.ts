@@ -4,6 +4,9 @@ import bcrypt from "bcryptjs";
 const prisma = new PrismaClient();
 
 async function main() {
+  if (process.env.NODE_ENV === "production" || process.env.ALLOW_DEMO_SEED !== "true") {
+    throw new Error("Seed demo menghapus data. Hanya untuk database development dengan ALLOW_DEMO_SEED=true.");
+  }
   console.log("🌱 Starting database seeding for KlinikCare...");
 
   // 1. Bersihkan data lama jika ada (idempotent)
@@ -11,6 +14,8 @@ async function main() {
   await prisma.prescriptionItem.deleteMany();
   await prisma.prescription.deleteMany();
   await prisma.medicalRecord.deleteMany();
+  await prisma.queueAnnouncement.deleteMany();
+  await prisma.queueAutoCall.deleteMany();
   await prisma.queue.deleteMany();
   await prisma.appointment.deleteMany();
   await prisma.schedule.deleteMany();
@@ -24,7 +29,7 @@ async function main() {
   const defaultPassword = await bcrypt.hash("password123", 10);
 
   // 2. Buat Pengguna (Users) untuk masing-masing Role
-  const adminUser = await prisma.user.create({
+  await prisma.user.create({
     data: {
       name: "Admin Rani",
       email: "admin@klinikcare.com",
@@ -33,7 +38,7 @@ async function main() {
     },
   });
 
-  const receptionistUser = await prisma.user.create({
+  await prisma.user.create({
     data: {
       name: "Dita Prameswari",
       email: "resepsionis@klinikcare.com",
@@ -78,7 +83,7 @@ async function main() {
     },
   });
 
-  const pharmacistUser = await prisma.user.create({
+  await prisma.user.create({
     data: {
       name: "Apt. Budi Santoso",
       email: "apoteker@klinikcare.com",
@@ -135,6 +140,7 @@ async function main() {
       userId: doctorHendraUser.id,
       departmentId: poliUmum.id,
       fullName: "dr. Hendra Pratama",
+      roomLabel: "Ruang Umum 1",
       specialization: "Dokter Umum",
       licenseNumber: "SIP.503/442/DU/2022",
     },
@@ -145,6 +151,7 @@ async function main() {
       userId: doctorMayaUser.id,
       departmentId: poliAnak.id,
       fullName: "dr. Maya Indah, Sp.A",
+      roomLabel: "Ruang Anak 1",
       specialization: "Spesialis Anak (Pediatri)",
       licenseNumber: "SIP.503/118/SPA/2021",
     },
@@ -155,6 +162,7 @@ async function main() {
       userId: doctorFadhilUser.id,
       departmentId: poliGigi.id,
       fullName: "drg. Fadhil Ramadhan",
+      roomLabel: "Ruang Gigi 1",
       specialization: "Dokter Gigi & Mulut",
       licenseNumber: "SIP.503/245/DG/2023",
     },
@@ -165,6 +173,7 @@ async function main() {
       userId: doctorBambangUser.id,
       departmentId: poliPenyakitDalam.id,
       fullName: "dr. Bambang Setiawan, Sp.PD",
+      roomLabel: "Ruang Penyakit Dalam 1",
       specialization: "Spesialis Penyakit Dalam",
       licenseNumber: "SIP.503/089/SPD/2019",
     },

@@ -59,6 +59,7 @@ Kunjungan dan resep ditandai selesai
 - Pasien lama dapat menghubungkan akun ke profil yang belum terhubung jika NIK, nama, dan tanggal lahir cocok; jika tidak, diarahkan menghubungi resepsionis.
 - Pasien masuk ke portal untuk melihat jadwal dokter, mengajukan tanggal kunjungan, dan memantau status pengajuan.
 - Pengajuan online memiliki status `PENDING`; sistem memeriksa jadwal dan kuota, tetapi tidak menerbitkan antrean.
+- Pasien memilih dokter dan jadwal yang masih memiliki slot; jika penuh, pasien dapat memilih dokter lain pada poli yang sama.
 - Pasien hanya dapat melihat kunjungan yang terkait dengan akunnya. Rekam medis dan resep tidak ditampilkan di portal MVP.
 - OTP, verifikasi email sungguhan, lupa kata sandi otomatis, akun wali, dan pembatalan mandiri belum termasuk MVP.
 
@@ -71,6 +72,7 @@ Kunjungan dan resep ditandai selesai
 - Meninjau pengajuan online, mengonfirmasi atau membatalkannya, dan melakukan check-in pada hari jadwal.
 - Mencetak kartu pasien atau tiket antrean bila diperlukan.
 - Mengisi kontak pasien dan kontak pendamping secara opsional; keduanya bukan data yang sama.
+- Menjalankan satu layar speaker ruang tunggu dan mengatur nama ruang untuk setiap dokter.
 
 ### 5.3 Dokter
 
@@ -80,6 +82,8 @@ Kunjungan dan resep ditandai selesai
 - Mencatat keluhan, hasil pemeriksaan, diagnosis, dan tindakan.
 - Membuat resep berisi obat, dosis, jumlah, dan aturan pakai.
 - Menyelesaikan konsultasi dan meneruskan resep ke apotek.
+- Setelah pemeriksaan selesai, sistem menjadwalkan panggilan pasien berikutnya milik dokter yang sama dengan jeda 10 detik; dokter dapat membatalkan selama jeda.
+- Panggilan manual dan panggilan ulang menyebut nomor antrean serta ruang, lalu diputar bergantian melalui satu speaker.
 
 ### 5.4 Apoteker
 
@@ -118,11 +122,13 @@ Alternatif akhir: `dibatalkan`.
 | users | email, password hash, role, status akun |
 | patients | nomor rekam medis, NIK, biodata, alergi, kontak darurat |
 | patient_guardians | patient_id, user_id, hubungan keluarga |
-| doctors | user_id, spesialisasi, nomor izin |
+| doctors | user_id, spesialisasi, nomor izin, ruang praktik |
 | departments | nama poli, deskripsi |
 | schedules | dokter, poli, hari, jam, kuota |
 | appointments | pasien, dokter, jadwal, status |
 | queues | appointment, nomor antrean, status |
+| queue_auto_calls | dokter, pemeriksaan selesai, waktu panggil, status batal/proses |
+| queue_announcements | antrean, ruang, waktu pengumuman, status pemutaran |
 | medical_records | pasien, dokter, keluhan, diagnosis, tindakan |
 | prescriptions | rekam medis, pasien, dokter, status |
 | prescription_items | resep, obat, dosis, jumlah, aturan pakai |

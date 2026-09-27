@@ -1,13 +1,16 @@
 import { NextResponse } from "next/server";
-import { randomUUID } from "node:crypto";
-import { Role } from "@prisma/client";
+import { Role, Prisma } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import prisma from "@/lib/prisma";
 import { setSession } from "@/lib/auth";
 import { getClinicDateKey } from "@/lib/clinic-time";
+import { createMedicalRecordNumber } from "@/features/patients/server/medical-record-number";
+import { limitAuthRequest } from "@/lib/rate-limit";
+import { getSessionSecret } from "@/lib/session-config";
 
 export async function POST(req: Request) {
   try {
+    getSessionSecret();
     const body = await req.json();
     const fullName = typeof body.fullName === "string" ? body.fullName.trim() : "";
     const email = typeof body.email === "string" ? body.email.trim().toLowerCase() : "";
@@ -21,13 +24,18 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Lengkapi nama, email, kata sandi minimal 8 karakter, telepon, NIK 16 digit, tanggal lahir, dan jenis kelamin dengan benar." }, { status: 400 });
     }
 
+    if (fullName.length > 120 || email.length > 254 || Buffer.byteLength(password) > 72) {
+      return NextResponse.json({ error: "Nama, email, atau kata sandi terlalu panjang." }, { status: 400 });
+    }
+    const limited = await limitAuthRequest(req, "register", email);
+    if (limited) return limited;
     const passwordHash = await bcrypt.hash(password, 10);
     const result = await prisma.$transaction(async (tx) => {
       const existingEmail = await tx.user.findUnique({ where: { email } });
       if (existingEmail) return { error: "Email sudah digunakan. Silakan masuk atau gunakan email lain." };
 
       const existingPatient = await tx.patient.findUnique({ where: { nik } });
-      if (existingPatient && (existingPatient.userId || existingPatient.fullName.toLocaleLowerCase("id-ID") !== fullName.toLocaleLowerCase("id-ID") || existingPatient.dateOfBirth.toISOString().slice(0, 10) !== body.dateOfBirth)) {
+      if (existingPatient) {
         return { error: "Data mungkin sudah terdaftar. Hubungi resepsionis untuk menghubungkan akun dengan nomor rekam medis yang sudah ada." };
       }
 
@@ -35,12 +43,10 @@ export async function POST(req: Request) {
         data: { name: fullName, email, passwordHash, role: Role.PATIENT },
       });
 
-      const patient = existingPatient
-        ? await tx.patient.update({ where: { id: existingPatient.id }, data: { userId: user.id } })
-        : await tx.patient.create({
+      const patient = await tx.patient.create({
             data: {
               userId: user.id,
-              medicalRecordNo: `RM-${new Date().getFullYear()}-${randomUUID().slice(0, 8).toUpperCase()}`,
+              medicalRecordNo: createMedicalRecordNumber(),
               nik,
               fullName,
               dateOfBirth,
@@ -57,6 +63,9 @@ export async function POST(req: Request) {
     await setSession(result.user);
     return NextResponse.json({ success: true, user: result.user, patient: { id: result.patient.id, medicalRecordNo: result.patient.medicalRecordNo } }, { status: 201 });
   } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
+      return NextResponse.json({ error: "Data sudah terdaftar. Silakan masuk atau hubungi resepsionis." }, { status: 409 });
+    }
     console.error("POST /api/auth/register error:", error);
     return NextResponse.json({ error: "Pendaftaran akun belum berhasil. Periksa kembali data Anda." }, { status: 500 });
   }

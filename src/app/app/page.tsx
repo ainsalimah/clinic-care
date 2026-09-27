@@ -15,7 +15,6 @@ import {
   HeartPulse,
   Clock,
   CheckCircle2,
-  AlertTriangle,
   RefreshCw,
   Loader2,
   BarChart3,
@@ -246,7 +245,7 @@ export default function Home() {
         </section>
 
         {/* Main Grid: Queue Table & Quick Actions */}
-        <section className="grid">
+        <section className="dashboard-grid">
           {/* Real Queues Panel */}
           <article className="panel queue-panel">
             <div className="panel-head">

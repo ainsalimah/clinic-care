@@ -5,6 +5,7 @@
 
 # testing
 /coverage
+/dogfood-output/
 
 # next.js
 /.next/
@@ -35,4 +36,3 @@ next-env.d.ts
 
 # scratch scripts
 *.ps1
-head_test.html

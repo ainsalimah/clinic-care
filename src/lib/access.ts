@@ -22,10 +22,17 @@ export function canAccessPath(pathname: string, role: string): boolean {
 }
 
 const API_ACCESS: { prefix: string; roles: AppRole[]; methods?: string[] }[] = [
+  { prefix: "/auth/me", roles: ["ADMIN", "RECEPTIONIST", "DOCTOR", "PHARMACIST", "PATIENT"], methods: ["GET"] },
+  { prefix: "/auth/logout", roles: ["ADMIN", "RECEPTIONIST", "DOCTOR", "PHARMACIST", "PATIENT"], methods: ["POST"] },
+  { prefix: "/departments", roles: ["ADMIN", "RECEPTIONIST", "DOCTOR", "PHARMACIST", "PATIENT"], methods: ["GET"] },
+  { prefix: "/patient/availability", roles: ["PATIENT"], methods: ["GET"] },
   { prefix: "/patient/appointments", roles: ["PATIENT"] },
   { prefix: "/appointments", roles: ["RECEPTIONIST"], methods: ["GET"] },
   { prefix: "/appointments", roles: ["RECEPTIONIST"], methods: ["PATCH"] },
   { prefix: "/doctor/examination", roles: ["DOCTOR"] },
+  { prefix: "/queue-auto-calls", roles: ["DOCTOR"] },
+  { prefix: "/queue-announcements", roles: ["ADMIN", "RECEPTIONIST"] },
+  { prefix: "/doctor-rooms", roles: ["ADMIN", "RECEPTIONIST"] },
   { prefix: "/queues/check-in", roles: ["RECEPTIONIST"] },
   { prefix: "/records", roles: ["DOCTOR"], methods: ["GET"] },
   { prefix: "/admin/reports", roles: ["ADMIN", "RECEPTIONIST", "DOCTOR", "PHARMACIST"] },
@@ -42,7 +49,7 @@ const API_ACCESS: { prefix: string; roles: AppRole[]; methods?: string[] }[] = [
 
 export function canAccessApi(pathname: string, method: string, role: string): boolean {
   const policies = API_ACCESS.filter(({ prefix }) => pathname === prefix || pathname.startsWith(`${prefix}/`));
-  if (!policies.length) return true;
+  if (!policies.length) return false;
   const policy = policies.find(({ methods }) => !methods || methods.includes(method));
   if (!policy) return false;
   return policy.roles.includes(role as AppRole);

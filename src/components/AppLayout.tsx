@@ -6,7 +6,6 @@ import Link from "next/link";
 import {
   Activity,
   BarChart3,
-  Bell,
   CalendarDays,
   ChevronRight,
   ClipboardList,
@@ -45,6 +44,10 @@ let cachedRole: Role | null = null;
 let cachedUser: { name: string; email: string; role: string } | null = null;
 
 function getInitialRole(): Role {
+  if (typeof window !== "undefined" && window.location.pathname.startsWith("/patient")) {
+    cachedRole = "Pasien";
+    return "Pasien";
+  }
   if (cachedRole) return cachedRole;
   if (typeof window !== "undefined") {
     // 1. Try reading role cookie
@@ -113,41 +116,7 @@ export default function AppLayout({ children, activeNav, breadcrumbTitle }: AppL
         }
       })
       .catch(() => {});
-  }, []);
-
-  const handleRoleChange = async (newRole: Role) => {
-    cachedRole = newRole;
-    setRole(newRole);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("cliniccare_role", newRole);
-      document.cookie = `cliniccare_role_name=${encodeURIComponent(newRole)}; path=/; max-age=604800; SameSite=Lax`;
-    }
-
-    try {
-      const enumRole = roleToEnum[newRole];
-      const res = await fetch("/api/auth/demo", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ role: enumRole }),
-      });
-      const data = await res.json();
-      if (data.user) {
-        cachedUser = data.user;
-        setCurrentUser(data.user);
-        if (typeof window !== "undefined") {
-          localStorage.setItem("cliniccare_user", JSON.stringify(data.user));
-        }
-        const isCurrentAllowed = canAccessPath(pathname, roleToEnum[newRole] as AppRole);
-        if (!isCurrentAllowed) {
-          router.push("/app");
-        } else {
-          router.refresh();
-        }
-      }
-    } catch {
-      // fallback
-    }
-  };
+  }, [pathname]);
 
   const handleLogout = async () => {
     cachedRole = null;
@@ -270,16 +239,14 @@ export default function AppLayout({ children, activeNav, breadcrumbTitle }: AppL
           </div>
 
           <div className="top-actions">
-            {process.env.NODE_ENV !== "production" && <div className="role-switcher">
-              <label htmlFor="role-select">Mode demo:</label>
-              <select id="role-select" value={role} onChange={(e) => handleRoleChange(e.target.value as Role)}>
-                <option value="Admin">Admin</option><option value="Resepsionis">Resepsionis</option>
-                <option value="Dokter">Dokter</option><option value="Apoteker">Apoteker</option>
-              </select>
-            </div>}
-            <button className="bell" aria-label="Notifikasi">
-              <Bell size={19} />
-              <i />
+            <button
+              className="btn-topbar-logout"
+              onClick={handleLogout}
+              title="Keluar dari sistem"
+              aria-label="Logout"
+            >
+              <LogOut size={16} />
+              <span>Keluar</span>
             </button>
           </div>
         </header>

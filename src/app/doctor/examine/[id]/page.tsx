@@ -1,12 +1,10 @@
 "use client";
 
 import { useState, useEffect, use } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import AppLayout from "@/components/AppLayout";
+import { AutoCallNotice } from "@/features/queue/components/AutoCallNotice";
 import {
-  Stethoscope,
-  HeartPulse,
   AlertTriangle,
   FileText,
   Pill,
@@ -77,13 +75,20 @@ interface PrescriptionItemInput {
   instruction: string;
 }
 
+interface AutoCall {
+  id: string;
+  dueAt: string;
+  cancelledAt: string | null;
+  processedAt: string | null;
+  calledQueueId: string | null;
+}
+
 export default function DoctorExaminationPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
   const { id: appointmentId } = use(params);
-  const router = useRouter();
 
   const [appointment, setAppointment] = useState<AppointmentDetail | null>(null);
   const [medicines, setMedicines] = useState<Medicine[]>([]);
@@ -91,6 +96,7 @@ export default function DoctorExaminationPage({
   const [submitting, setSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [success, setSuccess] = useState(false);
+  const [autoCall, setAutoCall] = useState<AutoCall | null>(null);
 
   // SOAP state
   const [complaint, setComplaint] = useState("");
@@ -192,6 +198,7 @@ export default function DoctorExaminationPage({
         return;
       }
 
+      setAutoCall(data.autoCall ?? null);
       setSuccess(true);
     } catch {
       setErrorMessage("Terjadi kesalahan jaringan.");
@@ -232,6 +239,7 @@ export default function DoctorExaminationPage({
             <p>
               Rekam medis telah tersimpan permanen dan resep digital telah otomatis diteruskan ke Apotek dengan status <b>PENDING</b>.
             </p>
+            {autoCall && <AutoCallNotice initialCall={autoCall} appointmentId={appointmentId} />}
 
             <div className="success-action-buttons" style={{ marginTop: "24px" }}>
               <Link href="/doctor" className="btn-primary">

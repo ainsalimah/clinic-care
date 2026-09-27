@@ -1,33 +1,38 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { jwtVerify } from "jose";
 import { canAccessApi, canAccessPath } from "@/lib/access";
+import { SESSION_COOKIE_NAME } from "@/lib/session-config";
+import { getUserFromToken } from "@/lib/session-store";
 
-const COOKIE_NAME = "cliniccare_session";
-const JWT_SECRET = new TextEncoder().encode(
-  process.env.AUTH_SECRET || "clinic-care-super-secret-key-2026-secure"
-);
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const isApi = pathname.startsWith("/api/");
+  if (isApi && !["GET", "HEAD", "OPTIONS"].includes(request.method)) {
+    const origin = request.headers.get("origin");
+    if (request.headers.get("sec-fetch-site") === "cross-site" || (origin && origin !== request.nextUrl.origin)) {
+      return NextResponse.json({ error: "Asal permintaan tidak diizinkan." }, { status: 403 });
+    }
+  }
 
   // Lewati file statis, aset Next.js, dan endpoint API
   if (
     pathname.startsWith("/_next") ||
-    (isApi && (pathname.startsWith("/api/auth/") || pathname === "/api/public/catalog")) ||
+    pathname.startsWith("/images/") ||
+    (isApi &&
+      (["/api/auth/login", "/api/auth/register", "/api/auth/demo"].includes(pathname) ||
+        pathname === "/api/public/catalog")) ||
     pathname === "/favicon.ico"
   ) {
     return NextResponse.next();
   }
 
-  const token = request.cookies.get(COOKIE_NAME)?.value;
+  const token = request.cookies.get(SESSION_COOKIE_NAME)?.value;
   let user: { role: string; email: string } | null = null;
 
   if (token) {
     try {
-      const { payload } = await jwtVerify(token, JWT_SECRET);
-      user = payload as { role: string; email: string };
+      user = await getUserFromToken(token);
     } catch {
       // Token tidak valid atau kedaluwarsa
     }
@@ -61,7 +66,7 @@ export async function middleware(request: NextRequest) {
 
   // Pakai kebijakan role yang sama dengan sidebar untuk halaman dan API.
   const accessPath = isApi ? pathname.slice("/api".length) : pathname;
-  if (!canAccessPath(accessPath, user.role) || (isApi && !canAccessApi(accessPath, request.method, user.role))) {
+  if (!(isApi ? canAccessApi(accessPath, request.method, user.role) : canAccessPath(accessPath, user.role))) {
     if (isApi) {
       return NextResponse.json({ error: "Role tidak memiliki akses ke endpoint ini." }, { status: 403 });
     }
@@ -74,6 +79,7 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
+  runtime: "nodejs",
   matcher: [
     /*
      * Match all request paths except for the ones starting with:
@@ -82,6 +88,6 @@ export const config = {
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
      */
-    "/((?!api/auth/|_next/static|_next/image|favicon.ico).*)",
+    "/((?!_next/static|_next/image|favicon.ico).*)",
   ],
 };

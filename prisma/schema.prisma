@@ -48,41 +48,62 @@ enum InventoryTransactionType {
 }
 
 model User {
-  id           String    @id @default(cuid())
+  id           String   @id @default(cuid())
   name         String
-  email        String    @unique
+  email        String   @unique
   passwordHash String
   role         Role
-  isActive     Boolean   @default(true)
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
-  patient      Patient?
-  doctor       Doctor?
-  guardians    PatientGuardian[]
+  patient   Patient?
+  doctor    Doctor?
+  guardians PatientGuardian[]
+  sessions AuthSession[]
+}
+
+model AuthSession {
+  id        String   @id
+  userId    String
+  role      Role
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model AuthRateLimit {
+  key       String   @id
+  count     Int
+  expiresAt DateTime
+
+  @@index([expiresAt])
 }
 
 model Patient {
-  id                    String            @id @default(cuid())
-  userId                String?           @unique
-  medicalRecordNo       String            @unique
-  nik                   String?           @unique
+  id                    String   @id @default(cuid())
+  userId                String?  @unique
+  medicalRecordNo       String   @unique
+  nik                   String?  @unique
   fullName              String
   dateOfBirth           DateTime
-  gender                String            @default("MALE")
+  gender                String   @default("MALE")
   address               String?
   phone                 String?
   emergencyContactName  String?
   emergencyContactPhone String?
   allergies             String?
-  createdAt             DateTime          @default(now())
-  updatedAt             DateTime          @updatedAt
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
 
-  user                  User?             @relation(fields: [userId], references: [id], onDelete: SetNull)
-  guardians             PatientGuardian[]
-  appointments          Appointment[]
-  records               MedicalRecord[]
-  prescriptions         Prescription[]
+  user          User?             @relation(fields: [userId], references: [id], onDelete: SetNull)
+  guardians     PatientGuardian[]
+  appointments  Appointment[]
+  records       MedicalRecord[]
+  prescriptions Prescription[]
 }
 
 model PatientGuardian {
@@ -92,17 +113,17 @@ model PatientGuardian {
   relationship String
   createdAt    DateTime @default(now())
 
-  patient      Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  patient Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([patientId, userId])
 }
 
 model Department {
-  id           String        @id @default(cuid())
-  name         String        @unique
-  description  String?
-  createdAt    DateTime      @default(now())
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  createdAt   DateTime @default(now())
 
   doctors      Doctor[]
   schedules    Schedule[]
@@ -111,31 +132,32 @@ model Department {
 }
 
 model Doctor {
-  id             String        @id @default(cuid())
-  userId         String        @unique
+  id             String   @id @default(cuid())
+  userId         String   @unique
   departmentId   String
   fullName       String
   specialization String?
+  roomLabel      String?
   licenseNumber  String?
-  createdAt      DateTime      @default(now())
+  createdAt      DateTime @default(now())
 
-  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  department     Department    @relation(fields: [departmentId], references: [id])
-  schedules      Schedule[]
-  appointments   Appointment[]
-  records        MedicalRecord[]
-  prescriptions  Prescription[]
+  user          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  department    Department      @relation(fields: [departmentId], references: [id])
+  schedules     Schedule[]
+  appointments  Appointment[]
+  records       MedicalRecord[]
+  prescriptions Prescription[]
 }
 
 model Schedule {
-  id           String        @id @default(cuid())
+  id           String   @id @default(cuid())
   doctorId     String
   departmentId String
   dayOfWeek    Int
   startTime    String
   endTime      String
-  quota        Int           @default(20)
-  createdAt    DateTime      @default(now())
+  quota        Int      @default(20)
+  createdAt    DateTime @default(now())
 
   doctor       Doctor        @relation(fields: [doctorId], references: [id], onDelete: Cascade)
   department   Department    @relation(fields: [departmentId], references: [id], onDelete: Cascade)
@@ -154,56 +176,83 @@ model Appointment {
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
 
-  patient         Patient           @relation(fields: [patientId], references: [id])
-  doctor          Doctor            @relation(fields: [doctorId], references: [id])
-  department      Department        @relation(fields: [departmentId], references: [id])
-  schedule        Schedule?         @relation(fields: [scheduleId], references: [id])
-  queue           Queue?
-  record          MedicalRecord?
+  patient    Patient        @relation(fields: [patientId], references: [id])
+  doctor     Doctor         @relation(fields: [doctorId], references: [id])
+  department Department     @relation(fields: [departmentId], references: [id])
+  schedule   Schedule?      @relation(fields: [scheduleId], references: [id])
+  queue      Queue?
+  record     MedicalRecord?
 }
 
 model Queue {
-  id            String       @id @default(cuid())
-  appointmentId String       @unique
+  id            String      @id @default(cuid())
+  appointmentId String      @unique
   departmentId  String
   queueNumber   String
-  status        QueueStatus  @default(WAITING)
+  status        QueueStatus @default(WAITING)
   calledAt      DateTime?
   completedAt   DateTime?
-  createdAt     DateTime     @default(now())
+  createdAt     DateTime    @default(now())
 
-  appointment   Appointment  @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
-  department    Department   @relation(fields: [departmentId], references: [id])
+  appointment Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+  department  Department  @relation(fields: [departmentId], references: [id])
+}
+
+model QueueAutoCall {
+  id                  String    @id @default(cuid())
+  doctorId            String
+  sourceAppointmentId String    @unique
+  dueAt               DateTime
+  cancelledAt         DateTime?
+  processedAt         DateTime?
+  calledQueueId       String?
+  createdAt           DateTime  @default(now())
+
+  @@index([dueAt, processedAt, cancelledAt])
+}
+
+model QueueAnnouncement {
+  id           String    @id @default(cuid())
+  queueId      String
+  doctorId     String
+  queueNumber  String
+  roomLabel    String
+  createdAt    DateTime  @default(now())
+  claimToken   String?
+  claimedUntil DateTime?
+  playedAt     DateTime?
+
+  @@index([playedAt, claimedUntil, createdAt])
 }
 
 model MedicalRecord {
-  id            String        @id @default(cuid())
-  appointmentId String        @unique
+  id            String   @id @default(cuid())
+  appointmentId String   @unique
   patientId     String
   doctorId      String
   complaint     String?
   physicalExam  String?
   diagnosis     String?
   treatment     String?
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
-  appointment   Appointment   @relation(fields: [appointmentId], references: [id])
-  patient       Patient       @relation(fields: [patientId], references: [id])
-  doctor        Doctor        @relation(fields: [doctorId], references: [id])
-  prescription  Prescription?
+  appointment  Appointment   @relation(fields: [appointmentId], references: [id])
+  patient      Patient       @relation(fields: [patientId], references: [id])
+  doctor       Doctor        @relation(fields: [doctorId], references: [id])
+  prescription Prescription?
 }
 
 model Medicine {
-  id           String                 @id @default(cuid())
+  id           String   @id @default(cuid())
   name         String
   form         String?
   unit         String
-  price        Float                  @default(0)
-  stock        Int                    @default(0)
-  minimumStock Int                    @default(10)
-  createdAt    DateTime               @default(now())
-  updatedAt    DateTime               @updatedAt
+  price        Float    @default(0)
+  stock        Int      @default(0)
+  minimumStock Int      @default(10)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   items        PrescriptionItem[]
   transactions InventoryTransaction[]
@@ -220,22 +269,22 @@ model Prescription {
   createdAt       DateTime           @default(now())
   updatedAt       DateTime           @updatedAt
 
-  medicalRecord   MedicalRecord      @relation(fields: [medicalRecordId], references: [id])
-  patient         Patient            @relation(fields: [patientId], references: [id])
-  doctor          Doctor             @relation(fields: [doctorId], references: [id])
-  items           PrescriptionItem[]
+  medicalRecord MedicalRecord      @relation(fields: [medicalRecordId], references: [id])
+  patient       Patient            @relation(fields: [patientId], references: [id])
+  doctor        Doctor             @relation(fields: [doctorId], references: [id])
+  items         PrescriptionItem[]
 }
 
 model PrescriptionItem {
-  id             String       @id @default(cuid())
+  id             String @id @default(cuid())
   prescriptionId String
   medicineId     String
   dosage         String
   quantity       Int
   instruction    String
 
-  prescription   Prescription @relation(fields: [prescriptionId], references: [id], onDelete: Cascade)
-  medicine       Medicine     @relation(fields: [medicineId], references: [id])
+  prescription Prescription @relation(fields: [prescriptionId], references: [id], onDelete: Cascade)
+  medicine     Medicine     @relation(fields: [medicineId], references: [id])
 }
 
 model InventoryTransaction {
@@ -247,5 +296,5 @@ model InventoryTransaction {
   referenceId String?
   createdAt   DateTime                 @default(now())
 
-  medicine    Medicine                 @relation(fields: [medicineId], references: [id])
+  medicine Medicine @relation(fields: [medicineId], references: [id])
 }
