@@ -148,7 +148,7 @@ export default function AppLayout({ children, activeNav, breadcrumbTitle }: AppL
       { label: "Ringkasan", items: [{ href: "/app", label: "Dashboard", icon: LayoutDashboard }] },
       { label: "Pelayanan", items: [{ href: "/patients", label: "Data Pasien", icon: Users }, { href: "/queue", label: "Kunjungan & Antrean", icon: CalendarDays }] },
       { label: "Operasional", items: [{ href: "/medicines", label: "Obat & Stok", icon: Package }] },
-      { label: "Administrasi", items: [{ href: "/admin/reports", label: "Laporan Operasional", icon: BarChart3 }, { href: "/admin/fees", label: "Tarif Konsultasi", icon: BarChart3 }] },
+      { label: "Administrasi", items: [{ href: "/admin/reports", label: "Laporan Operasional", icon: BarChart3 }, { href: "/admin/fees", label: "Tarif Konsultasi", icon: BarChart3 }, { href: "/admin/finance", label: "Pembayaran & Koreksi", icon: BarChart3 }] },
     ],
     RECEPTIONIST: [
       { label: "Ringkasan", items: [{ href: "/app", label: "Dashboard", icon: LayoutDashboard }] },
@@ -160,7 +160,7 @@ export default function AppLayout({ children, activeNav, breadcrumbTitle }: AppL
     ],
     PHARMACIST: [
       { label: "Ringkasan", items: [{ href: "/app", label: "Dashboard", icon: LayoutDashboard }] },
-      { label: "Farmasi", items: [{ href: "/pharmacy", label: "Resep Masuk", icon: Pill }, { href: "/medicines", label: "Obat & Stok", icon: Package }] },
+      { label: "Farmasi", items: [{ href: "/pharmacy", label: "Resep Masuk", icon: Pill }, { href: "/medicines", label: "Obat & Stok", icon: Package }, { href: "/pharmacy/finance", label: "Pembayaran & Koreksi", icon: BarChart3 }] },
     ],
     PATIENT: [
       { label: "Ringkasan", items: [{ href: "/patient", label: "Portal Saya", icon: LayoutDashboard }] },

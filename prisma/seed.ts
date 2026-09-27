@@ -10,6 +10,7 @@ async function main() {
   console.log("🌱 Starting database seeding for KlinikCare...");
 
   // 1. Bersihkan data lama jika ada (idempotent)
+  await prisma.billAdjustment.deleteMany();
   await prisma.billItem.deleteMany();
   await prisma.bill.deleteMany();
   await prisma.inventoryTransaction.deleteMany();

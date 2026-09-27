@@ -1026,7 +1026,11 @@ input:checked + .slider:before { transform:translateX(22px); }
 .billing-panel { padding:24px; margin:24px 0; }
 .billing-panel h2 { font-size:1.25rem; color:var(--teal); }
 .billing-panel p, .billing-row small { color:var(--muted); }
-.billing-filters { display:flex; flex-wrap:wrap; gap:12px; margin:16px 0; }
+.billing-filters { display:flex; flex-wrap:wrap; align-items:end; gap:12px; margin:16px 0; }
+.billing-filters label { display:grid; gap:6px; flex:1; min-width:180px; }
+.billing-filters .form-input, .billing-payment .form-input { width:100%; min-width:0; padding:10px 12px; border:1px solid var(--field-border); border-radius:8px; background:white; color:var(--ink); font:inherit; }
+.billing-payment textarea { min-height:96px; resize:vertical; }
+.billing-panel article { margin-top:16px; overflow-wrap:anywhere; }
 .billing-filters input { flex:1; min-width:180px; }
 .billing-row { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:16px; padding:18px 0; border-bottom:1px solid var(--line); }
 .billing-row p { margin:6px 0; font-size:0.8125rem; }

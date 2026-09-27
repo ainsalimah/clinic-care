@@ -13,13 +13,14 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     body = await req.json();
     paymentInput(body.method, body.receivedAmount, body.receivedAmount);
     if (body.confirmed !== true) throw new Error("Konfirmasi uang sudah diterima.");
+    if (!Number.isSafeInteger(body.expectedTotal) || body.expectedTotal < 0) throw new Error("Muat ulang rincian tagihan.");
   } catch (error) {
     return NextResponse.json({ error: error instanceof Error ? error.message : "Data pembayaran tidak valid." }, { status: 400 });
   }
   try {
     const { id } = await params;
     return NextResponse.json(await prisma.$transaction(
-      tx => payBill(tx, id, body.method, body.receivedAmount, user.name),
+      tx => payBill(tx, id, body.method, body.receivedAmount, user.name, body.expectedTotal),
       { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
     ));
   } catch (error) {

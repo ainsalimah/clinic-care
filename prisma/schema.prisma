@@ -303,6 +303,7 @@ model InventoryTransaction {
 }
 
 model Bill {
+  adjustments BillAdjustment[]
   id String @id @default(cuid())
   appointmentId String @unique
   appointment Appointment @relation(fields: [appointmentId], references: [id])
@@ -319,7 +320,32 @@ model Bill {
   @@index([paidAt, createdAt])
 }
 
+model BillAdjustment {
+  id String @id @default(cuid())
+  billId String
+  bill Bill @relation(fields: [billId], references: [id])
+  kind String
+  amount Int
+  reason String
+  status String @default("PENDING")
+  requestedById String
+  requestedBy String
+  createdAt DateTime @default(now())
+  reviewedById String?
+  reviewedBy String?
+  reviewedAt DateTime?
+  reviewNote String?
+  settledById String?
+  settledBy String?
+  settledAt DateTime?
+  settlementMethod String?
+  settlementReference String?
+  @@index([status, createdAt])
+  @@index([billId, status])
+}
+
 model BillItem {
+  kind String @default("MEDICINE")
   id String @id @default(cuid())
   billId String
   bill Bill @relation(fields: [billId], references: [id], onDelete: Cascade)

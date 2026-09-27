@@ -10,12 +10,12 @@ export function rupiahAmount(value: unknown): number {
 export function billLines(doctorName: string, consultationFee: number, medicines: {
   name: string; unit: string; price: number; quantity: number;
 }[]) {
-  const items = [{ description: `Konsultasi ${doctorName}`, quantity: 1, unit: "layanan",
+  const items = [{ kind: "CONSULTATION", description: `Konsultasi ${doctorName}`, quantity: 1, unit: "layanan",
     unitPrice: rupiahAmount(consultationFee), amount: rupiahAmount(consultationFee) }];
   for (const medicine of medicines) {
     if (!Number.isSafeInteger(medicine.quantity) || medicine.quantity < 1) throw new Error("Jumlah obat tidak valid.");
     const unitPrice = rupiahAmount(medicine.price);
-    items.push({ description: medicine.name, quantity: medicine.quantity, unit: medicine.unit,
+    items.push({ kind: "MEDICINE", description: medicine.name, quantity: medicine.quantity, unit: medicine.unit,
       unitPrice, amount: rupiahAmount(unitPrice * medicine.quantity) });
   }
   const total = rupiahAmount(items.reduce((sum, item) => sum + item.amount, 0));

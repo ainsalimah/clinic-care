@@ -113,6 +113,9 @@ Kunjungan dan resep ditandai selesai
 - Pembayaran mengalokasikan stok; penyerahan obat mengurangi stok fisik sekali dan menutup kunjungan. Tanpa resep, kunjungan selesai saat pembayaran lunas.
 - Status appointment COMPLETED berarti pemeriksaan selesai; Bill.completedAt menandakan seluruh layanan selesai. Portal pasien membedakan kedua tahap ini.
 - Tagihan lama tidak berubah ketika harga katalog diperbarui. Kunjungan sebelum fitur aktif tidak otomatis ditagih.
+- Koreksi biaya sebelum lunas diajukan apoteker dan diputuskan admin dengan alasan; rincian awal tetap tersimpan dan perubahan tampil sebagai penyesuaian.
+- Refund setelah lunas memerlukan persetujuan admin, lalu konfirmasi penyerahan uang oleh apoteker berikut metode dan bukti pengembalian. Tidak otomatis mengubah stok atau resep.
+- Laporan pembayaran memisahkan penerimaan, konsultasi, obat, koreksi, metode pembayaran, refund yang diserahkan, dan saldo belum dibayar berdasarkan tanggal WIB.
 
 ### Appointment
 
@@ -176,7 +179,7 @@ MVP mencakup:
 - Akun keluarga/wali untuk mengelola pasien tanggungan.
 - Reschedule dan pembatalan jadwal mandiri.
 - Pengelolaan akun/role serta CRUD master data dokter dan poli.
-- Integrasi payment gateway, pembatalan tagihan, koreksi, dan refund.
+- Integrasi payment gateway, pembatalan layanan, dan retur fisik obat.
 - Integrasi WhatsApp atau SMS.
 - Hasil laboratorium.
 - Integrasi BPJS/asuransi.

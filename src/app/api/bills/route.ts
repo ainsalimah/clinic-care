@@ -14,6 +14,7 @@ export async function GET(req: Request) {
   };
   const [bills, count] = await Promise.all([
     prisma.bill.findMany({ where, include: {
+      adjustments: { orderBy: { createdAt: "asc" } },
       items: { orderBy: { id: "asc" } },
       appointment: { select: { record: { select: { prescription: { select: { id: true, status: true } } } } } },
     }, orderBy: [{ createdAt: "desc" }, { id: "desc" }], take: 20, skip: (Math.floor(page) - 1) * 20 }),

@@ -51,9 +51,15 @@ Admin mengatur tarif per dokter di **Tarif Konsultasi** (`/admin/fees`), dengan 
 
 Pembayaran dan penyerahan obat adalah dua langkah terpisah. Pembayaran mengalokasikan stok; penyerahan mengurangi stok fisik satu kali. Pasien tanpa resep cukup melunasi konsultasi. Portal pasien menunjukkan apakah masih menunggu pembayaran, menunggu obat, atau sudah selesai. Struk mencantumkan rincian item, total, metode, uang diterima, kembalian, waktu, dan petugas.
 
-Tagihan bersifat tetap; koreksi, pembatalan tagihan, dan refund belum tersedia. Resep yang sudah masuk tagihan tidak dapat dibatalkan melalui perubahan status resep biasa.
+Rincian awal tagihan tetap tersimpan. Apoteker dapat mengajukan koreksi nominal sebelum pembayaran, atau refund setelah pembayaran lewat rincian tagihan. Admin menyetujui/menolak pada **Pembayaran & Koreksi** dengan catatan wajib. Selama koreksi menunggu keputusan, pembayaran ditunda.
+
+Refund yang disetujui belum dianggap uang keluar. Apoteker harus mencatat uang yang benar-benar dikembalikan (tunai/transfer) berikut nomor bukti atau tanda terima. Refund tidak mengubah resep, status penyerahan, atau stok. Penggantian obat, pembatalan layanan, dan retur fisik obat tetap memerlukan alur terpisah; fitur ini menangani koreksi biaya dan pengembalian uang.
+
+Laporan **Pembayaran & Koreksi** tersedia untuk admin dan apoteker, dengan rentang maksimal 31 hari dalam WIB. Uang masuk mengikuti tanggal pembayaran, uang keluar mengikuti tanggal refund diserahkan. Laporan memisahkan konsultasi, obat, koreksi, tunai/QRIS, refund, serta tagihan belum lunas dan dapat dicetak.
 
 Verifikasi: `npm test` dan `npm run test:billing:integration`. Uji integrasi membutuhkan database yang sudah dimigrasikan; semua data sintetis berada dalam transaksi yang di-rollback.
+
+Uji alur endpoint lengkap: jalankan server lokal, lalu `npm run test:visit:e2e`. Skrip menolak alamat server nonlokal, membuat data sintetis unik untuk seluruh role, menguji pendaftaran sampai refund/laporan, lalu membersihkan hanya data run tersebut. Gunakan database pengujian terpisah bila menjalankan di luar lingkungan demo.
 
 ## Konfigurasi hosting
 

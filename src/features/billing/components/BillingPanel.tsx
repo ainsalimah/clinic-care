@@ -3,8 +3,10 @@
 import { useCallback, useEffect, useState } from "react";
 import { fetchJson } from "@/lib/http/client";
 import { useDialogAccessibility } from "@/lib/use-dialog-accessibility";
+import { AdjustmentRequest } from "./AdjustmentRequest";
 
 type Bill = {
+  adjustments: { id: string; kind: string; amount: number; reason: string; status: string; settledAt: string | null }[];
   id: string; patientName: string; medicalRecordNo: string; total: number; createdAt: string;
   paidAt: string | null; completedAt: string | null; paymentMethod: string | null;
   receivedAmount: number | null; receivedBy: string | null;
@@ -23,6 +25,7 @@ function BillDetails({ bill, close, refresh }: { bill: Bill; close: () => void; 
   const [error, setError] = useState("");
   const rx = bill.appointment.record?.prescription;
   const canPay = !rx || rx.status === "READY";
+  const refunded = bill.adjustments.filter(a => a.kind === "REFUND" && a.status === "SETTLED").reduce((sum, a) => sum + a.amount, 0);
 
   async function pay(event: React.FormEvent) {
     event.preventDefault();
@@ -30,7 +33,7 @@ function BillDetails({ bill, close, refresh }: { bill: Bill; close: () => void; 
     try {
       await fetchJson(`/api/bills/${bill.id}/pay`, {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ method, receivedAmount: Number(amount), confirmed }),
+        body: JSON.stringify({ method, receivedAmount: Number(amount), confirmed, expectedTotal: bill.total }),
       });
       refresh(); close();
     } catch (err) { setError(err instanceof Error ? err.message : "Pembayaran gagal."); }
@@ -52,11 +55,14 @@ function BillDetails({ bill, close, refresh }: { bill: Bill; close: () => void; 
             <thead><tr><th>Layanan / obat</th><th>Jumlah</th><th>Harga satuan</th><th>Subtotal</th></tr></thead>
             <tbody>{bill.items.map(item => <tr key={item.id}><td>{item.description}</td><td>{item.quantity} {item.unit}</td><td>{money(item.unitPrice)}</td><td>{money(item.amount)}</td></tr>)}</tbody>
           </table></div>
+          {bill.adjustments.filter(a => a.kind === "CORRECTION" && a.status === "APPROVED").map(a => <p key={a.id}>Koreksi: {a.reason} <strong>{money(a.amount)}</strong></p>)}
           <p className="billing-total">Total <strong>{money(bill.total)}</strong></p>
+          {bill.adjustments.filter(a => a.kind === "REFUND" && a.status === "SETTLED").map(a => <p key={a.id}>Refund: {money(a.amount)} · {a.reason} · {a.settledAt && date(a.settledAt)}</p>)}
           {bill.paidAt && <div>
             <p>Dibayar: {date(bill.paidAt)} WIB · {bill.paymentMethod === "CASH" ? "Tunai" : "QRIS"}</p>
             <p>Diterima: {money(bill.receivedAmount ?? bill.total)} · Kembali: {money((bill.receivedAmount ?? bill.total) - bill.total)}</p>
             <p>Petugas: {bill.receivedBy}</p>
+            {refunded > 0 && <p>Total dikembalikan: {money(refunded)} · Pembayaran setelah refund: {money(bill.total - refunded)}</p>}
             <p>{bill.completedAt ? "Kunjungan selesai." : "Pembayaran lunas. Obat belum diserahkan."}</p>
           </div>}
         </section>
@@ -71,8 +77,10 @@ function BillDetails({ bill, close, refresh }: { bill: Bill; close: () => void; 
             <p>Kembalian: {money(Math.max(0, Number(amount) - bill.total))}</p>
             <label className="billing-confirm"><input type="checkbox" checked={confirmed} disabled={busy} onChange={e => setConfirmed(e.target.checked)} required />
               {method === "QRIS" ? "Saya sudah memverifikasi dana masuk melalui QRIS klinik." : "Saya sudah menerima uang pasien."}</label>
-            <button className="btn-primary-action" disabled={busy || !confirmed || !canPay || amount === "" || Number(amount) < bill.total}>{busy ? "Mencatat…" : "Konfirmasi pembayaran"}</button>
+            {bill.adjustments.some(a => a.kind === "CORRECTION" && a.status === "PENDING") && <p role="status">Koreksi menunggu persetujuan admin.</p>}
+            <button className="btn-primary-action" disabled={busy || !confirmed || !canPay || amount === "" || Number(amount) < bill.total || bill.adjustments.some(a => a.kind === "CORRECTION" && a.status === "PENDING")}>{busy ? "Mencatat…" : "Konfirmasi pembayaran"}</button>
           </form>}
+        <AdjustmentRequest billId={bill.id} paid={Boolean(bill.paidAt)} done={() => { refresh(); close(); }} />
       </div>
     </div>
   </div>;
