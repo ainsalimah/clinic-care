@@ -2,6 +2,8 @@
 
 Portfolio full-stack untuk **klinik rawat jalan dan apotek**. Pasien bisa mengajukan kunjungan dari website atau mendaftar langsung melalui resepsionis. Pengajuan online ditinjau resepsionis; nomor antrean baru diterbitkan saat pasien check-in.
 
+Demo production: [clinic-care-zeta.vercel.app](https://clinic-care-zeta.vercel.app)
+
 ## Menjalankan lokal
 
 1. Salin `.env.example` menjadi `.env` dan isi `DATABASE_URL` PostgreSQL serta `AUTH_SECRET` yang acak.
@@ -23,7 +25,7 @@ Jalankan `npm run lint`, `npm run typecheck`, dan `npm test` sebelum menggabungk
 
 Website publik tersedia di `/` dengan informasi poli, dokter, jadwal praktik, dan FAQ. Pasien dapat membuat akun di `/register`, masuk ke `/login`, lalu mengajukan jadwal dari `/patient`. Dashboard staf tersedia di `/app` setelah login.
 
-Pada database seed development, akun demo staf memakai sandi `password123`. Akun pasien contoh adalah `pasien.sari@gmail.com` dengan sandi yang sama. Jangan jalankan seed atau mempertahankan akun ini pada produksi. Login cepat dan pemilih role staf hanya tersedia saat development.
+Database seed hanya untuk development disposable. Kredensial demo tidak boleh dipakai pada produksi; login cepat dan pemilih role staf hanya tersedia saat development.
 
 ## Panggilan antrean bersuara
 

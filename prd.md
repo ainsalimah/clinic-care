@@ -175,14 +175,14 @@ MVP mencakup:
 - Pengecekan interaksi obat yang lebih lengkap.
 - Dashboard analitik yang lebih detail.
 
-## 11. Stack yang Disarankan
+## 11. Stack Implementasi
 
 - Frontend dan backend: Next.js + TypeScript
-- UI: Tailwind CSS + shadcn/ui
-- Database: PostgreSQL
+- UI: Tailwind CSS
+- Database: PostgreSQL di Neon
 - ORM: Prisma
-- Autentikasi: Auth.js
-- Deployment: Vercel + Supabase atau Neon
+- Autentikasi: sesi cookie HTTP-only dengan kontrol akses berbasis role
+- Deployment: Vercel + Neon
 
 ## 12. Indikator Keberhasilan
 
