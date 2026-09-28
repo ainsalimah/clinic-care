@@ -9,6 +9,7 @@
     "prestart": "node scripts/check-production-env.mjs",
     "db:deploy": "prisma migrate deploy",
     "db:generate": "prisma generate",
+    "db:sync-demo-catalog": "tsx scripts/sync-demo-catalog.ts",
     "lint": "eslint",
     "typecheck": "tsc --noEmit --incremental false",
     "test": "node --import tsx --test src/lib/clinic-time.test.ts src/lib/access.test.ts src/lib/rate-limit.test.ts src/lib/prescription-rules.test.ts src/lib/billing-rules.test.ts src/lib/payment-report.test.ts src/lib/password-rules.test.ts src/features/accounts/server/patient-recovery.test.ts",
