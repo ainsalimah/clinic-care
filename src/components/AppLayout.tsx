@@ -239,6 +239,14 @@ export default function AppLayout({ children, activeNav, breadcrumbTitle }: AppL
           </div>
 
           <div className="top-actions">
+            <div className="topbar-context">
+              <span className="topbar-context-dot" />
+              <span>Sistem aktif</span>
+            </div>
+            <div className="topbar-user">
+              <span className="topbar-user-avatar">{currentUser ? getInitials(currentUser.name) : "KP"}</span>
+              <span><b>{currentUser?.name || "Pengguna Klinik"}</b><small>{currentUser?.role || role}</small></span>
+            </div>
             <button
               className="btn-topbar-logout"
               onClick={handleLogout}

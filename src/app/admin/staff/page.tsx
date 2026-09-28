@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useState } from "react";
 import AppLayout from "@/components/AppLayout";
 import { fetchJson } from "@/lib/http/client";
+import { CheckCircle2, Clock3, ShieldCheck, UserPlus } from "lucide-react";
 
 type Staff = { id: string; name: string; email: string; role: string; isActive: boolean; mustChangePassword: boolean; canChangeStatus: boolean; doctor: { department: { name: string }; schedules: { dayOfWeek: number; startTime: string; endTime: string }[] } | null };
 const days = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
@@ -37,10 +38,17 @@ export default function StaffPage() {
     } catch (err) { setError(err instanceof Error ? err.message : "Gagal menyimpan."); }
     finally { setBusy(false); }
   }
-  return <AppLayout breadcrumbTitle="Akun Staf" activeNav="/admin/staff"><div className="page">
-    <h1 className="page-title">Akun staf</h1><p className="page-subtitle">Buat akun per petugas. Riwayat pelayanan tetap tersimpan ketika akun dinonaktifkan.</p>
+  const activeCount = users.filter(user => user.isActive).length;
+  const pendingPasswordCount = users.filter(user => user.mustChangePassword).length;
+  return <AppLayout breadcrumbTitle="Akun Staf" activeNav="/admin/staff"><div className="page staff-page">
+    <div className="section-header-flex staff-page-header"><div><p className="eyebrow">Administrasi akses</p><h1 className="page-title">Akun staf</h1><p className="page-subtitle">Kelola akses petugas tanpa menghapus riwayat pelayanan klinik.</p></div><span className="page-status"><span /> Sinkronisasi aman</span></div>
+    <section className="staff-metrics" aria-label="Ringkasan akun staf">
+      <article><span className="staff-metric-icon teal"><ShieldCheck size={17} /></span><div><small>Total staf</small><strong>{count}</strong><span>akun terdaftar</span></div></article>
+      <article><span className="staff-metric-icon green"><CheckCircle2 size={17} /></span><div><small>Aktif</small><strong>{activeCount}</strong><span>siap bertugas</span></div></article>
+      <article><span className="staff-metric-icon amber"><Clock3 size={17} /></span><div><small>Perlu tindakan</small><strong>{pendingPasswordCount}</strong><span>ganti password awal</span></div></article>
+    </section>
     {error && <p role="alert" className="data-error">{error}</p>}{message && <p role="status" className="portal-notice">{message}</p>}
-    <details className="panel billing-panel"><summary>Tambah staf baru</summary><form className="account-form" onSubmit={e => submit(e, true)}>
+    <details className="panel billing-panel staff-create-panel"><summary><span className="staff-create-icon"><UserPlus size={17} /></span><span><b>Tambah staf baru</b><small>Buat akses untuk petugas atau dokter</small></span><span className="staff-create-arrow">+</span></summary><form className="account-form" onSubmit={e => submit(e, true)}>
       <label>Nama lengkap<input name="name" required maxLength={100} autoComplete="off" /></label>
       <label>Email staf<input name="email" type="email" required maxLength={254} autoComplete="off" /></label>
       <label>Peran<select value={role} onChange={e => setRole(e.target.value)}>{Object.entries(roles).map(([key, name]) => <option key={key} value={key}>{name}</option>)}</select></label>
@@ -56,7 +64,8 @@ export default function StaffPage() {
     </form></details>
     <form className="billing-filters" onSubmit={e => { e.preventDefault(); setPage(1); setQ(query); if (q === query) void load(); }}><label>Cari staf<input className="form-input" value={query} onChange={e => setQuery(e.target.value)} placeholder="Nama atau email" maxLength={100} /></label><button className="btn-secondary">Cari</button></form>
     {target && <section className="panel billing-panel"><h2>{target.isActive ? "Nonaktifkan" : "Aktifkan"} {target.name}</h2><form className="account-form" onSubmit={e => submit(e, false)}><p>Akun sendiri tidak dapat dinonaktifkan. Dokter dengan kunjungan aktif harus menyelesaikan kunjungannya terlebih dahulu.</p><label>Password admin<input name="adminPassword" type="password" required autoComplete="current-password" /></label><div className="header-actions-group"><button className="btn-primary-action" disabled={busy}>Konfirmasi perubahan</button><button type="button" className="btn-secondary" disabled={busy} onClick={() => setTarget(null)}>Batal</button></div></form></section>}
-    {loading ? <p role="status">Memuat staf…</p> : users.length ? users.map(user => <article key={user.id} className="panel staff-card"><div><h2>{user.name}</h2><p>{user.email} · {roles[user.role]}</p><p>{user.isActive ? "Aktif" : "Nonaktif"}{user.mustChangePassword ? " · Menunggu penggantian password awal" : ""}</p>{user.doctor && <p>{user.doctor.department.name} · {user.doctor.schedules.map(s => `${days[s.dayOfWeek]} ${s.startTime}–${s.endTime}`).join(", ")} WIB</p>}</div><button className="btn-secondary" disabled={busy || !user.canChangeStatus} onClick={() => setTarget(user)}>{user.canChangeStatus ? user.isActive ? "Nonaktifkan" : "Aktifkan" : "Akun saat ini"}</button></article>) : <p>Tidak ada staf yang sesuai.</p>}
+    <div className="staff-list-head"><div><h2>Daftar staf</h2><span>{count} akun dalam sistem</span></div><span>Terakhir diperbarui saat halaman dimuat</span></div>
+    {loading ? <div className="staff-loading" role="status">Memuat staf…</div> : users.length ? <div className="staff-list">{users.map(user => <article key={user.id} className="panel staff-card"><div className="staff-person"><span className="staff-avatar">{user.name.split(" ").map(part => part[0]).slice(0, 2).join("").toUpperCase()}</span><div><h2>{user.name}</h2><p>{user.email}</p></div></div><div className="staff-role"><small>Peran</small><b>{roles[user.role]}</b></div><div className="staff-status"><span className={`status-pill ${user.isActive ? "is-active" : "is-inactive"}`}><i />{user.isActive ? "Aktif" : "Nonaktif"}</span>{user.mustChangePassword && <small className="staff-attention">Password awal belum diganti</small>}</div><div className="staff-schedule">{user.doctor ? <><small>{user.doctor.department.name}</small><span>{user.doctor.schedules.length ? `${user.doctor.schedules.length} jadwal praktik` : "Jadwal belum diatur"}</span></> : <><small>Akses sistem</small><span>Riwayat tersimpan</span></>}</div><button className="btn-secondary staff-action" disabled={busy || !user.canChangeStatus} onClick={() => setTarget(user)}>{user.canChangeStatus ? user.isActive ? "Nonaktifkan" : "Aktifkan" : "Akun saat ini"}</button></article>)}</div> : <p>Tidak ada staf yang sesuai.</p>}
     <div className="billing-pagination"><button className="btn-secondary" disabled={page === 1 || loading} onClick={() => setPage(page - 1)}>Sebelumnya</button><span>Halaman {page} · {count} staf</span><button className="btn-secondary" disabled={page * 20 >= count || loading} onClick={() => setPage(page + 1)}>Berikutnya</button></div>
   </div></AppLayout>;
 }

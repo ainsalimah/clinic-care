@@ -16,8 +16,10 @@
     "test:visit:e2e": "tsx scripts/test-visit-e2e.ts"
   },
   "dependencies": {
+    "@gsap/react": "^2.1.2",
     "@prisma/client": "^6.1.0",
     "bcryptjs": "^2.4.3",
+    "gsap": "^3.15.0",
     "jose": "^6.2.12",
     "lucide-react": "^0.468.0",
     "next": "^15.1.0",
