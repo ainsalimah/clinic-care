@@ -2,7 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, CalendarDays, Check } from "lucide-react";
 
-export function HeroSection() {
+export function HeroSection({ doctorCount }: { doctorCount: number }) {
   return <section className="kc-hero">
     <Image src="/images/hero-medical-team.jpg" alt="Tim dokter dan tenaga kesehatan KlinikCare" fill priority sizes="100vw" className="kc-hero-background" />
     <div className="kc-hero-background-shade" aria-hidden="true" />
@@ -27,7 +27,7 @@ export function HeroSection() {
     <div className="kc-shell kc-proof kc-hero-motion">
       <p>Pelayanan klinik dalam satu alur</p>
       <div><b>4 Poli</b><span>Konsultasi terarah</span></div>
-      <div><b>5 Dokter</b><span>Umum & spesialis</span></div>
+      <div><b>{doctorCount} Dokter</b><span>Umum & spesialis</span></div>
       <div><b>1 Sistem</b><span>Dari daftar hingga obat</span></div>
     </div>
   </section>;

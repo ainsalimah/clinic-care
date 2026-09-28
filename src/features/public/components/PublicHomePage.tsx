@@ -61,7 +61,7 @@ export default function PublicHomePage() {
     <div className="kc-progress" aria-hidden="true"><span className="kc-progress-bar" /></div>
     <PublicHeader />
     <main>
-      <HeroSection />
+      <HeroSection doctorCount={allDoctors.length} />
 
       <section className="kc-services kc-section" id="poli"><div className="kc-shell">
         <div className="kc-section-head kc-reveal"><div><p className="kc-eyebrow">Poli & layanan</p><h2 className="kc-heading">Perawatan tepat, sesuai kebutuhan Anda.</h2></div><p>Tim dokter umum dan spesialis dengan dukungan rekam medis serta farmasi yang saling terhubung.</p></div>
