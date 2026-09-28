@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import AppLayout from "@/components/AppLayout";
+import { getClinicDateKey } from "@/lib/clinic-time";
 import {
   Users,
   CalendarDays,
@@ -20,12 +21,13 @@ import {
 interface ReportData {
   summary: {
     totalPatients: number;
+    registeredPatientsCount: number;
     elderlyPatientsCount: number;
     totalDoctors: number;
     totalDepartments: number;
     totalMedicines: number;
     totalMedicalRecords: number;
-    todayVisitsCount: number;
+    visitsCount: number;
     activeQueuesCount: number;
     completedQueuesCount: number;
     pendingPrescriptionsCount: number;
@@ -66,16 +68,20 @@ interface ReportData {
     notes: string | null;
     createdAt: string;
   }[];
+  period: { from: string; to: string };
 }
 
 export default function AdminReportsPage() {
   const [data, setData] = useState<ReportData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [from, setFrom] = useState(getClinicDateKey);
+  const [to, setTo] = useState(getClinicDateKey);
 
-  const fetchReports = async () => {
+  const fetchReports = async (nextFrom = from, nextTo = to) => {
     setLoading(true);
     try {
-      const res = await fetch("/api/admin/reports");
+      const res = await fetch(`/api/admin/reports?from=${nextFrom}&to=${nextTo}`);
+      if (!res.ok) throw new Error("Laporan gagal dimuat.");
       const result = await res.json();
       setData(result);
     } catch {
@@ -86,29 +92,44 @@ export default function AdminReportsPage() {
   };
 
   useEffect(() => {
-    fetchReports();
+    const initialDate = getClinicDateKey();
+    fetch(`/api/admin/reports?from=${initialDate}&to=${initialDate}`)
+      .then(res => res.ok ? res.json() : Promise.reject(new Error("Laporan gagal dimuat.")))
+      .then(result => setData(result))
+      .catch(() => setData(null))
+      .finally(() => setLoading(false));
   }, []);
 
   const handlePrint = () => {
     window.print();
   };
+  const reportGeneratedAt = new Intl.DateTimeFormat("id-ID", {
+    dateStyle: "full",
+    timeStyle: "short",
+    timeZone: "Asia/Jakarta",
+  }).format(new Date());
+  const selectedPeriod = new Intl.DateTimeFormat("id-ID", { dateStyle: "long", timeZone: "Asia/Jakarta" }).format(new Date(`${from}T00:00:00+07:00`)) + (from === to ? "" : ` s.d. ${new Intl.DateTimeFormat("id-ID", { dateStyle: "long", timeZone: "Asia/Jakarta" }).format(new Date(`${to}T00:00:00+07:00`))}`);
 
   return (
     <AppLayout breadcrumbTitle="Laporan Operasional" activeNav="/admin/reports">
       <div className="page printable">
+        <header className="report-print-header">
+          <div><b>KLINIKCARE</b><span>Rawat Jalan & Farmasi</span></div>
+          <div><strong>LAPORAN OPERASIONAL</strong><span>Periode: {selectedPeriod}</span><span>Dicetak: {reportGeneratedAt} WIB</span></div>
+        </header>
         {/* Header */}
         <div className="section-header-flex">
           <div>
             <h1 className="page-title">Laporan & Rekapitulasi Operasional Klinik</h1>
             <p className="page-subtitle">
-              Ringkasan statistik kunjungan pasien, efisiensi antrean, pemakaian obat, dan persediaan farmasi.
+              Ringkasan kunjungan, antrean, resep, dan inventaris untuk periode {selectedPeriod}.
             </p>
           </div>
-          <div className="header-actions-group">
+          <div className="header-actions-group print-controls">
             <button
               type="button"
               className="btn-refresh"
-              onClick={fetchReports}
+              onClick={() => void fetchReports()}
               title="Perbarui data laporan"
             >
               <RefreshCw size={15} className={loading ? "spinner" : ""} />
@@ -125,6 +146,11 @@ export default function AdminReportsPage() {
             </button>
           </div>
         </div>
+        <form className="report-period-filter print-controls" onSubmit={event => { event.preventDefault(); void fetchReports(); }}>
+          <label>Dari<input type="date" value={from} max={to} onChange={event => setFrom(event.target.value)} required /></label>
+          <label>Sampai<input type="date" value={to} min={from} max={getClinicDateKey()} onChange={event => setTo(event.target.value)} required /></label>
+          <button type="submit" className="btn-primary-action" disabled={loading}>Tampilkan laporan</button>
+        </form>
 
         {/* Executive KPI Stats */}
         {loading || !data ? (
@@ -140,10 +166,10 @@ export default function AdminReportsPage() {
                   <Users size={19} />
                 </div>
                 <div>
-                  <p>Pasien Terdaftar</p>
-                  <strong>{data.summary.totalPatients} Pasien</strong>
+                  <p>Pasien Baru Periode</p>
+                  <strong>{data.summary.registeredPatientsCount} Pasien</strong>
                   <small className="neutral">
-                    {data.summary.elderlyPatientsCount} lansia inklusif
+                    Total master {data.summary.totalPatients} · {data.summary.elderlyPatientsCount} lansia baru
                   </small>
                 </div>
               </div>
@@ -153,8 +179,8 @@ export default function AdminReportsPage() {
                   <CalendarDays size={19} />
                 </div>
                 <div>
-                  <p>Kunjungan Hari Ini</p>
-                  <strong>{data.summary.todayVisitsCount} Antrean</strong>
+                  <p>Kunjungan Periode</p>
+                  <strong>{data.summary.visitsCount} Antrean</strong>
                   <small className="positive">
                     {data.summary.completedQueuesCount} selesai diperiksa
                   </small>
@@ -216,16 +242,16 @@ export default function AdminReportsPage() {
                         <th>Poliklinik</th>
                         <th>Dokter Aktif</th>
                         <th>Total Pasien Terlayani</th>
-                        <th>Persentase Beban</th>
+                        <th>Proporsi Kunjungan Periode</th>
                       </tr>
                     </thead>
                     <tbody>
                       {data.departments.map((dept) => {
                         const pct =
-                          data.summary.todayVisitsCount > 0
+                          data.summary.visitsCount > 0
                             ? Math.round(
                                 (dept.visitCount /
-                                  data.summary.todayVisitsCount) *
+                                  data.summary.visitsCount) *
                                   100
                               )
                             : 0;
@@ -383,7 +409,7 @@ export default function AdminReportsPage() {
                 <div className="panel-head">
                   <div>
                     <p className="eyebrow">MONITOR ANTREAN AKTUAL</p>
-                    <h2>Riwayat Antrean Pasien Hari Ini</h2>
+                    <h2>Riwayat Antrean Periode</h2>
                   </div>
                   <Link
                     href="/queue"
@@ -460,7 +486,7 @@ export default function AdminReportsPage() {
                 <div className="panel-head">
                   <div>
                     <p className="eyebrow">MUTASI INVENTARIS FARMASI</p>
-                    <h2>Log Pengeluaran & Penerimaan Obat</h2>
+                    <h2>Mutasi Inventaris Periode</h2>
                   </div>
                 </div>
 
@@ -534,6 +560,7 @@ export default function AdminReportsPage() {
             </div>
           </>
         )}
+        <footer className="report-print-footer"><span>Dokumen internal KlinikCare</span><span>Dicetak: {reportGeneratedAt} WIB</span></footer>
       </div>
     </AppLayout>
   );

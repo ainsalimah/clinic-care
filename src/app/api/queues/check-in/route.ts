@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { AppointmentStatus, Prisma } from "@prisma/client";
 import { getSession } from "@/lib/auth";
-import { getClinicDateKey } from "@/lib/clinic-time";
+import { getClinicDateKey, getClinicDayRange } from "@/lib/clinic-time";
 import { createQueue } from "@/features/queue/server/create-queue";
 
 export async function POST(req: Request) {
@@ -71,8 +71,22 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Dokter tidak bertugas di poli yang dipilih." }, { status: 400 });
     }
 
+    const { start, end } = getClinicDayRange();
+    const existingQueue = await prisma.appointment.findFirst({
+      where: { patientId, appointmentDate: { gte: start, lt: end }, queue: { isNot: null } },
+      select: { queue: { select: { queueNumber: true, status: true } } },
+    });
+    if (existingQueue?.queue) {
+      return NextResponse.json({ error: `Pasien ini sudah check-in hari ini dengan nomor antrean ${existingQueue.queue.queueNumber}.` }, { status: 409 });
+    }
+
     // Kunjungan dan antrean dibuat dalam satu transaksi.
     const queue = await prisma.$transaction(async (tx) => {
+      const duplicate = await tx.appointment.findFirst({
+        where: { patientId, appointmentDate: { gte: start, lt: end }, queue: { isNot: null } },
+        select: { id: true },
+      });
+      if (duplicate) throw new Error("Pasien ini sudah check-in hari ini.");
       const appointment = await tx.appointment.create({
         data: {
           patientId,
@@ -102,6 +116,9 @@ export async function POST(req: Request) {
       },
     }, { status: 201 });
   } catch (error) {
+    if (error instanceof Error && error.message === "Pasien ini sudah check-in hari ini.") {
+      return NextResponse.json({ error: error.message }, { status: 409 });
+    }
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
       return NextResponse.json({ error: "Kunjungan ini sudah memiliki nomor antrean." }, { status: 409 });
     }

@@ -13,14 +13,14 @@ export function QueueTicket({ queue, onClose }: QueueTicketProps) {
     <div className="modal-backdrop">
       <div className="modal-card modal-ticket">
         <div className="ticket-card printable">
-          <div className="ticket-head">
+          <div className="ticket-head print-document-head">
             <div className="ticket-brand">
               <HeartPulse size={20} />
               <span>KlinikCare — Tiket Antrean</span>
             </div>
             <span className="ticket-rm">{queue.appointment.patient.medicalRecordNo}</span>
           </div>
-          <div className="ticket-queue-section">
+          <div className="ticket-queue-section print-document-body">
             <small>NOMOR ANTREAN ANDA</small>
             <div className="queue-big-number">{queue.queueNumber}</div>
             <p><b>{queue.department.name}</b></p>
@@ -36,7 +36,7 @@ export function QueueTicket({ queue, onClose }: QueueTicketProps) {
               {issuedAt.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })} WIB
             </small>
           </div>
-          <div className="ticket-actions">
+          <div className="ticket-actions print-controls">
             <button type="button" className="btn-print" onClick={() => window.print()}>
               <Printer size={16} /> Cetak Tiket Ini
             </button>

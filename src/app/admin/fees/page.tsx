@@ -19,7 +19,7 @@ export default function DoctorFees() {
     } catch (error) { setMessage(error instanceof Error ? error.message : "Tarif gagal disimpan."); }
     finally { setBusy(null); }
   }
-  return <AppLayout breadcrumbTitle="Tarif Konsultasi" activeNav="/admin/reports"><div className="page">
+  return <AppLayout breadcrumbTitle="Tarif Konsultasi" activeNav="/admin/fees"><div className="page">
     <h1 className="page-title">Tarif Konsultasi Dokter</h1><p className="page-subtitle">Tarif berlaku untuk pemeriksaan yang diselesaikan setelah perubahan disimpan.</p>
     {message && <p role="status" className="portal-notice">{message}</p>}
     <div className="panel">{doctors.map(doctor => <form className="billing-row" key={doctor.id} onSubmit={event => save(event, doctor.id)}>

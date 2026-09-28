@@ -98,7 +98,7 @@ export default function FinancePage({ admin }: { admin: boolean }) {
           <p>Tagihan dibuat dalam periode ini yang masih belum lunas: {report.unpaid.count} · {money(report.unpaid.total)}</p>
           <p>Refund disetujui yang belum diserahkan (semua tanggal): {report.pendingRefunds.count} · {money(report.pendingRefunds.total)}</p>
           <small>Penerimaan mengikuti tanggal bayar; refund mengikuti tanggal uang dikembalikan. Nilai bersih dapat negatif bila refund atas pembayaran periode sebelumnya.</small>
-        </div><button className="btn-print" onClick={() => window.print()}>Cetak laporan</button></>}
+        </div><button className="btn-print print-controls" onClick={() => window.print()}>Cetak laporan</button></>}
       </section>
       <section className="billing-panel"><h2>Pengajuan koreksi dan refund</h2>
         <div className="billing-filters"><label>Status<select className="form-input" value={status} onChange={e => { setStatus(e.target.value); setPage(1); }}><option value="">Semua</option>{Object.entries(labels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>

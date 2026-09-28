@@ -52,6 +52,7 @@ button, a { -webkit-tap-highlight-color:transparent; }
   box-shadow:inset 3.5px 0 #5dd3b8;
 }
 .sidebar-foot { margin-top:auto; }
+.sidebar-loading { display:grid; gap:10px; padding:4px 10px; }.sidebar-loading span { display:block; height:38px; border-radius:9px; background:linear-gradient(90deg,rgba(201,230,220,.08),rgba(201,230,220,.16),rgba(201,230,220,.08)); background-size:200% 100%; animation:sidebarLoading 1.4s ease-in-out infinite; }.sidebar-loading span:nth-child(1) { width:72%; }.sidebar-loading span:nth-child(2) { width:90%; }.sidebar-loading span:nth-child(3) { width:78%; }.sidebar-loading span:nth-child(4) { width:86%; }.sidebar-loading span:nth-child(5) { width:68%; }@keyframes sidebarLoading { to { background-position:-200% 0; } }
 .help { display:flex; gap:11px; background:#1c465b; border:1px solid #2b566a; border-radius:10px; padding:11px; color:#6fe0cd; font-size:13px; transition:border-color .2s; }
 .help:hover { border-color:#3f7894; }
 .help small, .profile small { display:block; color:#96afb9; font-size:11px; margin-top:2px; }
@@ -513,12 +514,48 @@ input:checked + .slider:before { transform:translateX(22px); }
 .modal-ticket { max-width:440px; }
 
 /* Print Media Query */
+@page { size:A4 portrait; margin:12mm 13mm 14mm; }
 @media print {
-  body * { visibility:hidden; }
-  .printable, .printable * { visibility:visible; }
-  .printable { position:absolute; left:0; top:0; width:100%; border:none; box-shadow:none; }
-  .ticket-actions, .record-actions { display:none; }
+  html,body { width:100%; min-height:100%; background:#fff !important; color:#111 !important; }
+  body * { visibility:hidden !important; }
+  .printable,.printable * { visibility:visible !important; }
+  .printable { position:absolute !important; inset:0 !important; width:100% !important; margin:0 !important; border:0 !important; border-radius:0 !important; box-shadow:none !important; background:#fff !important; color:#111 !important; }
+  .print-controls,.ticket-actions,.record-actions,.btn-close-modal,.printable button,.printable input,.printable select,.printable textarea { display:none !important; }
+  .modal-backdrop:has(.printable),.modal-card:has(.printable) { position:static !important; display:block !important; width:auto !important; max-width:none !important; height:auto !important; min-height:0 !important; padding:0 !important; overflow:visible !important; background:transparent !important; box-shadow:none !important; }
+  .ticket-card.printable { max-width:80mm !important; margin:0 auto !important; padding:0 !important; border:1px solid #111 !important; font-family:Arial,sans-serif !important; }
+  .ticket-card.printable .ticket-head { padding:10px 12px !important; border-bottom:1px solid #111 !important; }
+  .ticket-card.printable .ticket-brand { color:#111 !important; font-size:11px !important; font-weight:800 !important; }
+  .ticket-card.printable .ticket-rm { padding:3px 5px !important; color:#111 !important; background:transparent !important; border:1px solid #111 !important; font-size:9px !important; }
+  .ticket-card.printable .ticket-queue-section { padding:14px 12px !important; border:0 !important; background:#fff !important; }
+  .ticket-card.printable .queue-big-number { margin:4px 0 8px !important; color:#111 !important; font-size:48px !important; line-height:1 !important; }
+  .etiket-card { break-inside:avoid; border:1px solid #111 !important; border-radius:0 !important; background:#fff !important; color:#111 !important; box-shadow:none !important; }
+  .etiket-card + .etiket-card { margin-top:8mm !important; }
+  .etiket-header { border-bottom:1px solid #111 !important; }
+  /* Labels must size to their content. The generic printable rule fills a
+     page for reports, which would otherwise create blank pages for labels. */
+  .etiket-print-sheet { position:static !important; inset:auto !important; display:block !important; width:100% !important; min-height:0 !important; height:auto !important; padding:0 !important; margin:0 !important; }
+  .etiket-print-sheet .etiket-card { width:100% !important; min-height:0 !important; margin:0 !important; break-before:auto !important; break-after:auto !important; page-break-before:auto !important; page-break-after:auto !important; }
+  .etiket-print-sheet .etiket-card + .etiket-card { margin-top:8mm !important; }
+  .bill-receipt { max-width:180mm !important; margin:0 auto !important; padding:0 !important; color:#111 !important; font-family:Arial,sans-serif !important; }
+  .bill-receipt h3 { margin:0 0 4mm !important; color:#111 !important; font-size:18px !important; }
+  .bill-receipt table,.bill-receipt th,.bill-receipt td { border-color:#777 !important; color:#111 !important; }
+  .billing-table-scroll { overflow:visible !important; }
+  .billing-total { border-top:1px solid #111 !important; }
+  .record-card.printable { page-break-after:always; border:0 !important; box-shadow:none !important; }
+  .record-card.printable .record-header { border-bottom:1px solid #111 !important; cursor:default !important; }
+  .page.printable { position:static !important; max-width:none !important; padding:0 !important; font-family:Arial,sans-serif !important; }
+  .page.printable .section-header-flex { display:none !important; }
+  .report-print-header { display:flex !important; justify-content:space-between; gap:16mm; padding:0 0 6mm !important; margin:0 0 7mm !important; border-bottom:2px solid #173f36 !important; }
+  .report-print-header div:last-child { text-align:right; }.report-print-header b,.report-print-header strong,.report-print-header span { display:block; }.report-print-header b { color:#173f36 !important; font-size:18px !important; letter-spacing:.08em !important; }.report-print-header strong { color:#111 !important; font-size:13px !important; }.report-print-header span { margin-top:2mm !important; color:#555 !important; font-size:9px !important; }
+  .page.printable .stats { grid-template-columns:repeat(4,1fr) !important; gap:4mm !important; margin-bottom:6mm !important; }.page.printable .stat-card { min-height:0 !important; padding:4mm !important; border:1px solid #aaa !important; border-radius:0 !important; box-shadow:none !important; }.page.printable .stat-icon { display:none !important; }.page.printable .stat-card p { color:#555 !important; font-size:9px !important; }.page.printable .stat-card strong { color:#111 !important; font-size:16px !important; }.page.printable .stat-card small { color:#444 !important; font-size:8px !important; }
+  .page.printable .dashboard-grid { display:block !important; margin:0 !important; }.page.printable .dashboard-grid > .panel { margin:0 0 6mm !important; padding:0 !important; border:0 !important; border-radius:0 !important; box-shadow:none !important; break-inside:auto; }.page.printable .panel-head { margin:0 0 3mm !important; padding-bottom:2mm !important; border-bottom:1px solid #777 !important; break-after:avoid; }.page.printable .panel-head .eyebrow { color:#173f36 !important; font-size:8px !important; }.page.printable .panel-head h2 { color:#111 !important; font-size:13px !important; }.page.printable .panel-head a { display:none !important; }
+  .page.printable .table-wrap { width:100% !important; overflow:visible !important; }.page.printable table { width:100% !important; table-layout:fixed !important; border-collapse:collapse !important; font-size:8.5px !important; }.page.printable thead { display:table-header-group !important; }.page.printable tr { break-inside:avoid !important; page-break-inside:avoid !important; }.page.printable th,.page.printable td { overflow-wrap:anywhere !important; word-break:normal !important; white-space:normal !important; vertical-align:top !important; }.page.printable th { padding:2mm 1.5mm !important; color:#333 !important; background:#f1f1f1 !important; font-size:8px !important; letter-spacing:0 !important; }.page.printable td { padding:2mm 1.5mm !important; color:#111 !important; }.page.printable .dashboard-grid:first-of-type table th:nth-child(1) { width:23% !important; }.page.printable .dashboard-grid:first-of-type table th:nth-child(2) { width:16% !important; }.page.printable .dashboard-grid:first-of-type table th:nth-child(3) { width:25% !important; }.page.printable .dashboard-grid:first-of-type table th:nth-child(4) { width:36% !important; }.page.printable .dashboard-grid:last-of-type table:first-child th:nth-child(1) { width:9% !important; }.page.printable .dashboard-grid:last-of-type table:first-child th:nth-child(2) { width:28% !important; }.page.printable .dashboard-grid:last-of-type table:first-child th:nth-child(3) { width:26% !important; }.page.printable .dashboard-grid:last-of-type table:first-child th:nth-child(4) { width:15% !important; }.page.printable .dashboard-grid:last-of-type table:first-child th:nth-child(5) { width:22% !important; }.page.printable .dashboard-grid:last-of-type table:last-child th:nth-child(1) { width:29% !important; }.page.printable .dashboard-grid:last-of-type table:last-child th:nth-child(2) { width:22% !important; }.page.printable .dashboard-grid:last-of-type table:last-child th:nth-child(3) { width:15% !important; }.page.printable .dashboard-grid:last-of-type table:last-child th:nth-child(4) { width:34% !important; }.page.printable .status-pill { border:1px solid #777 !important; background:#fff !important; color:#111 !important; }.report-print-footer { display:flex !important; justify-content:space-between; margin-top:8mm !important; padding-top:3mm !important; border-top:1px solid #777 !important; color:#555 !important; font-size:8px !important; }
 }
+.btn-checkin.checked-in,.btn-checkin:disabled { color:#31756a; border-color:#b9ddd4; background:#edf8f4; cursor:not-allowed; box-shadow:none; }
+.report-print-header,.report-print-footer { display:none; }
+.report-period-filter { display:flex; flex-wrap:wrap; align-items:end; gap:10px; margin:-8px 0 24px; padding:14px; border:1px solid #dce9e5; border-radius:12px; background:#fff; }
+.report-period-filter label { display:grid; gap:5px; color:#5b736c; font-size:11px; font-weight:700; }.report-period-filter input { min-height:40px; padding:8px 10px; border:1px solid #bed4ce; border-radius:8px; color:#173f36; background:#fff; font:inherit; }.report-period-filter .btn-primary-action,.report-period-filter .btn-secondary { min-height:40px; padding:0 13px; }
+@media (max-width:720px) { .report-period-filter { align-items:stretch; flex-direction:column; }.report-period-filter button { width:100%; } }
 
 /* Stage 4: Doctor Examination, SOAP & Medical Records */
 .allergy-alert-card { background:#fff1f0; border:1.5px solid #fca5a5; border-radius:12px; padding:14px 16px; color:#b91c1c; box-shadow:0 2px 8px rgba(239,68,68,.08); }
@@ -691,13 +728,15 @@ input:checked + .slider:before { transform:translateX(22px); }
 .dispensed-stamp { display:inline-flex; align-items:center; gap:5px; background:#f0fdf4; color:#166534; border:1px solid #bbf7d0; font-size:11px; font-weight:700; padding:6px 12px; border-radius:6px; }
 
 /* Etiket Aturan Pakai Obat */
-.etiket-card { background:#fff; border:2px solid #1a3644; border-radius:8px; padding:12px 14px; font-family:'Plus Jakarta Sans',sans-serif; text-align:left; }
-.etiket-header { display:flex; justify-content:space-between; align-items:center; border-bottom:1.5px solid #1a3644; padding-bottom:4px; font-size:11px; font-weight:800; color:#1a3644; }
-.etiket-meta { display:flex; justify-content:space-between; font-size:10px; color:#546e7a; margin-top:5px; }
-.etiket-patient { font-size:13px; font-weight:700; color:#0e202a; margin:6px 0 2px; }
-.etiket-med { font-size:12px; font-weight:700; color:#145c4d; background:#edf7f3; padding:4px 8px; border-radius:4px; margin:4px 0; }
-.etiket-signa { font-size:13px; font-weight:800; color:#c2410c; background:#fff7ed; padding:6px 10px; border-radius:5px; border-left:3px solid #f97316; margin:6px 0; }
-.etiket-foot { font-size:10px; text-align:center; color:#78909c; font-style:italic; margin-top:6px; border-top:1px dashed #d1dcde; padding-top:4px; }
+.etiket-card { position:relative; overflow:hidden; padding:18px 20px 15px; border:1px solid #c8d6d1; border-radius:5px; background:#fff; color:#173e35; font-family:'Figtree','DM Sans',sans-serif; text-align:left; box-shadow:0 6px 16px rgba(22,65,55,.05); }
+.etiket-card::before { content:""; position:absolute; inset:0 auto 0 0; width:5px; background:#17735f; }
+.etiket-header { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; padding-bottom:12px; border-bottom:1px solid #d9e4e0; color:#1b453b; }
+.etiket-brand { display:grid; grid-template-columns:auto auto; column-gap:3px; align-items:baseline; font-family:'Plus Jakarta Sans',sans-serif; letter-spacing:-.03em; font-size:15px; }.etiket-brand b:last-of-type { color:#16816a; }.etiket-brand small { grid-column:1/-1; margin-top:3px; color:#778d86; font-family:'Figtree','DM Sans',sans-serif; font-size:8px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; }.etiket-header > small { padding-top:3px; color:#5d756d; font-size:9px; font-weight:600; white-space:nowrap; }
+.etiket-meta { display:flex; justify-content:space-between; gap:12px; padding:10px 0 0; color:#647c74; font-size:10px; font-variant-numeric:tabular-nums; }
+.etiket-patient { margin:13px 0 0; }.etiket-patient small,.etiket-med small,.etiket-signa small { display:block; margin-bottom:4px; color:#7c938c; font-size:8px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; }.etiket-patient b { display:block; color:#183e35; font-size:16px; letter-spacing:-.02em; }
+.etiket-med { display:grid; grid-template-columns:1fr auto; column-gap:14px; align-items:end; margin:15px 0 0; padding:12px 0; border-top:1px solid #d9e4e0; border-bottom:1px solid #d9e4e0; }.etiket-med small { grid-column:1/-1; }.etiket-med b { color:#173e35; font-size:18px; line-height:1.16; letter-spacing:-.025em; }.etiket-med span { padding-bottom:2px; color:#176b59; font-size:12px; font-weight:800; white-space:nowrap; }
+.etiket-signa { margin-top:14px; }.etiket-signa b { display:block; color:#173e35; font-size:17px; line-height:1.3; letter-spacing:-.015em; }.etiket-signa::after { content:""; display:block; width:34px; height:3px; margin-top:11px; border-radius:99px; background:#f0aa57; }
+.etiket-foot { margin-top:13px; padding-top:10px; border-top:1px dashed #c9d7d2; color:#738a83; font-size:9px; line-height:1.45; }
 
 /* Medicine Master Stock & Catalogue */
 .stock-warning-badge { display:inline-flex; align-items:center; gap:4px; background:#fef3c7; color:#92400e; border:1px solid #fcd34d; font-size:10px; font-weight:700; padding:2px 6px; border-radius:4px; }
@@ -1383,6 +1422,9 @@ input:checked + .slider:before { transform:translateX(22px); }
 @media (max-width:720px) { .app-shell .topbar { padding:0 17px; }.topbar-context,.topbar-user { display:none; }.app-shell .page { padding:25px 17px 40px; }.app-shell .hero h1 { font-size:26px; }.staff-page-header { align-items:flex-start; }.page-status { margin-top:4px; }.staff-metrics { grid-template-columns:1fr; gap:9px; }.staff-metrics article { padding:13px 15px; }.staff-list-head { align-items:flex-start; flex-direction:column; gap:5px; }.staff-list-head > span { align-self:auto; }.staff-card { grid-template-columns:1fr auto; gap:13px; padding:17px; }.staff-role,.staff-status { grid-column:1; }.staff-action { grid-column:2; grid-row:2 / span 2; align-self:center; } }
 
 .speaker-current { display:flex; flex-wrap:wrap; align-items:baseline; gap:16px; padding:16px 0; }
+.speaker-status { display:inline-flex; align-items:center; gap:8px; padding:10px 13px; border:1px solid #d5e5e0; border-radius:999px; font-size:12px; font-weight:700; }
+.speaker-status.ready { color:#1f7b61; background:#effaf5; border-color:#bfe4d5; }.speaker-status.needs-interaction { color:#9a691d; background:#fff9ec; border-color:#f0dca4; }
+.speaker-screen { cursor:pointer; }.speaker-screen:has(.speaker-current) { cursor:default; }
 .speaker-current strong { font:800 clamp(3rem, 8vw, 6rem)/1 'Plus Jakarta Sans',sans-serif; color:var(--teal); }
 .speaker-current span { font:700 clamp(1.25rem, 3vw, 2rem) 'Plus Jakarta Sans',sans-serif; color:var(--ink); }
 .speaker-idle { margin:16px 0 4px; color:var(--muted); font-size:1rem; }

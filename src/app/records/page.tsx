@@ -150,7 +150,7 @@ export default function MedicalRecordsPage() {
                 rec.patient.allergies && rec.patient.allergies.toLowerCase() !== "tidak ada";
 
               return (
-                <div key={rec.id} className="record-card printable">
+                <div key={rec.id} className={`record-card ${isExpanded ? "printable" : ""}`}>
                   <div className="record-header" onClick={() => toggleExpand(rec.id)}>
                     <div className="record-meta">
                       <span className="record-date">

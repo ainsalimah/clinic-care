@@ -2,11 +2,13 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 import { createMedicalRecordNumber } from "@/features/patients/server/medical-record-number";
+import { getClinicDayRange } from "@/lib/clinic-time";
 
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
     const query = searchParams.get("q")?.trim() || "";
+    const { start, end } = getClinicDayRange();
 
     const patients = await prisma.patient.findMany({
       where: query
@@ -31,6 +33,11 @@ export async function GET(req: Request) {
         emergencyContactName: true,
         emergencyContactPhone: true,
         createdAt: true,
+        appointments: {
+          where: { appointmentDate: { gte: start, lt: end }, queue: { isNot: null } },
+          select: { queue: { select: { queueNumber: true, status: true } } },
+          take: 1,
+        },
       },
       orderBy: { createdAt: "desc" },
     });

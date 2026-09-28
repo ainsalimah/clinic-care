@@ -43,7 +43,7 @@ function BillDetails({ bill, close, refresh }: { bill: Bill; close: () => void; 
 
   return <div className="modal-backdrop">
     <div ref={ref} role="dialog" aria-modal="true" aria-labelledby="bill-title" className="modal-card billing-dialog">
-      <div className="modal-header"><h2 id="bill-title">{bill.paidAt ? "Struk Pembayaran" : "Rincian Tagihan"}</h2>
+      <div className="modal-header print-controls"><h2 id="bill-title">{bill.paidAt ? "Struk Pembayaran" : "Rincian Tagihan"}</h2>
         <button className="btn-secondary" onClick={close} disabled={busy}>Tutup</button></div>
       <div className="modal-body">
         <section className="bill-receipt printable">
@@ -68,7 +68,7 @@ function BillDetails({ bill, close, refresh }: { bill: Bill; close: () => void; 
           </div>}
         </section>
         {error && <p role="alert" className="data-error">{error}</p>}
-        {bill.paidAt ? <button className="btn-print" onClick={() => window.print()}>Cetak struk</button>
+        {bill.paidAt ? <button className="btn-print print-controls" onClick={() => window.print()}>Cetak struk</button>
           : <form onSubmit={pay} className="billing-payment">
             {!canPay && <p role="status">{held ? `Pembayaran ditunda menunggu stok obat${rx?.stockHoldReason ? `: ${rx.stockHoldReason}` : "."}` : "Siapkan resep dan tandai siap diambil sebelum menerima pembayaran."}</p>}
             <label>Metode pembayaran<select className="form-input" value={method} disabled={busy} onChange={e => { setMethod(e.target.value); setAmount(String(bill.total)); setConfirmed(false); }}>

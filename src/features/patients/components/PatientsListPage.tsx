@@ -29,6 +29,7 @@ interface Patient {
   emergencyContactName: string | null;
   emergencyContactPhone: string | null;
   createdAt: string;
+  appointments: { queue: { queueNumber: string; status: string } | null }[];
 }
 
 interface Department {
@@ -156,6 +157,7 @@ export default function PatientsListPage() {
       const data = await res.json();
       if (res.ok && data.ticket) {
         setCheckinSuccessTicket(data.ticket);
+        await fetchPatients(searchQuery);
       } else {
         alert(data.error || "Gagal check-in");
       }
@@ -246,6 +248,7 @@ export default function PatientsListPage() {
                   {patients.map((p) => {
                     const age = calculateAge(p.dateOfBirth);
                     const isElderly = age >= 60;
+                    const todayQueue = p.appointments[0]?.queue;
                     return (
                       <tr key={p.id}>
                         <td>
@@ -290,11 +293,12 @@ export default function PatientsListPage() {
                         {isReceptionist && <td style={{ textAlign: "right" }}>
                           <button
                             type="button"
-                            className="btn-checkin"
-                            onClick={() => handleOpenCheckin(p)}
-                            title="Check-in antrean hari ini"
+                            className={`btn-checkin ${todayQueue ? "checked-in" : ""}`}
+                            onClick={() => { if (!todayQueue) handleOpenCheckin(p); }}
+                            disabled={Boolean(todayQueue)}
+                            title={todayQueue ? `Sudah check-in: ${todayQueue.queueNumber}` : "Check-in antrean hari ini"}
                           >
-                            <CalendarDays size={14} /> Check-in Antrean
+                            <CalendarDays size={14} /> {todayQueue ? `Sudah check-in · ${todayQueue.queueNumber}` : "Check-in Antrean"}
                           </button>
                         </td>}
                       </tr>

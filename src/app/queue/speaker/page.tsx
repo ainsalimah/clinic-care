@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { Volume2, VolumeX, ArrowLeft } from "lucide-react";
+import { Volume2, ArrowLeft } from "lucide-react";
 import AppLayout from "@/components/AppLayout";
 
 interface Announcement {
@@ -49,8 +49,7 @@ function speak(text: string): Promise<void> {
 }
 
 export default function QueueSpeakerPage() {
-  const [enabled, setEnabled] = useState(false);
-  const [activating, setActivating] = useState(false);
+  const [audioReady, setAudioReady] = useState(false);
   const [error, setError] = useState("");
   const [recent, setRecent] = useState<Announcement[]>([]);
   const [rooms, setRooms] = useState<DoctorRoom[]>([]);
@@ -94,7 +93,7 @@ export default function QueueSpeakerPage() {
   };
 
   useEffect(() => {
-    if (!enabled) return;
+    if (!audioReady) return;
     let mounted = true;
     const poll = async () => {
       if (busy.current) return;
@@ -116,7 +115,6 @@ export default function QueueSpeakerPage() {
       } catch (cause) {
         if (mounted) {
           setError(cause instanceof Error ? cause.message : "Suara panggilan tidak dapat diputar.");
-          setEnabled(false);
         }
       } finally {
         busy.current = false;
@@ -126,22 +124,22 @@ export default function QueueSpeakerPage() {
     poll();
     const interval = window.setInterval(poll, 2500);
     return () => { mounted = false; window.clearInterval(interval); };
-  }, [enabled, refreshRecent]);
+  }, [audioReady, refreshRecent]);
 
-  const start = async () => {
+  const unlockAudio = async () => {
     if (!("speechSynthesis" in window)) {
       setError("Browser ini tidak mendukung suara panggilan. Gunakan browser dengan dukungan text-to-speech.");
       return;
     }
     setError("");
-    setActivating(true);
     try {
-      await speak("Pengeras suara antrean siap.");
-      setEnabled(true);
+      window.speechSynthesis.cancel();
+      const activation = new SpeechSynthesisUtterance("");
+      activation.volume = 0;
+      window.speechSynthesis.speak(activation);
+      setAudioReady(true);
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Gagal mengaktifkan suara.");
-    } finally {
-      setActivating(false);
     }
   };
 
@@ -154,13 +152,11 @@ export default function QueueSpeakerPage() {
             <h1 className="page-title">Layar Panggilan Antrean</h1>
             <p className="page-subtitle">Buka di satu perangkat yang terhubung ke speaker ruang tunggu.</p>
           </div>
-          <button type="button" className={enabled ? "btn-secondary" : "btn-primary-action"} disabled={activating || Boolean(current)} onClick={enabled ? () => setEnabled(false) : start}>
-            {enabled ? <><VolumeX size={17} /> Nonaktifkan Suara</> : <><Volume2 size={17} /> {activating ? "Mengaktifkan..." : "Aktifkan Suara"}</>}
-          </button>
+          <span className={`speaker-status ${audioReady ? "ready" : "needs-interaction"}`}><Volume2 size={16} /> {audioReady ? "Speaker siap" : "Klik layar sekali untuk mengaktifkan audio"}</span>
         </div>
 
         {error && <div className="data-error" role="alert">{error}</div>}
-        <section className="panel" aria-live="polite">
+        <section className="panel speaker-screen" aria-live="polite" onClick={() => { if (!audioReady) void unlockAudio(); }}>
           <p className="eyebrow">PANGGILAN SAAT INI</p>
           {current ? (
             <div className="speaker-current">
@@ -168,7 +164,7 @@ export default function QueueSpeakerPage() {
               <span>{current.roomLabel}</span>
             </div>
           ) : (
-            <p className="speaker-idle">{enabled ? "Menunggu panggilan berikutnya..." : "Aktifkan suara untuk mulai menerima panggilan."}</p>
+            <p className="speaker-idle">{audioReady ? "Menunggu panggilan berikutnya..." : "Klik area ini sekali. Setelah itu nomor dan ruang akan dipanggil otomatis."}</p>
           )}
         </section>
         <section className="panel" style={{ marginTop: 18 }}>

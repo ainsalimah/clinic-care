@@ -37,52 +37,12 @@ const enumToRole: Record<string, Role> = {
   PATIENT: "Pasien",
 };
 
-const isRole = (role: Role): role is Role => Boolean(roleToEnum[role]);
+type SessionProfile = { name: string; email: string; role: string };
 
-// In-memory singletons to ensure zero-flash instant rendering during SPA client navigation
-let cachedRole: Role | null = null;
-let cachedUser: { name: string; email: string; role: string } | null = null;
-
-function getInitialRole(): Role {
-  if (typeof window !== "undefined" && window.location.pathname.startsWith("/patient")) {
-    cachedRole = "Pasien";
-    return "Pasien";
-  }
-  if (cachedRole) return cachedRole;
-  if (typeof window !== "undefined") {
-    // 1. Try reading role cookie
-    const match = document.cookie.match(/cliniccare_role_name=([^;]+)/);
-    if (match) {
-      const cookieVal = decodeURIComponent(match[1]) as Role;
-      if (cookieVal && isRole(cookieVal)) {
-        cachedRole = cookieVal;
-        return cookieVal;
-      }
-    }
-    // 2. Try reading localStorage
-    const saved = localStorage.getItem("cliniccare_role") as Role | null;
-    if (saved && isRole(saved)) {
-      cachedRole = saved;
-      return saved;
-    }
-  }
-  return "Resepsionis";
-}
-
-function getInitialUser(): { name: string; email: string; role: string } | null {
-  if (cachedUser) return cachedUser;
-  if (typeof window !== "undefined") {
-    try {
-      const savedUser = localStorage.getItem("cliniccare_user");
-      if (savedUser) {
-        const parsed = JSON.parse(savedUser);
-        cachedUser = parsed;
-        return parsed;
-      }
-    } catch {}
-  }
-  return null;
-}
+// This cache is populated only after /api/auth/me succeeds. On the first
+// hydration it is empty on both server and client; later SPA navigations can
+// render the already-verified role without a blank sidebar.
+let cachedSession: { role: Role; user: SessionProfile } | null = null;
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -93,39 +53,30 @@ interface AppLayoutProps {
 export default function AppLayout({ children, activeNav, breadcrumbTitle }: AppLayoutProps) {
   const router = useRouter();
   const pathname = usePathname();
-  const [role, setRole] = useState<Role>(getInitialRole);
-  const [currentUser, setCurrentUser] = useState<{ name: string; email: string; role: string } | null>(getInitialUser);
+  // Keep the initial SSR and browser render deterministic. Do not render a
+  // fallback role because it can briefly expose another role's navigation.
+  const [role, setRole] = useState<Role | null>(() => cachedSession?.role ?? null);
+  const [currentUser, setCurrentUser] = useState<SessionProfile | null>(() => cachedSession?.user ?? null);
 
   useEffect(() => {
+    if (cachedSession) return;
     fetch("/api/auth/me")
       .then((res) => res.json())
-      .then((data) => {
-        if (data.user) {
-          cachedUser = data.user;
-          setCurrentUser(data.user);
-          const mapped = enumToRole[data.user.role];
-          if (mapped) {
-            cachedRole = mapped;
-            setRole(mapped);
-            if (typeof window !== "undefined") {
-              localStorage.setItem("cliniccare_role", mapped);
-              localStorage.setItem("cliniccare_user", JSON.stringify(data.user));
-              document.cookie = `cliniccare_role_name=${encodeURIComponent(mapped)}; path=/; max-age=604800; SameSite=Lax`;
+        .then((data) => {
+          if (data.user) {
+            setCurrentUser(data.user);
+            const mapped = enumToRole[data.user.role];
+            if (mapped) {
+              cachedSession = { role: mapped, user: data.user };
+              setRole(mapped);
             }
-          }
         }
       })
       .catch(() => {});
-  }, [pathname]);
+  }, []);
 
   const handleLogout = async () => {
-    cachedRole = null;
-    cachedUser = null;
-    if (typeof window !== "undefined") {
-      localStorage.removeItem("cliniccare_role");
-      localStorage.removeItem("cliniccare_user");
-      document.cookie = "cliniccare_role_name=; path=/; max-age=0";
-    }
+    cachedSession = null;
     try {
       await fetch("/api/auth/logout", { method: "POST" });
     } finally {
@@ -166,7 +117,7 @@ export default function AppLayout({ children, activeNav, breadcrumbTitle }: AppL
       { label: "Ringkasan", items: [{ href: "/patient", label: "Portal Saya", icon: LayoutDashboard }] },
     ],
   };
-  const navGroups = [...menuByRole[roleToEnum[role]], { label: "Akun", items: [{ href: "/account/password", label: "Ganti Password", icon: Users }, ...(role === "Admin" ? [{ href: "/admin/patient-accounts", label: "Pemulihan Pasien", icon: Users }, { href: "/admin/staff", label: "Akun Staf", icon: Users }] : [])] }];
+  const navGroups = role ? [...menuByRole[roleToEnum[role]], { label: "Akun", items: [{ href: "/account/password", label: "Ganti Password", icon: Users }, ...(role === "Admin" ? [{ href: "/admin/patient-accounts", label: "Pemulihan Pasien", icon: Users }, { href: "/admin/staff", label: "Akun Staf", icon: Users }] : [])] }] : [];
 
   return (
     <main className="app-shell">
@@ -183,7 +134,7 @@ export default function AppLayout({ children, activeNav, breadcrumbTitle }: AppL
         </Link>
 
         <nav>
-          {navGroups.map((group) => {
+          {role ? navGroups.map((group) => {
             const visibleItems = group.items.filter((item) => canAccessPath(item.href, roleToEnum[role]));
             if (!visibleItems.length) return null;
             return <div className="nav-group" key={group.label}>
@@ -198,7 +149,7 @@ export default function AppLayout({ children, activeNav, breadcrumbTitle }: AppL
                 </Link>;
               })}
             </div>;
-          })}
+          }) : <div className="sidebar-loading" aria-label="Memuat navigasi"><span /><span /><span /><span /><span /></div>}
         </nav>
 
         <div className="sidebar-foot">
@@ -216,7 +167,7 @@ export default function AppLayout({ children, activeNav, breadcrumbTitle }: AppL
             </div>
             <div>
               <b>{currentUser ? currentUser.name : "Pengguna Klinik"}</b>
-              <small>{currentUser ? currentUser.role : role}</small>
+              <small>{currentUser ? currentUser.role : "Memuat sesi..."}</small>
             </div>
             <button
               className="btn-logout"
@@ -235,7 +186,7 @@ export default function AppLayout({ children, activeNav, breadcrumbTitle }: AppL
           <div className="crumb">
             <span>KlinikCare</span>
             <ChevronRight size={14} />
-            <b>{breadcrumbTitle || role}</b>
+            <b>{breadcrumbTitle || role || "Memuat..."}</b>
           </div>
 
           <div className="top-actions">
@@ -245,7 +196,7 @@ export default function AppLayout({ children, activeNav, breadcrumbTitle }: AppL
             </div>
             <div className="topbar-user">
               <span className="topbar-user-avatar">{currentUser ? getInitials(currentUser.name) : "KP"}</span>
-              <span><b>{currentUser?.name || "Pengguna Klinik"}</b><small>{currentUser?.role || role}</small></span>
+              <span><b>{currentUser?.name || "Pengguna Klinik"}</b><small>{currentUser?.role || "Memuat sesi..."}</small></span>
             </div>
             <button
               className="btn-topbar-logout"
@@ -259,7 +210,7 @@ export default function AppLayout({ children, activeNav, breadcrumbTitle }: AppL
           </div>
         </header>
 
-        <label className="mobile-navigation">Menu halaman<select value={activeNav || pathname} onChange={e => router.push(e.target.value)}><option value={activeNav || pathname} hidden>{breadcrumbTitle || "Pilih halaman"}</option>{navGroups.flatMap(group => group.items).map(item => <option key={item.href} value={item.href}>{item.label}</option>)}</select></label>
+        {role && <label className="mobile-navigation">Menu halaman<select value={activeNav || pathname} onChange={e => router.push(e.target.value)}><option value={activeNav || pathname} hidden>{breadcrumbTitle || "Pilih halaman"}</option>{navGroups.flatMap(group => group.items).map(item => <option key={item.href} value={item.href}>{item.label}</option>)}</select></label>}
         {children}
       </section>
     </main>
