@@ -22,4 +22,6 @@ test("method and role restrictions are enforced", () => {
   assert.equal(canAccessApi("/patients", "POST", "RECEPTIONIST"), true);
   assert.equal(canAccessApi("/patients", "POST", "ADMIN"), false);
   assert.equal(canAccessApi("/records", "GET", "PHARMACIST"), false);
+  assert.equal(canAccessApi("/admin/patient-accounts", "POST", "ADMIN"), true);
+  assert.equal(canAccessApi("/admin/patient-accounts", "POST", "RECEPTIONIST"), false);
 });

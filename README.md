@@ -61,6 +61,8 @@ Jika stok resep tidak mencukupi, apoteker menunda resep dengan alasan. Resep, pe
 
 Admin dapat membuat dan menonaktifkan akun staf di **Akun Staf**. Pembuatan atau perubahan status memerlukan konfirmasi password admin; akun sendiri tidak dapat dinonaktifkan dan sesi akun yang dinonaktifkan langsung dicabut. Staf baru wajib mengganti password awal. Semua pengguna dapat mengganti password sendiri, sedangkan lupa password memakai tautan sekali pakai yang berlaku 30 menit dan mencabut seluruh sesi lama.
 
+Jika email pemulihan belum dapat digunakan, admin membuka **Pemulihan Pasien**, mencari akun, lalu mencocokkan NIK, tanggal lahir, dan nomor telepon yang disebutkan pasien. Setelah verifikasi, admin dapat memberitahukan email akun atau membuat password sementara. Reset mencabut seluruh sesi dan tautan reset lama; pasien wajib mengganti password sementara saat login.
+
 Verifikasi: `npm test` dan `npm run test:billing:integration`. Uji integrasi membutuhkan database yang sudah dimigrasikan; semua data sintetis berada dalam transaksi yang di-rollback.
 
 Uji alur endpoint lengkap: jalankan server lokal, lalu `npm run test:visit:e2e`. Skrip menolak alamat server nonlokal, membuat data sintetis unik untuk seluruh role, menguji pendaftaran sampai refund/laporan, lalu membersihkan hanya data run tersebut. Gunakan database pengujian terpisah bila menjalankan di luar lingkungan demo.

@@ -61,6 +61,30 @@ async function visit(withRx: boolean) {
 async function run() {
   await setup();
   await api("RECEPTIONIST", "/api/patients", "POST", { fullName: patientName, dateOfBirth: "1990-01-01", gender: "UNKNOWN" }, 201);
+  const recoveryPatient = await db.patient.findFirstOrThrow({ where: { fullName: patientName } });
+  const patientEmail = runId + ".patient@example.invalid";
+  const patientUser = await db.user.create({ data: { name: patientName, email: patientEmail, role: "PATIENT", passwordHash: await bcrypt.hash(testPassword, 10) } });
+  users.push(patientUser.id);
+  const recoveryNik = (Date.now().toString() + Math.floor(Math.random() * 1000).toString().padStart(3, "0")).slice(0, 16);
+  const recoveryPhone = "081234567890";
+  await db.patient.update({ where: { id: recoveryPatient.id }, data: { userId: patientUser.id, nik: recoveryNik, phone: recoveryPhone } });
+  const patientLogin = await fetch(base + "/api/auth/login", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: patientEmail, password: testPassword }) });
+  assert.equal(patientLogin.status, 200);
+  const patientCookie = patientLogin.headers.getSetCookie().map(value => value.split(";")[0]).join("; ");
+  const recoveryIdentity = { patientId: recoveryPatient.id, nik: recoveryNik, dateOfBirth: "1990-01-01", phone: recoveryPhone, adminPassword: testPassword };
+  await api("ADMIN", "/api/admin/patient-accounts", "POST", { ...recoveryIdentity, action: "identify", nik: "0000000000000000" }, 409);
+  const identified = await api<{ email: string }>("ADMIN", "/api/admin/patient-accounts", "POST", { ...recoveryIdentity, action: "identify" });
+  assert.equal(identified.email, patientEmail);
+  const recovered = await api<{ temporaryPassword: string }>("ADMIN", "/api/admin/patient-accounts", "POST", { ...recoveryIdentity, action: "reset" });
+  assert.ok(recovered.temporaryPassword);
+  assert.equal((await fetch(base + "/api/patient/appointments", { headers: { Cookie: patientCookie } })).status, 401, "Recovery revokes old sessions");
+  assert.equal((await fetch(base + "/api/auth/login", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: patientEmail, password: testPassword }) })).status, 401, "Old password is rejected");
+  const temporaryLogin = await fetch(base + "/api/auth/login", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: patientEmail, password: recovered.temporaryPassword }) });
+  assert.equal(temporaryLogin.status, 200);
+  const temporaryCookie = temporaryLogin.headers.getSetCookie().map(value => value.split(";")[0]).join("; ");
+  assert.equal((await fetch(base + "/api/patient/appointments", { headers: { Cookie: temporaryCookie } })).status, 403, "Temporary password requires replacement");
+  const patientFinalPassword = randomUUID() + "!9Aa";
+  assert.equal((await fetch(base + "/api/auth/change-password", { method: "POST", headers: { "Content-Type": "application/json", Cookie: temporaryCookie, Origin: base }, body: JSON.stringify({ currentPassword: recovered.temporaryPassword, password: patientFinalPassword }) })).status, 200);
   const { bill, rxId } = await visit(true);
   assert.ok(rxId);
   await api("PHARMACIST", "/api/prescriptions/" + rxId, "PATCH", { status: "PROCESSING" });
@@ -123,7 +147,7 @@ async function run() {
   assert.equal(changedLogin.status, 200);
   await api("ADMIN", "/api/admin/staff", "PATCH", { id: staff.id, isActive: false, adminPassword: testPassword });
   assert.equal((await fetch(base + "/api/auth/login", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: staffEmail, password: staffPassword }) })).status, 401);
-  console.log("PASS: visit, stock hold/resume, correction, payment, dispensing, refund, reports, staff creation, initial-password change and deactivation.");
+  console.log("PASS: patient recovery, visit, stock hold/resume, correction, payment, dispensing, refund, reports, staff creation, initial-password change and deactivation.");
 }
 
 async function cleanup() {

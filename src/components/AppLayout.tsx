@@ -166,7 +166,7 @@ export default function AppLayout({ children, activeNav, breadcrumbTitle }: AppL
       { label: "Ringkasan", items: [{ href: "/patient", label: "Portal Saya", icon: LayoutDashboard }] },
     ],
   };
-  const navGroups = [...menuByRole[roleToEnum[role]], { label: "Akun", items: [{ href: "/account/password", label: "Ganti Password", icon: Users }, ...(role === "Admin" ? [{ href: "/admin/staff", label: "Akun Staf", icon: Users }] : [])] }];
+  const navGroups = [...menuByRole[roleToEnum[role]], { label: "Akun", items: [{ href: "/account/password", label: "Ganti Password", icon: Users }, ...(role === "Admin" ? [{ href: "/admin/patient-accounts", label: "Pemulihan Pasien", icon: Users }, { href: "/admin/staff", label: "Akun Staf", icon: Users }] : [])] }];
 
   return (
     <main className="app-shell">
