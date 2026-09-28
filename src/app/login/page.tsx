@@ -69,6 +69,11 @@ const demoRoles: DemoRole[] = [
   },
 ];
 
+const demoModeEnabled = process.env.NODE_ENV !== "production" || process.env.NEXT_PUBLIC_DEMO_MODE === "true";
+const visibleDemoRoles = process.env.NODE_ENV === "production"
+  ? demoRoles.filter((demo) => demo.role !== "ADMIN")
+  : demoRoles;
+
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -251,12 +256,12 @@ function LoginForm() {
         <p className="auth-existing"><Link href="/forgot-password">Lupa kata sandi?</Link></p>
         <p className="auth-existing">Belum punya akun pasien? <Link href="/register">Daftar di sini</Link></p>
 
-        {process.env.NODE_ENV !== "production" && <>
+        {demoModeEnabled && <>
           <div className="login-divider">
-            <span>ATAU MASUK CEPAT (MODE DEMO)</span>
+            <span>ATAU COBA MODE DEMO</span>
           </div>
           <div className="demo-grid">
-            {demoRoles.map((demo) => {
+            {visibleDemoRoles.map((demo) => {
               const IconComponent = demo.icon;
               const isSelected = activeDemo === demo.role;
               return (
@@ -276,7 +281,7 @@ function LoginForm() {
             })}
           </div>
           <div className="login-foot">
-            <p>Login demo menampilkan lima alur: Pasien, Resepsionis, Dokter, Apoteker, dan Admin.</p>
+            <p>Data pada mode demo bersifat contoh dan dapat berubah ketika dicoba pengunjung lain.</p>
           </div>
         </>}
       </div>
