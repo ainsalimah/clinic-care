@@ -81,12 +81,11 @@ export async function PATCH(req: Request) {
         return NextResponse.json({ error: "Antrean ini bukan milik dokter yang sedang masuk." }, { status: 403 });
       }
     }
-    const canTransitionFromReception = currentQueue.status === QueueStatus.WAITING || currentQueue.status === QueueStatus.CALLED;
-    const canTransition = canTransitionFromReception && (
-      status === QueueStatus.CALLED ||
-      (session.role === "RECEPTIONIST" && status === QueueStatus.SKIPPED) ||
-      (session.role === "DOCTOR" && status === QueueStatus.IN_ROOM)
-    );
+    const isWaitingOrCalled = currentQueue.status === QueueStatus.WAITING || currentQueue.status === QueueStatus.CALLED;
+    const canTransition =
+      (status === QueueStatus.CALLED && isWaitingOrCalled) ||
+      (session.role === "RECEPTIONIST" && status === QueueStatus.SKIPPED && isWaitingOrCalled) ||
+      (session.role === "DOCTOR" && status === QueueStatus.IN_ROOM && currentQueue.status === QueueStatus.CALLED);
     if (!canTransition) {
       return NextResponse.json({ error: "Perubahan status antrean tidak valid." }, { status: 400 });
     }
@@ -110,7 +109,7 @@ export async function PATCH(req: Request) {
           select: { id: true },
         });
         if (otherPatient) throw new QueueCallError("Selesaikan pasien yang sedang diperiksa sebelum membuka pasien lain.", 409);
-        const changed = await tx.queue.updateMany({ where: { id: queueId, status: { in: [QueueStatus.WAITING, QueueStatus.CALLED] } }, data: { status, calledAt: new Date() } });
+        const changed = await tx.queue.updateMany({ where: { id: queueId, status: QueueStatus.CALLED }, data: { status, calledAt: new Date() } });
         if (changed.count !== 1) throw new QueueCallError("Antrean sudah diperbarui petugas lain.", 409);
         await tx.appointment.update({ where: { id: currentQueue.appointmentId }, data: { status: AppointmentStatus.IN_EXAMINATION } });
         return tx.queue.findUniqueOrThrow({ where: { id: queueId }, include: { appointment: true } });

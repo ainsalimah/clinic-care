@@ -152,7 +152,7 @@ export default function DoctorDashboardPage() {
             <div>
               <p>Pasien Menunggu</p>
               <strong>{waitingPatients.length}</strong>
-              <small className="warn">Siap diperiksa</small>
+              <small className="warn">Menunggu dipanggil atau masuk ruang</small>
             </div>
           </div>
 
@@ -299,14 +299,14 @@ export default function DoctorDashboardPage() {
                                 <Volume2 size={13} /> {q.status === "CALLED" ? "Panggil Ulang" : "Panggil"}
                               </button>
                             )}
-                            <button
+                            {q.status === "CALLED" && <button
                               type="button"
                               className="btn-action-done"
                               disabled={isBusy}
                               onClick={() => handleStartExam(q)}
                             >
                               <Stethoscope size={13} /> Mulai Periksa
-                            </button>
+                            </button>}
                           </div>
                         </td>
                       </tr>

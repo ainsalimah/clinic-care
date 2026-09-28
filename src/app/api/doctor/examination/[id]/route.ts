@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
+import { AppointmentStatus, QueueStatus } from "@prisma/client";
 
 export async function GET(
   req: Request,
@@ -59,6 +60,9 @@ export async function GET(
     const doctor = await prisma.doctor.findUnique({ where: { userId: session.id }, select: { id: true } });
     if (!doctor || appointment.doctorId !== doctor.id) {
       return NextResponse.json({ error: "Kunjungan ini bukan milik dokter yang sedang masuk." }, { status: 403 });
+    }
+    if (appointment.status !== AppointmentStatus.IN_EXAMINATION || appointment.queue?.status !== QueueStatus.IN_ROOM) {
+      return NextResponse.json({ error: "Panggil pasien dan masukkan ke ruang periksa terlebih dahulu." }, { status: 409 });
     }
 
     return NextResponse.json({ appointment });

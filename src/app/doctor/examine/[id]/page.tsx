@@ -122,7 +122,7 @@ export default function DoctorExaminationPage({
             setComplaint(data.appointment.notes);
           }
         } else {
-          setErrorMessage("Data pemeriksaan tidak ditemukan.");
+          setErrorMessage(data.error || "Data pemeriksaan tidak ditemukan.");
         }
       })
       .catch(() => setErrorMessage("Gagal memuat data pemeriksaan."))
