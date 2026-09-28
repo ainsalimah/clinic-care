@@ -61,7 +61,7 @@ Kunjungan dan resep ditandai selesai
 - Pengajuan online memiliki status `PENDING`; sistem memeriksa jadwal dan kuota, tetapi tidak menerbitkan antrean.
 - Pasien memilih dokter dan jadwal yang masih memiliki slot; jika penuh, pasien dapat memilih dokter lain pada poli yang sama.
 - Pasien hanya dapat melihat kunjungan yang terkait dengan akunnya. Rekam medis dan resep tidak ditampilkan di portal MVP.
-- OTP, verifikasi email sungguhan, lupa kata sandi otomatis, akun wali, dan pembatalan mandiri belum termasuk MVP.
+- OTP/verifikasi email saat pendaftaran, akun wali, dan pembatalan mandiri belum termasuk MVP. Pemulihan password memakai email akun yang sudah tersimpan.
 
 ### 5.2 Resepsionis
 
@@ -94,6 +94,7 @@ Kunjungan dan resep ditandai selesai
 - Mengurangi stok obat secara otomatis saat obat diserahkan.
 - Menambah katalog obat dan mencatat penerimaan/perubahan stok.
 - Melihat peringatan stok menipis.
+- Menunda resep dengan alasan ketika stok kurang; pembayaran dan penyerahan diblokir sampai stok kembali cukup.
 
 ### 5.5 Admin
 
@@ -101,6 +102,7 @@ Kunjungan dan resep ditandai selesai
 - Mengatur tarif konsultasi per dokter; perubahan hanya berlaku untuk tagihan baru.
 - Melihat direktori pasien, antrean, dan ketersediaan obat dalam mode baca-saja sesuai kebutuhan pemantauan.
 - Tidak melakukan pendaftaran/check-in, pemeriksaan klinis, pemrosesan resep, atau perubahan katalog/stok obat.
+- Membuat atau menonaktifkan akun staf dengan konfirmasi password admin dan audit tindakan.
 
 ## 6. Status Utama
 
@@ -134,6 +136,8 @@ Alternatif akhir: `dibatalkan`.
 | Tabel | Data penting |
 |---|---|
 | users | email, password hash, role, status akun |
+| password_resets | hash token sekali pakai, pengguna, waktu kedaluwarsa/pemakaian |
+| account_audits | aktor, akun sasaran, tindakan, waktu |
 | patients | nomor rekam medis, NIK, biodata, alergi, kontak darurat |
 | patient_guardians | patient_id, user_id, hubungan keluarga |
 | doctors | user_id, spesialisasi, nomor izin, ruang praktik |
@@ -165,6 +169,7 @@ MVP mencakup:
 
 - Website publik dengan informasi klinik, poli, dokter, jadwal, dan FAQ.
 - Login, pembuatan akun pasien, dan pembatasan akses berbasis role.
+- Ganti password mandiri, kewajiban mengganti password awal staf, dan pemulihan lewat tautan email sekali pakai.
 - Pendaftaran online pasien baru dan penghubungan pasien lama lewat kecocokan identitas.
 - Pengajuan jadwal mandiri dengan pemeriksaan kuota serta verifikasi resepsionis.
 - Pencarian pasien lama, pendaftaran walk-in, check-in, dan antrean oleh resepsionis.
@@ -175,10 +180,10 @@ MVP mencakup:
 
 ## 10. Fitur Tahap Lanjutan
 
-- Verifikasi email/OTP dan pemulihan kata sandi.
+- Verifikasi email/OTP saat pendaftaran.
 - Akun keluarga/wali untuk mengelola pasien tanggungan.
 - Reschedule dan pembatalan jadwal mandiri.
-- Pengelolaan akun/role serta CRUD master data dokter dan poli.
+- CRUD master data poli serta jadwal dokter yang lebih lengkap.
 - Integrasi payment gateway, pembatalan layanan, dan retur fisik obat.
 - Integrasi WhatsApp atau SMS.
 - Hasil laboratorium.

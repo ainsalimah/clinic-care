@@ -3,10 +3,13 @@ export interface PrescriptionItem {
   dosage: string;
   quantity: number;
   instruction: string;
-  medicine: { id: string; name: string; form: string | null; unit: string; stock: number };
+  medicine: { id: string; name: string; form: string | null; unit: string; stock: number; reservedStock: number };
 }
 
 export interface PrescriptionData {
+  stockHoldReason: string | null;
+  stockHeldAt: string | null;
+  stockResumedAt: string | null;
   id: string;
   status: "PENDING" | "PROCESSING" | "READY" | "COMPLETED" | "CANCELLED";
   notes: string | null;

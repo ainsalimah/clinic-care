@@ -187,6 +187,7 @@ function LoginForm() {
         </div>
 
         {/* Error Alert */}
+        {searchParams.get("passwordChanged") === "1" && <p role="status" className="portal-notice">Kata sandi berhasil diperbarui. Silakan masuk kembali.</p>}
         {errorMessage && (
           <div className="login-alert">
             <AlertCircle size={18} />
@@ -247,6 +248,7 @@ function LoginForm() {
           </button>
         </form>
 
+        <p className="auth-existing"><Link href="/forgot-password">Lupa kata sandi?</Link></p>
         <p className="auth-existing">Belum punya akun pasien? <Link href="/register">Daftar di sini</Link></p>
 
         {process.env.NODE_ENV !== "production" && <>

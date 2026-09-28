@@ -20,7 +20,7 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith("/_next") ||
     pathname.startsWith("/images/") ||
     (isApi &&
-      (["/api/auth/login", "/api/auth/register", "/api/auth/demo"].includes(pathname) ||
+      (["/api/auth/login", "/api/auth/register", "/api/auth/demo", "/api/auth/forgot-password", "/api/auth/reset-password"].includes(pathname) ||
         pathname === "/api/public/catalog")) ||
     pathname === "/favicon.ico"
   ) {
@@ -28,7 +28,7 @@ export async function middleware(request: NextRequest) {
   }
 
   const token = request.cookies.get(SESSION_COOKIE_NAME)?.value;
-  let user: { role: string; email: string } | null = null;
+  let user: { role: string; email: string; mustChangePassword: boolean } | null = null;
 
   if (token) {
     try {
@@ -37,6 +37,11 @@ export async function middleware(request: NextRequest) {
       // Token tidak valid atau kedaluwarsa
     }
   }
+
+  if (user?.mustChangePassword && !["/account/password", "/api/auth/change-password", "/api/auth/me", "/api/auth/logout"].includes(pathname)) {
+    return isApi ? NextResponse.json({ error: "Ganti kata sandi awal sebelum melanjutkan." }, { status: 403 }) : NextResponse.redirect(new URL("/account/password", request.url));
+  }
+  if (["/forgot-password", "/reset-password"].includes(pathname)) return NextResponse.next();
 
   // Jika sudah login tapi mengakses halaman /login, arahkan ke dashboard
   if (pathname === "/login") {

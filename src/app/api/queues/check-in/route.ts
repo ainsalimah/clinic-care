@@ -61,10 +61,10 @@ export async function POST(req: Request) {
     const [patient, department, doctor] = await Promise.all([
       prisma.patient.findUnique({ where: { id: patientId } }),
       prisma.department.findUnique({ where: { id: departmentId } }),
-      prisma.doctor.findUnique({ where: { id: doctorId } }),
+      prisma.doctor.findUnique({ where: { id: doctorId }, include: { user: { select: { isActive: true } } } }),
     ]);
 
-    if (!patient || !department || !doctor) {
+    if (!patient || !department || !doctor || !doctor.user.isActive) {
       return NextResponse.json({ error: "Data pasien, poli, atau dokter tidak ditemukan." }, { status: 404 });
     }
     if (doctor.departmentId !== departmentId) {

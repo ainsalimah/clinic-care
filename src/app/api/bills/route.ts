@@ -16,7 +16,7 @@ export async function GET(req: Request) {
     prisma.bill.findMany({ where, include: {
       adjustments: { orderBy: { createdAt: "asc" } },
       items: { orderBy: { id: "asc" } },
-      appointment: { select: { record: { select: { prescription: { select: { id: true, status: true } } } } } },
+      appointment: { select: { record: { select: { prescription: { select: { id: true, status: true, stockHeldAt: true, stockResumedAt: true, stockHoldReason: true } } } } } },
     }, orderBy: [{ createdAt: "desc" }, { id: "desc" }], take: 20, skip: (Math.floor(page) - 1) * 20 }),
     prisma.bill.count({ where }),
   ]);

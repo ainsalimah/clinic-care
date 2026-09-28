@@ -54,6 +54,7 @@ model User {
   passwordHash String
   role         Role
   isActive     Boolean  @default(true)
+  mustChangePassword Boolean @default(false)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
@@ -61,6 +62,27 @@ model User {
   doctor    Doctor?
   guardians PatientGuardian[]
   sessions AuthSession[]
+  passwordResets PasswordReset[]
+}
+
+model PasswordReset {
+  id String @id @default(cuid())
+  tokenHash String @unique
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  usedAt DateTime?
+  createdAt DateTime @default(now())
+  @@index([userId])
+}
+
+model AccountAudit {
+  id String @id @default(cuid())
+  actorId String
+  targetId String
+  action String
+  createdAt DateTime @default(now())
+  @@index([targetId, createdAt])
 }
 
 model AuthSession {
@@ -262,6 +284,11 @@ model Medicine {
 }
 
 model Prescription {
+  stockHoldReason String?
+  stockHeldAt DateTime?
+  stockHeldBy String?
+  stockResumedAt DateTime?
+  stockResumedBy String?
   id              String             @id @default(cuid())
   medicalRecordId String             @unique
   patientId       String

@@ -1025,6 +1025,18 @@ input:checked + .slider:before { transform:translateX(22px); }
 .speaker-idle { margin:16px 0 4px; color:var(--muted); font-size:1rem; }
 .billing-panel { padding:24px; margin:24px 0; }
 .billing-panel h2 { font-size:1.25rem; color:var(--teal); }
+.account-form { display:grid; gap:18px; max-width:640px; margin-top:20px; }
+.mobile-navigation { display:none; }
+@media (max-width:900px) { .mobile-navigation { display:grid; gap:6px; margin:16px 18px 0; font-size:0.875rem; }.mobile-navigation select { padding:10px; border:1px solid var(--field-border); border-radius:8px; background:white; color:var(--ink); } }
+.recovery-page { min-height:100vh; padding:32px 16px; display:grid; place-items:center; background:var(--bg); }
+.recovery-page > section { width:min(100%, 600px); }.recovery-page h1 { margin:24px 0 12px; font-size:1.75rem; }
+.account-form label { display:grid; gap:7px; font-weight:600; }
+.account-form :is(input, select, textarea) { width:100%; min-width:0; padding:12px; border:1px solid var(--field-border); border-radius:8px; background:white; color:var(--ink); font:inherit; }
+.account-form :is(small, p) { font-weight:400; color:var(--muted); }
+.account-form fieldset { display:grid; gap:14px; padding:16px; border:1px solid var(--line); border-radius:10px; }
+.account-form button:disabled { opacity:0.6; cursor:not-allowed; }
+.staff-card { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:16px; padding:20px; margin:12px 0; overflow-wrap:anywhere; }
+.staff-card h2 { font-size:1.1rem; }.staff-card p { margin:6px 0; color:var(--muted); }
 .billing-panel p, .billing-row small { color:var(--muted); }
 .billing-filters { display:flex; flex-wrap:wrap; align-items:end; gap:12px; margin:16px 0; }
 .billing-filters label { display:grid; gap:6px; flex:1; min-width:180px; }

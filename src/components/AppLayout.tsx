@@ -166,7 +166,7 @@ export default function AppLayout({ children, activeNav, breadcrumbTitle }: AppL
       { label: "Ringkasan", items: [{ href: "/patient", label: "Portal Saya", icon: LayoutDashboard }] },
     ],
   };
-  const navGroups = menuByRole[roleToEnum[role]];
+  const navGroups = [...menuByRole[roleToEnum[role]], { label: "Akun", items: [{ href: "/account/password", label: "Ganti Password", icon: Users }, ...(role === "Admin" ? [{ href: "/admin/staff", label: "Akun Staf", icon: Users }] : [])] }];
 
   return (
     <main className="app-shell">
@@ -251,6 +251,7 @@ export default function AppLayout({ children, activeNav, breadcrumbTitle }: AppL
           </div>
         </header>
 
+        <label className="mobile-navigation">Menu halaman<select value={activeNav || pathname} onChange={e => router.push(e.target.value)}><option value={activeNav || pathname} hidden>{breadcrumbTitle || "Pilih halaman"}</option>{navGroups.flatMap(group => group.items).map(item => <option key={item.href} value={item.href}>{item.label}</option>)}</select></label>
         {children}
       </section>
     </main>

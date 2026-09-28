@@ -11,7 +11,7 @@
     "db:generate": "prisma generate",
     "lint": "eslint",
     "typecheck": "tsc --noEmit --incremental false",
-    "test": "node --import tsx --test src/lib/clinic-time.test.ts src/lib/access.test.ts src/lib/rate-limit.test.ts src/lib/prescription-rules.test.ts src/lib/billing-rules.test.ts src/lib/payment-report.test.ts",
+    "test": "node --import tsx --test src/lib/clinic-time.test.ts src/lib/access.test.ts src/lib/rate-limit.test.ts src/lib/prescription-rules.test.ts src/lib/billing-rules.test.ts src/lib/payment-report.test.ts src/lib/password-rules.test.ts",
     "test:billing:integration": "tsx scripts/test-billing-integration.ts",
     "test:visit:e2e": "tsx scripts/test-visit-e2e.ts"
   },

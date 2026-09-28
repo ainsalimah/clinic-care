@@ -15,6 +15,7 @@ export async function payBill(tx: Prisma.TransactionClient, id: string, method: 
   if (pending) throw new BillingConflict("Tunggu keputusan admin atas koreksi tagihan sebelum menerima pembayaran.");
   const payment = paymentInput(method, received, bill.total);
   const rx = bill.appointment.record?.prescription;
+  if (rx?.stockHeldAt && !rx.stockResumedAt) throw new BillingConflict("Resep ditunda menunggu stok. Lanjutkan persiapan obat sebelum menerima pembayaran.");
   if (rx && rx.status !== "READY") throw new BillingConflict("Siapkan obat dan tandai siap diambil sebelum menerima pembayaran.");
   // Reserve paid medicines without dispensing: another cashier cannot sell the same units.
   for (const item of [...(rx?.items ?? [])].sort((a, b) => a.medicineId.localeCompare(b.medicineId))) {

@@ -16,6 +16,7 @@ let departmentId: string | undefined;
 let doctorId: string | undefined;
 let medicineId: string | undefined;
 const cookies: Partial<Record<Role, string>> = {};
+let testPassword = "";
 
 async function api<T = Record<string, unknown>>(role: Role, path: string, method = "GET", body?: unknown, status = 200): Promise<T> {
   const response = await fetch(base + path, {
@@ -26,8 +27,8 @@ async function api<T = Record<string, unknown>>(role: Role, path: string, method
   return response.json() as Promise<T>;
 }
 async function setup() {
-  const password = randomUUID() + "!9Aa";
-  const hash = await bcrypt.hash(password, 10);
+  testPassword = randomUUID() + "!9Aa";
+  const hash = await bcrypt.hash(testPassword, 10);
   for (const role of ["ADMIN", "RECEPTIONIST", "DOCTOR", "PHARMACIST"] as Role[]) {
     const user = await db.user.create({ data: { name: "E2E " + role, role, email: runId + "." + role.toLowerCase() + "@example.invalid", passwordHash: hash } });
     users.push(user.id);
@@ -35,7 +36,7 @@ async function setup() {
       const department = await db.department.create({ data: { name: "E2E " + runId } }); departmentId = department.id;
       const doctor = await db.doctor.create({ data: { userId: user.id, departmentId, fullName: "dr. E2E", consultationFee: 100000 } }); doctorId = doctor.id;
     }
-    const response = await fetch(base + "/api/auth/login", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: user.email, password }) });
+    const response = await fetch(base + "/api/auth/login", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: user.email, password: testPassword }) });
     assert.equal(response.status, 200, "Test role login");
     cookies[role] = response.headers.getSetCookie().map(value => value.split(";")[0]).join("; ");
   }
@@ -63,6 +64,13 @@ async function run() {
   const { bill, rxId } = await visit(true);
   assert.ok(rxId);
   await api("PHARMACIST", "/api/prescriptions/" + rxId, "PATCH", { status: "PROCESSING" });
+  await db.medicine.update({ where: { id: medicineId }, data: { stock: 1 } });
+  await api("PHARMACIST", "/api/prescriptions/" + rxId, "PATCH", { status: "READY" }, 409);
+  await api("PHARMACIST", "/api/stock-holds", "POST", { id: rxId, hold: true, reason: "E2E menunggu stok tambahan" });
+  await api("PHARMACIST", "/api/bills/" + bill.id + "/pay", "POST", { method: "CASH", receivedAmount: 150000, confirmed: true, expectedTotal: 119000 }, 409);
+  await api("PHARMACIST", "/api/stock-holds", "POST", { id: rxId, hold: false }, 409);
+  await db.medicine.update({ where: { id: medicineId }, data: { stock: 10 } });
+  await api("PHARMACIST", "/api/stock-holds", "POST", { id: rxId, hold: false });
   await api("PHARMACIST", "/api/prescriptions/" + rxId, "PATCH", { status: "READY" });
   await api("PHARMACIST", "/api/prescriptions/" + rxId, "PATCH", { status: "COMPLETED" }, 409);
   const request = await api<{ result: { id: string } }>("PHARMACIST", "/api/bill-adjustments", "POST", { action: "request", id: bill.id, kind: "CORRECTION", amount: -9000, reason: "E2E koreksi tarif" });
@@ -100,7 +108,22 @@ async function run() {
   assert.ok((await db.bill.findUniqueOrThrow({ where: { id: plain.bill.id } })).completedAt);
   const today = getClinicDateKey();
   await api("DOCTOR", "/api/payment-reports?from=" + today + "&to=" + today, "GET", undefined, 403);
-  console.log("PASS: patient registration → check-in → examination → correction approval → payment → dispensing → refund → dated reports; consultation-only; role boundaries and duplicate actions.");
+  const staffEmail = runId + ".newstaff@example.invalid";
+  const staffInitial = "Initial-staff-2026!";
+  await api("ADMIN", "/api/admin/staff", "POST", { name: "E2E NEW STAFF", email: staffEmail, role: "RECEPTIONIST", password: staffInitial, adminPassword: testPassword });
+  const staff = await db.user.findUniqueOrThrow({ where: { email: staffEmail } }); users.push(staff.id);
+  assert.equal(staff.mustChangePassword, true);
+  const firstLogin = await fetch(base + "/api/auth/login", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: staffEmail, password: staffInitial }) });
+  assert.equal(firstLogin.status, 200);
+  const staffCookie = firstLogin.headers.getSetCookie().map(value => value.split(";")[0]).join("; ");
+  assert.equal((await fetch(base + "/api/patients", { headers: { Cookie: staffCookie } })).status, 403, "Initial password blocks application APIs");
+  const staffPassword = "Changed-staff-2026!";
+  assert.equal((await fetch(base + "/api/auth/change-password", { method: "POST", headers: { "Content-Type": "application/json", Cookie: staffCookie, Origin: base }, body: JSON.stringify({ currentPassword: staffInitial, password: staffPassword }) })).status, 200);
+  const changedLogin = await fetch(base + "/api/auth/login", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: staffEmail, password: staffPassword }) });
+  assert.equal(changedLogin.status, 200);
+  await api("ADMIN", "/api/admin/staff", "PATCH", { id: staff.id, isActive: false, adminPassword: testPassword });
+  assert.equal((await fetch(base + "/api/auth/login", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: staffEmail, password: staffPassword }) })).status, 401);
+  console.log("PASS: visit, stock hold/resume, correction, payment, dispensing, refund, reports, staff creation, initial-password change and deactivation.");
 }
 
 async function cleanup() {
@@ -110,6 +133,7 @@ async function cleanup() {
     const ids = patients.map(p => p.id);
     const visits = await tx.appointment.findMany({ where: { patientId: { in: ids } }, select: { id: true } });
     const visitIds = visits.map(v => v.id);
+    await tx.accountAudit.deleteMany({ where: { OR: [{ actorId: { in: users } }, { targetId: { in: users } }] } });
     await tx.billAdjustment.deleteMany({ where: { bill: { appointmentId: { in: visitIds } } } });
     await tx.billItem.deleteMany({ where: { bill: { appointmentId: { in: visitIds } } } });
     await tx.bill.deleteMany({ where: { appointmentId: { in: visitIds } } });
@@ -128,7 +152,7 @@ async function cleanup() {
     if (departmentId) await tx.department.delete({ where: { id: departmentId } });
     await tx.authSession.deleteMany({ where: { userId: { in: users } } });
     await tx.user.deleteMany({ where: { id: { in: users } } });
-  }, { timeout: 60000 });
+  }, { maxWait: 30000, timeout: 60000 });
   console.log("Synthetic run data cleaned.");
 }
 

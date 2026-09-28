@@ -39,7 +39,7 @@ Petugas membuka `/queue/speaker` pada satu komputer yang tersambung ke speaker r
 - **Resepsionis:** daftar pasien walk-in, verifikasi pengajuan online, check-in, dan antrean.
 - **Dokter:** antrean praktik, pemeriksaan, rekam medis, dan resep.
 - **Apoteker:** resep masuk, obat, stok, dan penyerahan.
-- **Admin:** pemantauan operasional dan laporan.
+- **Admin:** pemantauan operasional, laporan, tarif, dan akun staf.
 
 Pengajuan jadwal online tidak langsung membuat antrean. Pasien lama perlu meminta resepsionis memverifikasi dan menghubungkan akun ke data yang sudah ada. Akun baru memakai NIK dan telepon untuk pendaftaran online; resepsionis tetap dapat mendaftarkan pasien tanpa telepon. Portal pasien menampilkan jadwal, status kunjungan, dan ringkasan tagihan; rekam medis dan resep belum dibuka di portal. Rawat inap, laboratorium, radiologi, verifikasi OTP/email, dan integrasi eksternal belum termasuk MVP.
 
@@ -57,10 +57,14 @@ Refund yang disetujui belum dianggap uang keluar. Apoteker harus mencatat uang y
 
 Laporan **Pembayaran & Koreksi** tersedia untuk admin dan apoteker, dengan rentang maksimal 31 hari dalam WIB. Uang masuk mengikuti tanggal pembayaran, uang keluar mengikuti tanggal refund diserahkan. Laporan memisahkan konsultasi, obat, koreksi, tunai/QRIS, refund, serta tagihan belum lunas dan dapat dicetak.
 
+Jika stok resep tidak mencukupi, apoteker menunda resep dengan alasan. Resep, pembayaran, dan penyerahan baru dapat dilanjutkan setelah stok tersedia. Pasien melihat status menunggu stok pada portalnya.
+
+Admin dapat membuat dan menonaktifkan akun staf di **Akun Staf**. Pembuatan atau perubahan status memerlukan konfirmasi password admin; akun sendiri tidak dapat dinonaktifkan dan sesi akun yang dinonaktifkan langsung dicabut. Staf baru wajib mengganti password awal. Semua pengguna dapat mengganti password sendiri, sedangkan lupa password memakai tautan sekali pakai yang berlaku 30 menit dan mencabut seluruh sesi lama.
+
 Verifikasi: `npm test` dan `npm run test:billing:integration`. Uji integrasi membutuhkan database yang sudah dimigrasikan; semua data sintetis berada dalam transaksi yang di-rollback.
 
 Uji alur endpoint lengkap: jalankan server lokal, lalu `npm run test:visit:e2e`. Skrip menolak alamat server nonlokal, membuat data sintetis unik untuk seluruh role, menguji pendaftaran sampai refund/laporan, lalu membersihkan hanya data run tersebut. Gunakan database pengujian terpisah bila menjalankan di luar lingkungan demo.
 
 ## Konfigurasi hosting
 
-Atur `DATABASE_URL` dan `AUTH_SECRET` acak minimal 32 karakter pada platform hosting. Jalankan `npm run db:deploy` sebelum `npm run start`; `prestart` menolak konfigurasi kosong atau nilai contoh. Bila memakai reverse proxy dan ingin rate limit berdasarkan IP, set `TRUSTED_CLIENT_IP_HEADER` hanya ke header yang selalu ditimpa oleh proxy tepercaya. Aktifkan HTTPS, backup database, monitoring error tanpa data medis, dan uji restore sebelum menerima pasien nyata.
+Atur `DATABASE_URL` dan `AUTH_SECRET` acak minimal 32 karakter pada platform hosting. Untuk lupa password, verifikasi domain pengirim di Resend lalu atur `RESEND_API_KEY`, `AUTH_EMAIL_FROM`, dan `APP_BASE_URL` HTTPS. Tanpa ketiganya, halaman pemulihan memberi tahu pengguna untuk menghubungi admin dan tidak membuat token reset. Jalankan `npm run db:deploy` sebelum `npm run start`; `prestart` menolak konfigurasi inti yang kosong atau memakai nilai contoh. Bila memakai reverse proxy dan ingin rate limit berdasarkan IP, set `TRUSTED_CLIENT_IP_HEADER` hanya ke header yang selalu ditimpa oleh proxy tepercaya. Aktifkan HTTPS, backup database, monitoring error tanpa data medis, dan uji restore sebelum menerima pasien nyata.

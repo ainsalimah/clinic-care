@@ -21,10 +21,10 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     const { id } = await params;
     return NextResponse.json(await prisma.$transaction(
       tx => payBill(tx, id, body.method, body.receivedAmount, user.name, body.expectedTotal),
-      { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
+      { isolationLevel: Prisma.TransactionIsolationLevel.Serializable, maxWait: 10000, timeout: 15000 },
     ));
   } catch (error) {
-    if (error instanceof BillingConflict || (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2034")) {
+    if (error instanceof BillingConflict || (error instanceof Prisma.PrismaClientKnownRequestError && ["P2028", "P2034"].includes(error.code))) {
       return NextResponse.json({ error: error instanceof BillingConflict ? error.message : "Tagihan sedang diperbarui. Muat ulang." }, { status: 409 });
     }
     return NextResponse.json({ error: "Pembayaran gagal. Periksa nominal dan muat ulang tagihan sebelum mencoba lagi." }, { status: 400 });

@@ -16,6 +16,7 @@ export async function GET() {
         medicalRecordNo: true,
         appointments: {
           include: { department: true, doctor: true, schedule: true, queue: true,
+            record: { select: { prescription: { select: { stockHeldAt: true, stockResumedAt: true } } } },
             bill: { select: { total: true, paidAt: true, completedAt: true } } },
           orderBy: { appointmentDate: "desc" },
           take: 20,

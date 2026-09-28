@@ -7,6 +7,7 @@ import { fetchJson } from "@/lib/http/client";
 import { PrescriptionLabelModal } from "./PrescriptionLabelModal";
 import type { PrescriptionData } from "../types";
 import { BillingPanel } from "@/features/billing/components/BillingPanel";
+import { StockHoldControl } from "./StockHoldControl";
 import {
   Pill,
   Clock,
@@ -239,6 +240,7 @@ export default function PharmacyPage() {
           ) : (
             prescriptions.map((rx) => {
               const isBusy = actionLoading === rx.id;
+              const held = Boolean(rx.stockHeldAt && !rx.stockResumedAt);
               const hasAllergies = rx.patient.allergies && rx.patient.allergies.toLowerCase() !== "tidak ada";
 
               return (
@@ -247,7 +249,7 @@ export default function PharmacyPage() {
                   <div className="record-header">
                     <div className="record-meta">
                       <span className={`status-pill ${rx.status.toLowerCase()}`}>
-                        {rx.status === "PENDING"
+                        {held ? "Menunggu Stok" : rx.status === "PENDING"
                           ? "Menunggu Diproses"
                           : rx.status === "PROCESSING"
                           ? "Sedang Disiapkan"
@@ -297,7 +299,8 @@ export default function PharmacyPage() {
                       </thead>
                       <tbody>
                         {rx.items.map((item) => {
-                          const isLowStock = item.medicine.stock < item.quantity;
+                          const available = rx.medicalRecord.appointment.bill?.paidAt ? item.medicine.stock : item.medicine.stock - item.medicine.reservedStock;
+                          const isLowStock = available < item.quantity;
                           return (
                             <tr key={item.id}>
                               <td>
@@ -309,7 +312,7 @@ export default function PharmacyPage() {
                               </td>
                               <td>
                                 <span className={isLowStock ? "stock-danger" : "stock-safe"}>
-                                  {item.medicine.stock} {item.medicine.unit} {isLowStock ? "(Stok Kurang!)" : ""}
+                                  {available} {item.medicine.unit} {isLowStock ? "(Stok Kurang!)" : ""}
                                 </span>
                               </td>
                               <td>
@@ -327,6 +330,7 @@ export default function PharmacyPage() {
                       </p>
                     )}
 
+                    <StockHoldControl rx={rx} refresh={() => { void fetchPrescriptions(); setBillingRevision(value => value + 1); }} />
                     {/* Action Toolbar per Stage */}
                     <div className="rx-action-toolbar">
                       <button
@@ -352,7 +356,7 @@ export default function PharmacyPage() {
                         )}
 
                         {/* If PROCESSING -> Tandai Siap */}
-                        {rx.status === "PROCESSING" && (
+                        {rx.status === "PROCESSING" && !held && (
                           <button
                             type="button"
                             className="btn-ready-action"

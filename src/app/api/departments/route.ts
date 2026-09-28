@@ -6,6 +6,7 @@ export async function GET() {
     const departments = await prisma.department.findMany({
       include: {
         doctors: {
+          where: { user: { isActive: true } },
           include: {
             schedules: true,
           },

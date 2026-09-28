@@ -22,6 +22,9 @@ export function canAccessPath(pathname: string, role: string): boolean {
 }
 
 const API_ACCESS: { prefix: string; roles: AppRole[]; methods?: string[] }[] = [
+  { prefix: "/admin/staff", roles: ["ADMIN"], methods: ["GET", "POST", "PATCH"] },
+  { prefix: "/stock-holds", roles: ["PHARMACIST"], methods: ["POST"] },
+  { prefix: "/auth/change-password", roles: ["ADMIN", "RECEPTIONIST", "DOCTOR", "PHARMACIST", "PATIENT"], methods: ["POST"] },
   { prefix: "/bill-adjustments", roles: ["ADMIN", "PHARMACIST"], methods: ["GET", "POST"] },
   { prefix: "/payment-reports", roles: ["ADMIN", "PHARMACIST"], methods: ["GET"] },
   { prefix: "/bills", roles: ["PHARMACIST"], methods: ["GET", "POST"] },

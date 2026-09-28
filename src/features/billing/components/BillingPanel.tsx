@@ -11,7 +11,7 @@ type Bill = {
   paidAt: string | null; completedAt: string | null; paymentMethod: string | null;
   receivedAmount: number | null; receivedBy: string | null;
   items: { id: string; description: string; quantity: number; unit: string; unitPrice: number; amount: number }[];
-  appointment: { record: { prescription: { id: string; status: string } | null } | null };
+  appointment: { record: { prescription: { id: string; status: string; stockHeldAt: string | null; stockResumedAt: string | null; stockHoldReason: string | null } | null } | null };
 };
 const money = (value: number) => new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(value);
 const date = (value: string) => new Date(value).toLocaleString("id-ID", { timeZone: "Asia/Jakarta" });
@@ -24,7 +24,8 @@ function BillDetails({ bill, close, refresh }: { bill: Bill; close: () => void; 
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const rx = bill.appointment.record?.prescription;
-  const canPay = !rx || rx.status === "READY";
+  const held = Boolean(rx?.stockHeldAt && !rx.stockResumedAt);
+  const canPay = !rx || (rx.status === "READY" && !held);
   const refunded = bill.adjustments.filter(a => a.kind === "REFUND" && a.status === "SETTLED").reduce((sum, a) => sum + a.amount, 0);
 
   async function pay(event: React.FormEvent) {
@@ -69,7 +70,7 @@ function BillDetails({ bill, close, refresh }: { bill: Bill; close: () => void; 
         {error && <p role="alert" className="data-error">{error}</p>}
         {bill.paidAt ? <button className="btn-print" onClick={() => window.print()}>Cetak struk</button>
           : <form onSubmit={pay} className="billing-payment">
-            {!canPay && <p role="status">Siapkan resep dan tandai siap diambil sebelum menerima pembayaran.</p>}
+            {!canPay && <p role="status">{held ? `Pembayaran ditunda menunggu stok obat${rx?.stockHoldReason ? `: ${rx.stockHoldReason}` : "."}` : "Siapkan resep dan tandai siap diambil sebelum menerima pembayaran."}</p>}
             <label>Metode pembayaran<select className="form-input" value={method} disabled={busy} onChange={e => { setMethod(e.target.value); setAmount(String(bill.total)); setConfirmed(false); }}>
               <option value="CASH">Tunai</option><option value="QRIS">QRIS (verifikasi manual)</option>
             </select></label>

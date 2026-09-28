@@ -16,5 +16,5 @@ export async function getUserFromToken(token: string) {
   if (!session || session.expiresAt <= new Date()) return null;
   const { user } = session;
   if (!user.isActive || user.role !== session.role || user.updatedAt > session.createdAt) return null;
-  return { id: user.id, name: user.name, email: user.email, role: user.role };
+  return { id: user.id, name: user.name, email: user.email, role: user.role, mustChangePassword: user.mustChangePassword };
 }
