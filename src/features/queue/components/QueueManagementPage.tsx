@@ -6,6 +6,7 @@ import AppLayout from "@/components/AppLayout";
 import { fetchJson } from "@/lib/http/client";
 import { QueueTicket } from "@/features/queue/components/QueueTicket";
 import type { QueueItem } from "@/features/queue/types";
+import { prepareQueueSpeech, speakQueueAnnouncement } from "@/features/queue/client/speech";
 import {
   CalendarDays,
   Clock,
@@ -36,6 +37,7 @@ export default function QueueManagementPage() {
   const isReceptionist = userRole === "RECEPTIONIST";
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [ticketToPrint, setTicketToPrint] = useState<QueueItem | null>(null);
+  const [callNotice, setCallNotice] = useState("");
 
   const fetchQueues = useCallback(async () => {
     setLoading(true);
@@ -92,6 +94,36 @@ export default function QueueManagementPage() {
     }
   };
 
+  const handleCall = async (queueId: string) => {
+    setActionLoading(queueId);
+    setCallNotice("");
+    const canPlayLocally = prepareQueueSpeech();
+    try {
+      const res = await fetch("/api/queues", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ queueId, status: "CALLED", playback: canPlayLocally ? "LOCAL" : "SPEAKER_SCREEN" }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Gagal memanggil pasien.");
+      if (canPlayLocally) {
+        try {
+          await speakQueueAnnouncement(data.queue.queueNumber, data.queue.roomLabel);
+          setCallNotice(`${data.queue.queueNumber} berhasil dipanggil melalui perangkat ini.`);
+        } catch (speechError) {
+          setCallNotice(speechError instanceof Error ? speechError.message : "Status antrean tersimpan, tetapi suara gagal diputar.");
+        }
+      } else {
+        setCallNotice("Panggilan dikirim ke Layar Speaker karena browser perangkat ini tidak mendukung suara.");
+      }
+      await fetchQueues();
+    } catch (error) {
+      alert(error instanceof Error ? error.message : "Gagal memanggil pasien.");
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
   // Stats calculation
   const totalToday = queues.length;
   const waitingCount = queues.filter((q) => q.status === "WAITING").length;
@@ -120,8 +152,8 @@ export default function QueueManagementPage() {
             </p>
           </div>
           <div className="header-actions-group">
-            <Link href="/queue/speaker" className="btn-secondary">
-              <Volume2 size={16} /> Layar Speaker
+            <Link href="/queue/speaker" className="btn-secondary" title="Opsional untuk monitor dan speaker khusus ruang tunggu">
+              <Volume2 size={16} /> Layar Speaker (Opsional)
             </Link>
             <button
               type="button"
@@ -140,6 +172,8 @@ export default function QueueManagementPage() {
             )}
           </div>
         </div>
+
+        {callNotice && <div className="queue-call-notice" role="status"><Volume2 size={16} />{callNotice}</div>}
 
         {/* Stats Summary Cards */}
         <div className="stats">
@@ -322,7 +356,7 @@ export default function QueueManagementPage() {
                                 type="button"
                                 className="btn-action-call"
                                 disabled={isRowBusy}
-                                onClick={() => handleUpdateStatus(q.id, "CALLED")}
+                                onClick={() => handleCall(q.id)}
                                 title={q.status === "CALLED" ? "Panggil ulang pasien jika belum masuk" : "Panggil pasien"}
                               >
                                 <Volume2 size={13} /> {q.status === "CALLED" ? "Panggil Ulang" : "Panggil"}

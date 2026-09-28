@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Volume2, ArrowLeft } from "lucide-react";
 import AppLayout from "@/components/AppLayout";
+import { prepareQueueSpeech, speakQueueAnnouncement } from "@/features/queue/client/speech";
 
 interface Announcement {
   id: string;
@@ -25,27 +26,6 @@ interface DoctorRoom {
   fullName: string;
   roomLabel: string | null;
   department: { name: string };
-}
-
-function spokenQueueNumber(value: string) {
-  const digits: Record<string, string> = {
-    "0": "nol", "1": "satu", "2": "dua", "3": "tiga", "4": "empat",
-    "5": "lima", "6": "enam", "7": "tujuh", "8": "delapan", "9": "sembilan",
-  };
-  return [...value.toUpperCase()].map((character) => digits[character] ?? character).join(" ");
-}
-
-function speak(text: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = "id-ID";
-    utterance.rate = 0.88;
-    const indonesianVoice = window.speechSynthesis.getVoices().find((voice) => voice.lang.toLowerCase().startsWith("id"));
-    if (indonesianVoice) utterance.voice = indonesianVoice;
-    utterance.onend = () => resolve();
-    utterance.onerror = () => reject(new Error("Suara tidak dapat diputar. Periksa speaker dan izin audio browser."));
-    window.speechSynthesis.speak(utterance);
-  });
 }
 
 export default function QueueSpeakerPage() {
@@ -104,7 +84,7 @@ export default function QueueSpeakerPage() {
         const data: { announcement: ClaimedAnnouncement | null } = await res.json();
         if (!data.announcement || !mounted) return;
         setCurrent(data.announcement);
-        await speak(`Nomor antrean ${spokenQueueNumber(data.announcement.queueNumber)}, silakan menuju ${data.announcement.roomLabel}.`);
+        await speakQueueAnnouncement(data.announcement.queueNumber, data.announcement.roomLabel);
         const ack = await fetch("/api/queue-announcements", {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
@@ -133,10 +113,7 @@ export default function QueueSpeakerPage() {
     }
     setError("");
     try {
-      window.speechSynthesis.cancel();
-      const activation = new SpeechSynthesisUtterance("");
-      activation.volume = 0;
-      window.speechSynthesis.speak(activation);
+      prepareQueueSpeech();
       setAudioReady(true);
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Gagal mengaktifkan suara.");

@@ -55,7 +55,7 @@ export async function PATCH(req: Request) {
       return NextResponse.json({ error: "Sesi login diperlukan." }, { status: 401 });
     }
 
-    const { queueId, status } = await req.json();
+    const { queueId, status, playback } = await req.json();
 
     if (!queueId || !status || !Object.values(QueueStatus).includes(status)) {
       return NextResponse.json({ error: "ID antrean dan status tidak valid." }, { status: 400 });
@@ -92,8 +92,9 @@ export async function PATCH(req: Request) {
     }
 
     if (status === QueueStatus.CALLED) {
+      const playedLocally = session.role === "RECEPTIONIST" && playback === "LOCAL";
       const called = await prisma.$transaction(
-        (tx) => callQueue(tx, queueId),
+        (tx) => callQueue(tx, queueId, { playedLocally }),
         { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
       );
       return NextResponse.json({ success: true, queue: called });

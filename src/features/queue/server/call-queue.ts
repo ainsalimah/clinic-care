@@ -10,7 +10,7 @@ export class QueueCallError extends Error {
 }
 
 /** The same transition creates the audio event for manual calls and automatic calls. */
-export async function callQueue(tx: QueueTransaction, queueId: string) {
+export async function callQueue(tx: QueueTransaction, queueId: string, options?: { playedLocally?: boolean }) {
   const queue = await tx.queue.findUnique({
     where: { id: queueId },
     include: { appointment: { include: { doctor: true } } },
@@ -51,14 +51,15 @@ export async function callQueue(tx: QueueTransaction, queueId: string) {
     data: { playedAt: now },
   });
 
-  await tx.queueAnnouncement.create({
+  const announcement = await tx.queueAnnouncement.create({
     data: {
       queueId,
       doctorId: queue.appointment.doctorId,
       queueNumber: queue.queueNumber,
       roomLabel: queue.appointment.doctor.roomLabel?.trim() || `Ruang praktik ${queue.appointment.doctor.fullName}`,
+      playedAt: options?.playedLocally ? now : null,
     },
   });
 
-  return { id: queueId, queueNumber: queue.queueNumber, calledAt: now };
+  return { id: queueId, queueNumber: queue.queueNumber, roomLabel: announcement.roomLabel, calledAt: now };
 }

@@ -1425,6 +1425,7 @@ input:checked + .slider:before { transform:translateX(22px); }
 .speaker-current { display:flex; flex-wrap:wrap; align-items:baseline; gap:16px; padding:16px 0; }
 .speaker-status { display:inline-flex; align-items:center; gap:8px; padding:10px 13px; border:1px solid #d5e5e0; border-radius:999px; font-size:12px; font-weight:700; }
 .speaker-status.ready { color:#1f7b61; background:#effaf5; border-color:#bfe4d5; }.speaker-status.needs-interaction { color:#9a691d; background:#fff9ec; border-color:#f0dca4; }
+.queue-call-notice { display:flex; align-items:center; gap:8px; margin:0 0 18px; padding:12px 14px; border:1px solid #bfe4d5; border-radius:10px; color:#17634f; background:#effaf5; font-size:13px; font-weight:650; }
 .speaker-screen { cursor:pointer; }.speaker-screen:has(.speaker-current) { cursor:default; }
 .speaker-current strong { font:800 clamp(3rem, 8vw, 6rem)/1 'Plus Jakarta Sans',sans-serif; color:var(--teal); }
 .speaker-current span { font:700 clamp(1.25rem, 3vw, 2rem) 'Plus Jakarta Sans',sans-serif; color:var(--ink); }
