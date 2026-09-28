@@ -146,7 +146,11 @@ export async function POST(req: Request) {
 
       await createBill(tx, appointment.id);
       return { medicalRecord, prescription, autoCall };
-    }, { isolationLevel: Prisma.TransactionIsolationLevel.Serializable });
+    }, {
+      isolationLevel: Prisma.TransactionIsolationLevel.Serializable,
+      maxWait: 10_000,
+      timeout: 20_000,
+    });
 
     return NextResponse.json({
       success: true,
@@ -155,6 +159,9 @@ export async function POST(req: Request) {
       autoCall: result.autoCall,
     }, { status: 201 });
   } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2028") {
+      return NextResponse.json({ error: "Koneksi database sedang lambat. Data belum tersimpan; silakan tekan Simpan sekali lagi." }, { status: 503 });
+    }
     if (error instanceof Prisma.PrismaClientKnownRequestError && ["P2002", "P2034"].includes(error.code)) {
       return NextResponse.json({ error: "Pemeriksaan ini sudah selesai." }, { status: 409 });
     }

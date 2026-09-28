@@ -1299,12 +1299,13 @@ input:checked + .slider:before { transform:translateX(22px); }
   .kc-footer-grid > div:last-child { grid-column:auto; }
 }
 @media (max-width:560px) {
-  .kc-shell,.kc-header-inner { width:min(100% - 32px,1240px); }
+  .kc-shell,.kc-header-inner { width:min(calc(100% - 32px),1240px); }
   .kc-header-inner { height:72px; }
   .kc-section { padding:68px 0; }
   .kc-heading { font-size:2.6rem; }
   .kc-display { font-size:3.55rem; }
   .kc-hero-copy { padding-top:28px; }
+  .kc-hero-orb-one { width:280px; height:280px; left:-170px; top:-70px; background:rgba(208,229,216,.2); }
   .kc-hero-lead { font-size:.98rem; }
   .kc-hero-actions { align-items:stretch; flex-direction:column; }
   .kc-trust-list { display:grid; gap:12px; }

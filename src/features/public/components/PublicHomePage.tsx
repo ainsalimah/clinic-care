@@ -42,18 +42,25 @@ export default function PublicHomePage() {
   }, [allDoctors, searchDoctor, selectedDeptFilter]);
 
   useGSAP(() => {
-    if (loading) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      gsap.set(".kc-hero-motion, .kc-reveal, .kc-card-motion", { clearProps: "all" });
+      gsap.set(".kc-hero-motion, .kc-reveal", { clearProps: "all" });
       return;
     }
     gsap.timeline({ defaults: { ease: "power3.out" } })
-      .from(".kc-hero-copy .kc-hero-motion", { y: 28, opacity: 0, duration: .75, stagger: .09 })
-      .from(".kc-hero-visual", { y: 24, opacity: 0, scale: .97, duration: .9 }, "-=.65")
-      .from(".kc-proof", { y: 18, opacity: 0, duration: .65 }, "-=.45");
-    gsap.to(".kc-hero-image", { yPercent: 6, ease: "none", scrollTrigger: { trigger: ".kc-hero", start: "top top", end: "bottom top", scrub: .6 } });
+      .from(".kc-hero-copy .kc-hero-motion", { y: 28, duration: .75, stagger: .09 })
+      .from(".kc-hero-background", { scale: 1.1, duration: 1.1 }, 0)
+      .from(".kc-proof", { y: 18, duration: .65 }, "-=.45");
+    gsap.to(".kc-hero-background", { yPercent: 6, ease: "none", scrollTrigger: { trigger: ".kc-hero", start: "top top", end: "bottom top", scrub: .6 } });
     gsap.to(".kc-progress-bar", { scaleX: 1, ease: "none", scrollTrigger: { trigger: root.current, start: "top top", end: "bottom bottom", scrub: true } });
     gsap.utils.toArray<HTMLElement>(".kc-reveal").forEach(element => gsap.from(element, { y: 36, opacity: 0, duration: .85, ease: "power3.out", scrollTrigger: { trigger: element, start: "top 86%", once: true } }));
+  }, { scope: root });
+
+  useGSAP(() => {
+    if (loading) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      gsap.set(".kc-card-motion", { clearProps: "all" });
+      return;
+    }
     gsap.utils.toArray<HTMLElement>(".kc-card-group").forEach(group => gsap.from(group.querySelectorAll(".kc-card-motion"), { y: 28, opacity: 0, duration: .7, stagger: .08, ease: "power2.out", scrollTrigger: { trigger: group, start: "top 84%", once: true } }));
   }, { scope: root, dependencies: [loading], revertOnUpdate: true });
 
