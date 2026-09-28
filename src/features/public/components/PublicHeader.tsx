@@ -5,11 +5,10 @@ import Link from "next/link";
 import { ArrowUpRight, HeartPulse, Menu, X } from "lucide-react";
 
 const navLinks = [
+  { href: "#demo", label: "Coba Demo" },
   { href: "#poli", label: "Layanan" },
-  { href: "#tentang", label: "Tentang" },
   { href: "#dokter", label: "Dokter" },
   { href: "#alur", label: "Alur Pasien" },
-  { href: "#faq", label: "FAQ" },
 ];
 
 export function PublicHeader() {
@@ -25,7 +24,7 @@ export function PublicHeader() {
       </nav>
       <div className="kc-header-actions">
         <Link href="/login" className="kc-login-link">Masuk</Link>
-        <Link href="/register" className="kc-button kc-button-small">Buat janji <ArrowUpRight size={15} /></Link>
+        <Link href="/login#demo" className="kc-button kc-button-small">Coba demo <ArrowUpRight size={15} /></Link>
       </div>
       <button type="button" className="kc-menu-button" aria-label={open ? "Tutup menu" : "Buka menu"} aria-expanded={open} onClick={() => setOpen(value => !value)}>{open ? <X size={20} /> : <Menu size={20} />}</button>
     </div>

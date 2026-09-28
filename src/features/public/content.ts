@@ -2,6 +2,10 @@ export const weekdayNames = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Juma
 
 export const faqs = [
   [
+    "Apakah data pasien dan transaksi pada situs ini nyata?",
+    "Tidak. Seluruh nama, identitas, rekam medis, resep, stok, tagihan, alamat, dan nomor telepon dibuat khusus untuk simulasi produk KlinikCare.",
+  ],
+  [
     "Apakah pasien baru bisa membuat janji secara online?",
     "Bisa. Buat akun pasien di KlinikCare, lengkapi identitas dasar, lalu pilih poli, dokter, dan tanggal kunjungan yang Anda kehendaki.",
   ],

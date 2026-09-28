@@ -14,6 +14,9 @@ export async function GET() {
             id: true,
             fullName: true,
             specialization: true,
+            consultationFee: true,
+            licenseNumber: true,
+            roomLabel: true,
             schedules: {
               select: { id: true, dayOfWeek: true, startTime: true, endTime: true, quota: true },
               orderBy: [{ dayOfWeek: "asc" }, { startTime: "asc" }],

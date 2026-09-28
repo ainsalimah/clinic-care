@@ -257,7 +257,7 @@ function LoginForm() {
         <p className="auth-existing">Belum punya akun pasien? <Link href="/register">Daftar di sini</Link></p>
 
         {demoModeEnabled && <>
-          <div className="login-divider">
+          <div className="login-divider" id="demo">
             <span>ATAU COBA MODE DEMO</span>
           </div>
           <div className="demo-grid">
