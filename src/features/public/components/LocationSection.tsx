@@ -1,118 +1,67 @@
-import {
-  Car,
-  Clock,
-  HeartPulse,
-  MapPin,
-  Navigation,
-  Sparkles,
-} from "lucide-react";
-
 export function LocationSection() {
   return (
-    <section className="kc-location-section kc-section" id="lokasi">
-      <div className="kc-shell">
-        <div className="kc-section-head kc-reveal">
-          <div>
-            <p className="kc-eyebrow">
-              <Sparkles size={13} />
-              <span>Lokasi & Akses Fasilitas</span>
-            </p>
-            <h2 className="kc-heading">
-              Akses strategis di pusat kota,<br />
-              <em>mudah dijangkau bersama keluarga.</em>
-            </h2>
-          </div>
-          <p className="kc-section-head-desc">
-            Berada di jalur utama dengan akses ramah ambulans, area parkir luas, serta drop-off zone
-            khusus pasien lansia dan kursi roda di depan lobi penerimaan.
-          </p>
-        </div>
+    <section id="lokasi" className="pad grid-bg">
+      <div className="wrap">
+        <p className="eyebrow text-[#2F80C0] mb-3">LOKASI RUMAH SAKIT</p>
+        <h2 className="text-[#0B2D45] font-extrabold text-2xl sm:text-3xl">
+          Lokasi Rumah Sakit
+        </h2>
+        <p className="mt-3 text-[#315066] text-base max-w-2xl">
+          Temukan kami dengan mudah di kawasan Jakarta Selatan
+        </p>
 
-        <div className="kc-location-grid kc-reveal">
-          {/* Left Column: Visual Map Card with Coordinates & Directions */}
-          <div className="kc-map-card">
-            <div className="kc-map-art" aria-hidden="true">
-              {/* Stylized vector map graphic */}
-              <div className="kc-map-grid-lines" />
-              <div className="kc-map-road kc-road-horizontal" />
-              <div className="kc-map-road kc-road-vertical" />
-              <div className="kc-map-pin-pulse">
-                <span className="kc-pin-ring" />
-                <span className="kc-pin-core">
-                  <HeartPulse size={16} />
-                </span>
-              </div>
-              <div className="kc-map-label-bubble">
-                <b>KlinikCare Pratama</b>
-                <small>Lobi Utama & IGD 24 Jam</small>
-              </div>
+        <div className="grid lg:grid-cols-[1.25fr_.75fr] gap-8 mt-8 items-stretch">
+          <div className="location-map">
+            <iframe
+              title="Peta lokasi RS Cakrawala Medika"
+              src="https://www.google.com/maps?q=Jl.+Kesehatan+Raya+No.+18,+Jakarta+Selatan&z=15&output=embed"
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              allowFullScreen
+            />
+          </div>
+
+          <aside className="bg-white rounded-3xl p-7 shadow-lg border border-[#d5e2eb] flex flex-col justify-between">
+            <div>
+              <h3 className="font-bold text-xl text-[#0B2D45]">
+                Temukan kami dengan mudah
+              </h3>
+              <p className="mt-5 text-[#315066] text-base leading-relaxed">
+                Jl. Kesehatan Raya No. 18, Jakarta Selatan
+              </p>
+              <p className="mt-3 text-[#315066] text-base font-semibold">
+                Telp: +62 21 555 7788
+              </p>
+              <p className="mt-3 text-[#0B2D45] font-bold text-base">
+                IGD 24 Jam: +62 21 555 7799
+              </p>
+              <p className="mt-3 text-[#4c6475] text-sm">
+                Pelayanan Poli: Senin–Sabtu, 08.00–20.00
+              </p>
             </div>
 
-            <div className="kc-map-footer">
-              <div className="kc-map-addr-info">
-                <MapPin size={18} className="text-emerald-700 flex-shrink-0" />
-                <div>
-                  <b>Jl. Kesehatan Raya No. 12</b>
-                  <span>Kecamatan Sukajadi, Kota Bandung, Jawa Barat 40161</span>
-                </div>
-              </div>
+            <div className="flex flex-wrap gap-3 mt-8">
               <a
-                href="https://maps.google.com"
+                href="https://www.google.com/maps/search/?api=1&query=Jl.+Kesehatan+Raya+No.+18%2C+Jakarta+Selatan"
                 target="_blank"
-                rel="noreferrer"
-                className="kc-btn-secondary kc-map-nav-btn"
+                rel="noopener noreferrer"
+                className="btn bg-[#0B2D45] text-white !py-2.5 !text-sm"
               >
-                <Navigation size={15} />
-                <span>Buka Peta Navigasi</span>
+                Lihat Alamat di Peta
+              </a>
+              <a href="#kontak" className="btn outline-btn !py-2.5 !text-sm">
+                Hubungi Kami
+              </a>
+              <a
+                href="https://www.google.com/maps/dir/?api=1&destination=Jl.+Kesehatan+Raya+No.+18%2C+Jakarta+Selatan"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn outline-btn !py-2.5 !text-sm"
+              >
+                Petunjuk Arah
               </a>
             </div>
-          </div>
-
-          {/* Right Column: Facility Details & Schedule */}
-          <div className="kc-access-details">
-            <div className="kc-access-card">
-              <div className="kc-access-head">
-                <div className="kc-access-icon">
-                  <Clock size={20} />
-                </div>
-                <div>
-                  <h4>Jadwal Pelayanan Poliklinik</h4>
-                  <p>Rawat jalan reguler terjadwal</p>
-                </div>
-              </div>
-              <div className="kc-schedule-rows">
-                <div className="kc-sched-row">
-                  <span>Senin – Jumat</span>
-                  <b>08.00 – 21.00 WIB</b>
-                </div>
-                <div className="kc-sched-row">
-                  <span>Sabtu</span>
-                  <b>08.00 – 14.00 WIB</b>
-                </div>
-                <div className="kc-sched-row">
-                  <span>Minggu & Hari Libur</span>
-                  <span className="kc-sched-badge">Tutup (Khusus IGD Buka)</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="kc-access-card">
-              <div className="kc-access-head">
-                <div className="kc-access-icon kc-access-icon-gold">
-                  <Car size={20} />
-                </div>
-                <div>
-                  <h4>Fasilitas Parkir & Drop-Off</h4>
-                  <p>Akses nyaman untuk kendaraan roda 2 dan roda 4</p>
-                </div>
-              </div>
-              <ul className="kc-access-bullet-list">
-                <li>Area drop-off tepat di depan lobi rawat jalan tanpa tangga</li>
-                <li>Parkir khusus difabel dan lansia dekat pintu masuk utama</li>
-                <li>Layanan valet dan pengawalan kursi roda gratis dari satpam</li>
-              </ul>
-            </div>
-          </div>
+          </aside>
         </div>
       </div>
     </section>

@@ -1,237 +1,64 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
-import Image from "next/image";
-import {
-  ArrowRight,
-  BadgeCheck,
-  CalendarCheck,
-  Check,
-  Clock,
-  HeartPulse,
-  Pill,
-  Search,
-  ShieldCheck,
-  Sparkles,
-  Stethoscope,
-  Volume2,
-} from "lucide-react";
 
-export function HeroSection({
-  doctorCount,
-  departmentCount,
-}: {
-  doctorCount: number;
-  departmentCount: number;
-}) {
-  const [selectedQuickDept, setSelectedQuickDept] = useState("all");
-
-  const quickDepts = [
-    { id: "all", label: "Semua Poli" },
-    { id: "umum", label: "Poli Umum" },
-    { id: "anak", label: "Poli Anak" },
-    { id: "gigi", label: "Poli Gigi" },
-    { id: "dalam", label: "Penyakit Dalam" },
-  ];
-
+export function HeroSection() {
   return (
-    <section className="kc-hero">
-      {/* Soft Ambient Medical Aura */}
-      <div className="kc-hero-ambient" aria-hidden="true">
-        <div className="kc-ambient-blob kc-blob-1" />
-        <div className="kc-ambient-blob kc-blob-2" />
-        <div className="kc-ambient-blob kc-blob-3" />
-      </div>
-
-      <div className="kc-shell kc-hero-grid">
-        <div className="kc-hero-copy">
-          {/* Eyebrow Kicker */}
-          <div className="kc-hero-kicker kc-hero-motion">
-            <span className="kc-kicker-dot" />
-            <Sparkles size={14} className="kc-kicker-icon" />
-            <span>Sistem Operasional Klinik & Farmasi Terpadu</span>
-          </div>
-
-          {/* Main Headline */}
-          <h1 className="kc-hero-display kc-hero-motion">
-            Pelayanan medis modern,<br />
-            <em>terhubung dari pendaftaran hingga obat.</em>
+    <section id="beranda" className="hero pad">
+      <div className="wrap grid lg:grid-cols-2 gap-12 items-center">
+        <div className="rise">
+          <p className="eyebrow mb-5 text-[#E8EEF2] tracking-[0.13rem] font-bold text-xs">
+            LAYANAN KESEHATAN TERPADU
+          </p>
+          <h1 className="font-extrabold text-white text-4xl sm:text-5xl leading-[1.1] tracking-[-0.04em]">
+            Kesehatan Anda, Prioritas Kami
           </h1>
-
-          {/* Value proposition lead */}
-          <p className="kc-hero-lead kc-hero-motion">
-            Solusi klinik rawat jalan terintegrasi: pendaftaran online mandiri, pemanggilan antrean audio
-            multi-ruang otomatis, rekam medis SOAP terstandar, hingga resep digital dan kasir farmasi yang
-            tersinkronisasi secara real-time tanpa antre berulang.
+          <p className="mt-6 text-white/90 text-lg sm:text-xl font-normal leading-relaxed">
+            Di RS Cakrawala Medika, keahlian medis dan perhatian tulus hadir bersama untuk mendampingi kesehatan Anda dan keluarga.
           </p>
 
-          {/* Quick Action Buttons */}
-          <div className="kc-hero-actions kc-hero-motion">
-            <Link href="/register" className="kc-btn-primary">
-              <CalendarCheck size={18} />
-              <span>Daftar Janji Temu Online</span>
-              <ArrowRight size={16} />
-            </Link>
-            <Link href="/login#demo" className="kc-btn-secondary">
-              <Sparkles size={17} className="text-emerald-700" />
-              <span>Jelajahi Demo 4 Role</span>
-            </Link>
+          <div className="flex flex-wrap gap-3 mt-8">
+            <a href="#janji" className="btn white-btn !font-bold">
+              Buat Janji Sekarang
+            </a>
+            <a href="tel:+62215557799" className="btn border-btn" aria-label="Hubungi IGD 24 jam">
+              Hubungi IGD
+            </a>
+            <a href="#dokter" className="btn border-btn">
+              Cari Dokter
+            </a>
+            <a href="#demo" className="btn border-btn">
+              Coba Mode Demo
+            </a>
           </div>
 
-          {/* Quick Polyclinic Jump Bar */}
-          <div className="kc-hero-quicksearch kc-hero-motion">
-            <div className="kc-quicksearch-label">
-              <Search size={14} />
-              <span>Pilih Layanan Cepat:</span>
+          <div className="grid grid-cols-3 gap-4 border-t border-white/25 mt-10 pt-6">
+            <div>
+              <p className="font-bold text-lg text-white">IGD 24 Jam</p>
+              <p className="text-sm text-white/80">Siaga Setiap Hari</p>
             </div>
-            <div className="kc-quicksearch-pills">
-              {quickDepts.map((d) => (
-                <a
-                  key={d.id}
-                  href="#dokter"
-                  className={`kc-quick-pill ${
-                    selectedQuickDept === d.id ? "kc-quick-pill-active" : ""
-                  }`}
-                  onClick={() => setSelectedQuickDept(d.id)}
-                >
-                  {d.label}
-                </a>
-              ))}
+            <div>
+              <p className="font-bold text-lg text-white">10 Dokter Spesialis</p>
+              <p className="text-sm text-white/80">Jadwal Terjadwal</p>
             </div>
-          </div>
-
-          {/* Trust Guarantees */}
-          <div className="kc-hero-trust kc-hero-motion">
-            <div className="kc-trust-pill">
-              <Check size={14} className="kc-trust-check" />
-              <span>Dokter Ber-SIP Resmi</span>
-            </div>
-            <div className="kc-trust-pill">
-              <Check size={14} className="kc-trust-check" />
-              <span>Panggilan Suara Real-time</span>
-            </div>
-            <div className="kc-trust-pill">
-              <Check size={14} className="kc-trust-check" />
-              <span>E-Resep Langsung ke Farmasi</span>
-            </div>
-            <div className="kc-trust-pill">
-              <Check size={14} className="kc-trust-check" />
-              <span>Pendampingan Lansia</span>
+            <div>
+              <p className="font-bold text-lg text-white">15 Tahun Melayani</p>
+              <p className="text-sm text-white/80">Terpercaya di Jaksel</p>
             </div>
           </div>
         </div>
 
-        {/* Hero Interactive Visual Showcase */}
-        <div className="kc-hero-visual kc-hero-motion">
-          <div className="kc-visual-frame">
-            <div className="kc-visual-img-box">
-              <Image
-                src="/images/hero_clinic_modern.jpg"
-                alt="Fasilitas Pelayanan Modern KlinikCare"
-                fill
-                priority
-                sizes="(max-width: 960px) 100vw, 560px"
-                className="kc-hero-img"
-              />
-              <div className="kc-visual-shade" />
-
-              {/* Status Overlay Badge */}
-              <div className="kc-hero-img-badge">
-                <span className="kc-pulse-dot" />
-                <span>Pelayanan Poliklinik Berjalan Normal</span>
-              </div>
-            </div>
-
-            {/* Float Card 1: Queue Calling Simulator */}
-            <div className="kc-float-card kc-float-card-top">
-              <div className="kc-float-icon kc-float-icon-teal">
-                <Volume2 size={20} />
-              </div>
-              <div className="kc-float-body">
-                <div className="kc-float-title">
-                  <span className="kc-pulse-dot" />
-                  <b>Panggilan Antrean · A-014</b>
-                  <span className="kc-mini-tag">Audio TTS</span>
-                </div>
-                <small className="kc-float-sub">Sari Wulandari · Menuju Poli Umum (R. 101)</small>
-                <div className="kc-soundwaves" aria-hidden="true">
-                  <span className="kc-bar kc-bar-1" />
-                  <span className="kc-bar kc-bar-2" />
-                  <span className="kc-bar kc-bar-3" />
-                  <span className="kc-bar kc-bar-4" />
-                </div>
-              </div>
-            </div>
-
-            {/* Float Card 2: SOAP Examination Card */}
-            <div className="kc-float-card kc-float-card-middle">
-              <div className="kc-float-icon kc-float-icon-blue">
-                <Stethoscope size={18} />
-              </div>
-              <div className="kc-float-body">
-                <div className="kc-float-title">
-                  <b>Pemeriksaan SOAP Aktif</b>
-                  <BadgeCheck size={15} className="text-emerald-600" />
-                </div>
-                <small className="kc-float-sub">dr. Hendra Pratama · Diagnosa ICD-10 terhubung</small>
-              </div>
-            </div>
-
-            {/* Float Card 3: Digital Prescription & Pharmacy Card */}
-            <div className="kc-float-card kc-float-card-bottom">
-              <div className="kc-float-icon kc-float-icon-gold">
-                <Pill size={20} />
-              </div>
-              <div className="kc-float-body">
-                <div className="kc-float-title">
-                  <b>E-Resep & Farmasi Otomatis</b>
-                  <span className="kc-mini-tag-gold">Instan</span>
-                </div>
-                <small className="kc-float-sub">Stok terpotong aman · Etiket dosis tercetak</small>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Proof Metric Bar */}
-      <div className="kc-shell kc-hero-proof-shell">
-        <div className="kc-hero-proof-bar kc-hero-motion">
-          <div className="kc-proof-item">
-            <div className="kc-proof-header">
-              <HeartPulse size={20} className="kc-proof-icon" />
-              <b>{departmentCount || 4} Poli Aktif</b>
-            </div>
-            <span>Umum, Anak, Gigi, & Penyakit Dalam</span>
-          </div>
-          <div className="kc-proof-sep" />
-
-          <div className="kc-proof-item">
-            <div className="kc-proof-header">
-              <Stethoscope size={20} className="kc-proof-icon" />
-              <b>{doctorCount || 5} Dokter Praktik</b>
-            </div>
-            <span>Spesialis & dokter umum ber-SIP resmi</span>
-          </div>
-          <div className="kc-proof-sep" />
-
-          <div className="kc-proof-item">
-            <div className="kc-proof-header">
-              <Clock size={20} className="kc-proof-icon" />
-              <b>Senin–Sabtu</b>
-            </div>
-            <span>Buka pagi s.d. malam (08.00–21.00 WIB)</span>
-          </div>
-          <div className="kc-proof-sep" />
-
-          <div className="kc-proof-item">
-            <div className="kc-proof-header">
-              <ShieldCheck size={20} className="kc-proof-icon" />
-              <b>1 Database Sinkron</b>
-            </div>
-            <span>Dari pendaftaran sampai obat selesai</span>
-          </div>
+        <div className="image-card h-[460px] sm:h-[480px] rise lg:rounded-tl-[90px]">
+          <img
+            src="/images/landing/hero.jpg"
+            alt="Dokter berkonsultasi dengan pasien di klinik modern yang terang."
+            loading="lazy"
+            className="w-full h-full object-cover"
+          />
+          <div className="shade" />
+          <p className="card-copy text-white font-semibold text-base sm:text-lg">
+            Pendampingan yang hangat, komunikasi yang jelas.
+          </p>
         </div>
       </div>
     </section>

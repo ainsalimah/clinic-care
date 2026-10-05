@@ -2,358 +2,145 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import {
-  Activity,
-  ArrowRight,
-  ArrowUpRight,
-  Check,
-  ChevronRight,
-  Pill,
-  ShieldCheck,
-  Sparkles,
-  Stethoscope,
-  UserCheck,
-  UserRound,
-} from "lucide-react";
+import { ArrowRight, CheckCircle2, ShieldCheck, Sparkles, Stethoscope, UserCheck, Users, Pill } from "lucide-react";
 
-interface RoleData {
-  id: "PATIENT" | "RECEPTIONIST" | "DOCTOR" | "PHARMACIST";
-  stepNumber: string;
-  role: string;
-  name: string;
-  tag: string;
-  badgeColor: string;
-  icon: typeof UserCheck;
-  title: string;
-  tagline: string;
-  description: string;
-  features: string[];
-  mockup: {
-    heading: string;
-    subheading: string;
-    statusPill: string;
-    items: { label: string; value: string; badge?: string; badgeType?: "success" | "warning" | "info" }[];
-    actionText: string;
-  };
-}
-
-const roleList: RoleData[] = [
+const roles = [
   {
-    id: "PATIENT",
-    stepNumber: "01",
-    role: "Pasien",
-    name: "Sari Wulandari",
-    tag: "Portal Mandiri Pasien",
-    badgeColor: "emerald",
-    icon: UserRound,
-    title: "Reservasi Online & Pantau Kuota Kunjungan",
-    tagline: "Pilih tanggal, cek sisa kuota dokter per hari, dan terima konfirmasi jadwal tanpa antre fisik.",
-    description:
-      "Portal ramah pengguna untuk pasien memilih tanggal periksa, melihat profil dokter, memeriksa sisa slot per hari, dan meninjau riwayat kunjungan medis secara mandiri dari smartphone atau komputer rumah.",
-    features: [
-      "Jadwal dokter real-time dengan sisa kuota per sesi",
-      "Pengajuan janji temu online tanpa antre pagi",
-      "Nomor rekam medis digital tersimpan rapi",
-      "Pantauan riwayat kunjungan dan status resep obat",
+    id: "receptionist",
+    title: "Resepsionis",
+    desc: "Admisi Pasien & Antrean Audio",
+    icon: Users,
+    badge: "Pintu Depan",
+    href: "/login#demo",
+    summary: "Check-in pasien mandiri/walk-in, cetak nomor antrean, dan panggil suara otomatis multi-poli.",
+    bullets: [
+      "Check-in janji temu & terbitkan nomor tiket poli",
+      "Panggilan audio otomatis ke speaker ruang tunggu",
+      "Pendaftaran cepat pasien walk-in & lansia",
     ],
-    mockup: {
-      heading: "Portal Kunjungan Saya",
-      subheading: "Sari Wulandari · No. RM: 2026-0001",
-      statusPill: "Jadwal Terkonfirmasi",
-      items: [
-        { label: "Poli Pilihan", value: "Poli Umum · dr. Hendra Pratama" },
-        { label: "Jadwal & Kuota", value: "Hari Ini · 08.00 - 12.00 WIB", badge: "Sisa 8 Slot", badgeType: "info" },
-        { label: "Status Kedatangan", value: "Silakan check-in di resepsionis", badge: "Terkonfirmasi", badgeType: "success" },
-      ],
-      actionText: "Tampilkan Kode Booking Kunjungan",
-    },
   },
   {
-    id: "RECEPTIONIST",
-    stepNumber: "02",
-    role: "Resepsionis",
-    name: "Dita Prameswari",
-    tag: "Meja Penerimaan & Antrean",
-    badgeColor: "teal",
-    icon: UserCheck,
-    title: "Check-in Pasien & Panggilan Antrean Bersuara",
-    tagline: "Verifikasi pasien, terbitkan nomor antrean resmi, dan panggil nomor ke ruang dokter.",
-    description:
-      "Meja depan melayani pasien terjadwal maupun walk-in, menerbitkan nomor antrean per poli, serta memanggil antrean dengan output audio text-to-speech otomatis menuju nomor ruangan praktik dokter bertugas.",
-    features: [
-      "Pencarian cepat pasien via NIK atau No. RM",
-      "Check-in kedatangan & terbitkan nomor antrean",
-      "Pemanggilan audio otomatis ke speaker ruang dokter",
-      "Pendampingan pendaftaran manual pasien lansia",
-    ],
-    mockup: {
-      heading: "Daftar Antrean Hari Ini",
-      subheading: "Poli Umum · dr. Hendra Pratama",
-      statusPill: "Audio Pemanggil Aktif",
-      items: [
-        { label: "Antrean A-012", value: "Budi Santoso · Selesai diperiksa", badge: "Selesai", badgeType: "info" },
-        { label: "Antrean A-013", value: "Dewi Lestari · Di ruang dokter", badge: "Diperiksa", badgeType: "warning" },
-        { label: "Antrean A-014", value: "Sari Wulandari · Menunggu panggilan", badge: "Berikutnya", badgeType: "success" },
-      ],
-      actionText: "Panggil Nomor Antrean A-014 ke Ruang 101",
-    },
-  },
-  {
-    id: "DOCTOR",
-    stepNumber: "03",
-    role: "Dokter",
-    name: "dr. Hendra Pratama",
-    tag: "Ruang Konsultasi & SOAP",
-    badgeColor: "cyan",
+    id: "doctor",
+    title: "Dokter",
+    desc: "SOAP & E-Prescription",
     icon: Stethoscope,
-    title: "Pemeriksaan Medis SOAP & Resep Elektronik",
-    tagline: "Panggil pasien ke ruangan, catat anamnesis SOAP, tentukan diagnosa, dan terbitkan resep digital.",
-    description:
-      "Workspace klinis terfokus untuk meninjau riwayat medis terdahulu, mencatat hasil pemeriksaan fisik terstruktur (Subjektif, Objektif, Asesmen, Plan), dan mengirim resep langsung ke bagian instalasi farmasi.",
-    features: [
-      "Akses riwayat kunjungan dan riwayat alergi pasien",
-      "Pencatatan SOAP (Subjektif, Objektif, Asesmen, Plan)",
-      "Penerbitan e-Resep terhubung langsung ke stok apotek",
-      "Terintegrasi dengan sistem speaker pemanggil antrean",
+    badge: "Klinis",
+    href: "/login#demo",
+    summary: "Akses rekam medis terpadu, input diagnosa SOAP terstandar, dan kirim resep digital langsung ke farmasi.",
+    bullets: [
+      "Pemeriksaan riwayat medis & alergi pasien",
+      "Pencatatan Subjective, Objective, Assessment, Plan",
+      "Resep obat digital langsung terhubung ke kasir",
     ],
-    mockup: {
-      heading: "Pemeriksaan Aktif: Sari Wulandari",
-      subheading: "No. RM: 2026-0001 · 29 Tahun · R. 101",
-      statusPill: "Konsultasi Berjalan",
-      items: [
-        { label: "Anamnesis (S)", value: "Demam 3 hari, flu, batuk berdahak", badge: "Subjektif", badgeType: "info" },
-        { label: "Tanda Vital (O)", value: "TD: 120/80 mmHg · Nadi: 78 · Suhu: 38.2°C", badge: "Objektif", badgeType: "info" },
-        { label: "Diagnosa (A)", value: "J06.9 - Infeksi Saluran Napas Akut", badge: "Asesmen", badgeType: "success" },
-      ],
-      actionText: "Simpan SOAP & Terbitkan E-Resep ke Farmasi",
-    },
   },
   {
-    id: "PHARMACIST",
-    stepNumber: "04",
-    role: "Apoteker",
-    name: "Apt. Budi Santoso",
-    tag: "Instalasi Farmasi & Kasir",
-    badgeColor: "amber",
+    id: "pharmacist",
+    title: "Apoteker",
+    desc: "Dispensing & Billing",
     icon: Pill,
-    title: "Peracikan Obat, Stok Aman & Kasir Terpadu",
-    tagline: "Terima resep seketika dari dokter, siapkan obat, potong stok aman, dan satukan tagihan.",
-    description:
-      "Bagian farmasi terhubung seketika saat dokter menyelesaikan konsultasi. Stok obat terpotong secara transaksional, etiket dosis dicetak, dan pembayaran diproses tanpa double entry antara jasa dokter dan obat.",
-    features: [
-      "Daftar tunggu resep masuk secara real-time",
-      "Pemotongan kuota stok obat otomatis aman",
-      "Pencetakan etiket aturan dosis pemakaian",
-      "Kasir gabungan jasa konsultasi dan obat",
+    badge: "Instalasi Farmasi",
+    href: "/login#demo",
+    summary: "Terima resep seketika, cek ketersediaan stok, racik obat, dan cetak etiket aturan pakai tanpa resep manual.",
+    bullets: [
+      "Antrean resep real-time langsung dari ruang periksa",
+      "Pengurangan stok obat otomatis saat dispensasi",
+      "Kuitansi pembayaran kasir obat terintegrasi",
     ],
-    mockup: {
-      heading: "Resep #RX-202609-088",
-      subheading: "Pasien: Sari Wulandari · dr. Hendra",
-      statusPill: "Resep Masuk",
-      items: [
-        { label: "Paracetamol 500mg", value: "10 tablet · 3x1 sesudah makan", badge: "Stok Terpotong", badgeType: "info" },
-        { label: "Amoxicillin 500mg", value: "10 kapsul · 3x1 habiskan", badge: "Etiket Siap", badgeType: "info" },
-        { label: "Total Pembayaran", value: "Rp 128.000 (Konsultasi + 2 Obat)", badge: "Siap Bayar", badgeType: "success" },
-      ],
-      actionText: "Serahkan Obat & Cetak Bukti Pembayaran",
-    },
+  },
+  {
+    id: "patient",
+    title: "Pasien",
+    desc: "Portal Mandiri",
+    icon: UserCheck,
+    badge: "Pasien",
+    href: "/login#demo",
+    summary: "Reservasi jadwal dokter online, pantau status nomor antrean langsung dari smartphone, dan cek riwayat kontrol.",
+    bullets: [
+      "Pendaftaran janji temu dokter 24/7",
+      "Pantau antrean dari ponsel secara transparan",
+      "Histori catatan rekam medis & resep pribadi",
+    ],
   },
 ];
 
 export function DemoExperienceSection() {
-  const [activeId, setActiveId] = useState<"PATIENT" | "RECEPTIONIST" | "DOCTOR" | "PHARMACIST">("PATIENT");
-  const activeRole = roleList.find((r) => r.id === activeId) || roleList[0];
-  const IconComp = activeRole.icon;
+  const [activeTab, setActiveTab] = useState(0);
+  const current = roles[activeTab];
+  const Icon = current.icon;
 
   return (
-    <section className="kc-demo-section" id="demo">
-      <div className="kc-shell">
-        {/* Section Heading */}
-        <div className="kc-demo-intro kc-reveal">
-          <div>
-            <p className="kc-eyebrow">
-              <Sparkles size={13} />
-              <span>Simulasi Produk Interaktif</span>
-            </p>
-            <h2 className="kc-heading">
-              Empat sudut pandang.<br />
-              <em>Satu alur yang utuh dan saling terhubung.</em>
-            </h2>
-          </div>
-          <p className="kc-demo-desc">
-            Seluruh data pasien, antrean, resep, dan tagihan tersinkronisasi pada database terpadu. Perubahan
-            status di satu bagian langsung tercermin seketika pada peran berikutnya.
+    <section id="demo" className="pad mesh" aria-label="Simulasi peran sistem klinik">
+      <div className="wrap">
+        <div className="text-center max-w-2xl mx-auto">
+          <p className="eyebrow text-[#2F80C0] mb-2 flex items-center justify-center gap-1.5 font-bold">
+            <Sparkles size={14} />
+            <span>MODE SIMULASI PRODUK</span>
+          </p>
+          <h2 className="text-[#0B2D45] font-extrabold text-2xl sm:text-3xl">
+            Coba Alur 4 Peran Secara Langsung
+          </h2>
+          <p className="mt-3 text-[#315066] text-base leading-relaxed">
+            KlinikCare dirancang dengan alur nyata yang menghubungkan loket resepsionis, ruang periksa dokter, instalasi farmasi, dan portal pasien dalam satu sistem.
           </p>
         </div>
 
-        {/* Clinical Progression Pipeline */}
-        <div className="kc-pipeline-strip kc-reveal">
-          <div className="kc-pipeline-label">
-            <Activity size={14} />
-            <span>Alur Pelayanan Sekuensial:</span>
-          </div>
-          <div className="kc-pipeline-steps">
-            {roleList.map((item, index) => {
-              const isSelected = activeId === item.id;
-              return (
-                <button
-                  key={item.id}
-                  type="button"
-                  className={`kc-pipeline-step ${isSelected ? "kc-pipeline-step-active" : ""}`}
-                  onClick={() => setActiveId(item.id)}
-                >
-                  <span className="kc-step-bubble">{item.stepNumber}</span>
-                  <div className="kc-step-info">
-                    <b>{item.role}</b>
-                    <small>{item.tag.split("&")[0]}</small>
-                  </div>
-                  {index < roleList.length - 1 && <ChevronRight size={14} className="kc-step-arr" />}
-                </button>
-              );
-            })}
-          </div>
+        {/* Role Tabs */}
+        <div className="flex flex-wrap justify-center gap-2 mt-8">
+          {roles.map((r, i) => (
+            <button
+              key={r.id}
+              type="button"
+              className={"demo-role-tab " + (activeTab === i ? "active" : "")}
+              onClick={() => setActiveTab(i)}
+            >
+              {r.title}
+            </button>
+          ))}
         </div>
 
-        {/* Role Switcher Tabs */}
-        <div className="kc-role-tabs kc-reveal">
-          {roleList.map((item) => {
-            const ItemIcon = item.icon;
-            const isSelected = activeId === item.id;
-            return (
-              <button
-                key={item.id}
-                type="button"
-                className={`kc-role-tab ${isSelected ? "kc-role-tab-active" : ""}`}
-                onClick={() => setActiveId(item.id)}
-              >
-                <div className={`kc-role-tab-icon kc-icon-${item.badgeColor}`}>
-                  <ItemIcon size={20} />
-                </div>
-                <div className="kc-role-tab-text">
-                  <span className="kc-tab-num">Langkah {item.stepNumber}</span>
-                  <b>{item.role}</b>
-                  <small>{item.name}</small>
-                </div>
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Active Role Showcase Card */}
-        <div className="kc-role-card kc-reveal">
-          <div className="kc-role-card-grid">
-            {/* Left Column: Role Details */}
-            <div className="kc-role-card-left">
-              <div className="kc-role-badge-row">
-                <span className="kc-role-tag">
-                  <IconComp size={15} />
-                  <span>{activeRole.tag}</span>
-                </span>
-                <span className="kc-role-sim-account">
-                  Akun Demo Siap Pakai: <b>{activeRole.name}</b>
-                </span>
-              </div>
-
-              <h3 className="kc-role-card-title">{activeRole.title}</h3>
-              <p className="kc-role-card-tagline">{activeRole.tagline}</p>
-              <p className="kc-role-card-desc">{activeRole.description}</p>
-
-              <div className="kc-role-feature-list">
-                {activeRole.features.map((feat) => (
-                  <div key={feat} className="kc-role-feature-item">
-                    <span className="kc-role-check">
-                      <Check size={14} strokeWidth={2.5} />
-                    </span>
-                    <span>{feat}</span>
-                  </div>
-                ))}
-              </div>
-
-              <div className="kc-role-card-actions">
-                <Link href="/login#demo" className="kc-btn-primary">
-                  <span>Masuk Sebagai {activeRole.role}</span>
-                  <ArrowRight size={16} />
-                </Link>
-                <div className="kc-demo-pill-hint">
-                  <ShieldCheck size={15} />
-                  <span>1-klik langsung masuk tanpa ketik password</span>
-                </div>
+        {/* Active Role Card */}
+        <div className="mt-8 bg-white rounded-3xl p-6 sm:p-10 shadow-lg border border-[#d5e2eb] max-w-3xl mx-auto">
+          <div className="flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-[#E8EEF2]">
+            <div className="flex items-center gap-4">
+              <span className="w-12 h-12 rounded-2xl bg-[#0B2D45] text-white flex items-center justify-center shrink-0">
+                <Icon size={24} />
+              </span>
+              <div>
+                <h3 className="font-bold text-xl text-[#0B2D45]">{current.title}</h3>
+                <p className="text-sm text-[#256da5] font-semibold">{current.desc}</p>
               </div>
             </div>
-
-            {/* Right Column: Live Clinical Console Mockup */}
-            <div className="kc-role-card-right">
-              <div className="kc-mock-console">
-                {/* Console Bar */}
-                <div className="kc-mock-top">
-                  <div className="kc-mock-dots">
-                    <span className="kc-dot-red" />
-                    <span className="kc-dot-yellow" />
-                    <span className="kc-dot-green" />
-                  </div>
-                  <div className="kc-mock-live-pill">
-                    <span className="kc-pulse-dot" />
-                    <span>{activeRole.mockup.statusPill}</span>
-                  </div>
-                </div>
-
-                {/* Console Body */}
-                <div className="kc-mock-body">
-                  <div className="kc-mock-head">
-                    <div className="kc-mock-header-row">
-                      <h4>{activeRole.mockup.heading}</h4>
-                      <span className="kc-console-role-tag">{activeRole.role}</span>
-                    </div>
-                    <p>{activeRole.mockup.subheading}</p>
-                  </div>
-
-                  <div className="kc-mock-rows">
-                    {activeRole.mockup.items.map((it, idx) => (
-                      <div key={idx} className="kc-mock-row">
-                        <div className="kc-mock-row-left">
-                          <span className="kc-mock-key">{it.label}</span>
-                          <span className="kc-mock-val">{it.value}</span>
-                        </div>
-                        {it.badge && (
-                          <span
-                            className={`kc-mock-tag ${
-                              it.badgeType === "success"
-                                ? "kc-mock-tag-success"
-                                : it.badgeType === "warning"
-                                ? "kc-mock-tag-warning"
-                                : "kc-mock-tag-info"
-                            }`}
-                          >
-                            {it.badge}
-                          </span>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="kc-mock-action">
-                    <div className="kc-mock-action-btn">
-                      <span>{activeRole.mockup.actionText}</span>
-                      <ArrowUpRight size={14} />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <span className="px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#E8EEF2] text-[#0B2D45]">
+              {current.badge}
+            </span>
           </div>
-        </div>
 
-        {/* Demo Disclaimer / Reassurance Note */}
-        <div className="kc-demo-note kc-reveal">
-          <span className="kc-note-pill">DATA SIMULASI TERVERIFIKASI</span>
-          <p>
-            Nama pasien, alamat, nomor rekam medis, keluhan fisik, dan transaksi resep pada portal ini
-            adalah data simulasi non-sensitif yang dirancang khusus untuk menguji kenyamanan alur klinik tanpa risiko privasi.
+          <p className="mt-6 text-[#315066] text-base leading-relaxed">
+            {current.summary}
           </p>
-          <Link href="/login#demo" className="kc-note-link">
-            <span>Buka Ruang Demo Sekarang</span>
-            <ArrowUpRight size={15} />
-          </Link>
+
+          <ul className="mt-6 space-y-3">
+            {current.bullets.map((b, idx) => (
+              <li key={idx} className="flex items-start gap-3">
+                <CheckCircle2 size={18} className="text-[#2F80C0] shrink-0 mt-0.5" />
+                <span className="text-sm sm:text-base text-[#0B2D45] font-medium">{b}</span>
+              </li>
+            ))}
+          </ul>
+
+          <div className="mt-8 pt-6 border-t border-[#E8EEF2] flex flex-wrap gap-4 items-center justify-between">
+            <div className="flex items-center gap-2 text-xs text-[#4c6475]">
+              <ShieldCheck size={16} className="text-[#2F80C0]" />
+              <span>Simulasi aman: Data uji terisolasi tanpa risiko</span>
+            </div>
+            <Link
+              href={current.href}
+              className="btn !py-2.5 !px-5 text-sm sm:text-base font-bold text-white flex items-center gap-2"
+            >
+              <span>Masuk Mode {current.title}</span>
+              <ArrowRight size={16} />
+            </Link>
+          </div>
         </div>
       </div>
     </section>

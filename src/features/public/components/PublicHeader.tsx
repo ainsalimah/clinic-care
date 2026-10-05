@@ -1,181 +1,61 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
-import {
-  ArrowRight,
-  CalendarCheck,
-  ChevronRight,
-  HeartPulse,
-  Menu,
-  PhoneCall,
-  Sparkles,
-  User,
-  X,
-} from "lucide-react";
-
-const navLinks = [
-  { href: "#demo", label: "Demo 4-Role" },
-  { href: "#poli", label: "Layanan Poli" },
-  { href: "#dokter", label: "Dokter & Jadwal" },
-  { href: "#alur", label: "Alur Pelayanan" },
-  { href: "#faq", label: "FAQ" },
-];
+import { Menu, Plus, X } from "lucide-react";
 
 export function PublicHeader() {
-  const [open, setOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
-    };
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <header className={`kc-header ${scrolled ? "kc-header-scrolled" : ""}`}>
-      {/* Top micro-announcement banner */}
-      <div className="kc-top-strip">
-        <div className="kc-shell kc-top-strip-inner">
-          <div className="kc-status-live">
-            <span className="kc-live-beacon">
-              <span className="kc-beacon-ring" />
-              <span className="kc-beacon-dot" />
-            </span>
-            <span>Klinik Buka Hari Ini · 08.00 – 21.00 WIB</span>
-          </div>
-          <div className="kc-top-strip-right">
-            <span className="kc-top-tag">Layanan Rawat Jalan & Farmasi Terpadu</span>
-            <span className="kc-strip-sep" />
-            <a href="tel:02287654321" className="kc-top-phone">
-              <PhoneCall size={12} />
-              <span>(022) 8765-4321</span>
-            </a>
-          </div>
-        </div>
-      </div>
-
-      <div className="kc-header-inner">
-        <Link href="/" className="kc-brand" aria-label="KlinikCare, kembali ke beranda">
-          <span className="kc-brand-mark">
-            <HeartPulse size={22} strokeWidth={2.4} />
+    <header className="canva-header sticky top-0 z-50 border-b border-[#E8EEF2] bg-white text-[#0B2D45]">
+      <div className="wrap flex items-center justify-between gap-4 px-5 py-4">
+        <Link href="#beranda" aria-label="Beranda RS Cakrawala Medika" className="flex items-center gap-3">
+          <span className="rounded-xl bg-[#0B2D45] p-2 text-white" aria-hidden="true">
+            <Plus size={20} strokeWidth={2.6} />
           </span>
-          <span className="kc-brand-text">
-            <span className="kc-brand-title">
-              <b>Klinik</b>
-              <b className="kc-brand-accent">Care</b>
-            </span>
-            <small>Klinik Pratama Terpadu</small>
+          <span className="font-extrabold text-[#0B2D45] text-lg sm:text-xl tracking-tight">
+            RS Cakrawala Medika
           </span>
         </Link>
 
-        <nav className="kc-nav" aria-label="Navigasi utama">
-          {navLinks.map((item) => (
-            <a key={item.href} href={item.href} className="kc-nav-link">
-              <span>{item.label}</span>
-            </a>
-          ))}
+        <nav aria-label="Navigasi utama" className="hidden lg:flex items-center gap-6">
+          <a href="#beranda" className="canva-nav-link font-semibold text-[15px]">Beranda</a>
+          <a href="#layanan" className="canva-nav-link font-semibold text-[15px]">Layanan</a>
+          <a href="#fasilitas" className="canva-nav-link font-semibold text-[15px]">Fasilitas</a>
+          <a href="#dokter" className="canva-nav-link font-semibold text-[15px]">Dokter</a>
+          <a href="#tentang" className="canva-nav-link font-semibold text-[15px]">Tentang Kami</a>
+          <a href="#kontak" className="canva-nav-link font-semibold text-[15px]">Kontak</a>
+          <a href="#demo" className="btn outline-btn font-bold text-[14px] !py-2.5 !px-4">Mode Demo</a>
+          <a href="#janji" className="btn text-white font-bold text-[15px] !py-2.5 !px-5">Buat Janji</a>
+          <Link href="/login" className="font-semibold text-[15px] text-[#0B2D45] hover:text-[#2F80C0] ml-2">Masuk</Link>
         </nav>
-
-        <div className="kc-header-actions">
-          <Link href="/login" className="kc-login-link">
-            <User size={15} />
-            <span>Masuk</span>
-          </Link>
-          <Link href="/login#demo" className="kc-demo-pill-btn">
-            <Sparkles size={14} />
-            <span>Demo 4-Role</span>
-          </Link>
-          <Link href="/register" className="kc-btn-primary kc-btn-header">
-            <CalendarCheck size={16} />
-            <span>Daftar Janji</span>
-          </Link>
-        </div>
 
         <button
           type="button"
-          className="kc-menu-button"
-          aria-label={open ? "Tutup navigasi" : "Buka navigasi"}
-          aria-expanded={open}
-          onClick={() => setOpen((value) => !value)}
+          className="lg:hidden p-2 rounded-lg text-[#0B2D45] hover:bg-[#E8EEF2]"
+          aria-label="Buka atau tutup navigasi"
+          aria-expanded={menuOpen}
+          onClick={() => setMenuOpen(!menuOpen)}
         >
-          {open ? <X size={22} /> : <Menu size={22} />}
+          {menuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </div>
 
-      {/* Mobile Drawer Navigation */}
-      {open && (
-        <div className="kc-mobile-backdrop" onClick={() => setOpen(false)}>
-          <nav
-            className="kc-mobile-nav"
-            aria-label="Navigasi ponsel"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="kc-mobile-nav-head">
-              <div className="kc-mobile-status">
-                <span className="kc-beacon-dot" />
-                <span>Pelayanan Aktif (08.00–21.00 WIB)</span>
-              </div>
-              <button
-                type="button"
-                className="kc-mobile-close"
-                onClick={() => setOpen(false)}
-                aria-label="Tutup menu"
-              >
-                <X size={20} />
-              </button>
-            </div>
-
-            <div className="kc-mobile-links">
-              {navLinks.map((item) => (
-                <a
-                  key={item.href}
-                  href={item.href}
-                  className="kc-mobile-item"
-                  onClick={() => setOpen(false)}
-                >
-                  <span>{item.label}</span>
-                  <ChevronRight size={16} />
-                </a>
-              ))}
-            </div>
-
-            <div className="kc-mobile-actions">
-              <Link
-                href="/login#demo"
-                className="kc-btn-secondary kc-btn-block"
-                onClick={() => setOpen(false)}
-              >
-                <Sparkles size={16} />
-                <span>Coba Demo 4 Role</span>
-              </Link>
-              <Link
-                href="/register"
-                className="kc-btn-primary kc-btn-block"
-                onClick={() => setOpen(false)}
-              >
-                <CalendarCheck size={16} />
-                <span>Daftar Janji Temu</span>
-                <ArrowRight size={15} />
-              </Link>
-              <Link
-                href="/login"
-                className="kc-mobile-login"
-                onClick={() => setOpen(false)}
-              >
-                <User size={15} />
-                <span>Masuk Akun Pasien / Staf</span>
-              </Link>
-            </div>
-
-            <div className="kc-mobile-foot">
-              <PhoneCall size={14} />
-              <span>Bantuan Langsung: (022) 8765-4321</span>
-            </div>
-          </nav>
-        </div>
+      {menuOpen && (
+        <nav aria-label="Navigasi mobile" className="px-5 pb-5 lg:hidden flex flex-col gap-3 border-t border-[#E8EEF2] bg-white pt-4">
+          <a href="#beranda" onClick={() => setMenuOpen(false)} className="font-semibold text-base py-1">Beranda</a>
+          <a href="#layanan" onClick={() => setMenuOpen(false)} className="font-semibold text-base py-1">Layanan</a>
+          <a href="#fasilitas" onClick={() => setMenuOpen(false)} className="font-semibold text-base py-1">Fasilitas</a>
+          <a href="#dokter" onClick={() => setMenuOpen(false)} className="font-semibold text-base py-1">Dokter</a>
+          <a href="#tentang" onClick={() => setMenuOpen(false)} className="font-semibold text-base py-1">Tentang Kami</a>
+          <a href="#kontak" onClick={() => setMenuOpen(false)} className="font-semibold text-base py-1">Kontak</a>
+          <div className="flex flex-wrap gap-2 pt-2 border-t border-[#E8EEF2]">
+            <a href="#janji" onClick={() => setMenuOpen(false)} className="btn text-white w-full text-center">Buat Janji</a>
+            <a href="#demo" onClick={() => setMenuOpen(false)} className="btn outline-btn w-full text-center">Coba Demo 4 Role</a>
+            <Link href="/login" onClick={() => setMenuOpen(false)} className="btn outline-btn w-full text-center">Masuk Akun</Link>
+          </div>
+        </nav>
       )}
     </header>
   );

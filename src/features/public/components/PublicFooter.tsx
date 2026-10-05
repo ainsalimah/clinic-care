@@ -1,87 +1,87 @@
-import Link from "next/link";
-import {
-  Clock3,
-  HeartPulse,
-  MapPin,
-  Phone,
-  ShieldCheck,
-} from "lucide-react";
+"use client";
 
 export function PublicFooter() {
   return (
-    <footer className="kc-footer">
-      <div className="kc-shell">
-        <div className="kc-footer-grid">
-          {/* Brand Column */}
-          <div className="kc-footer-brand-col">
-            <Link href="/" className="kc-brand kc-brand-footer" aria-label="KlinikCare Beranda">
-              <span className="kc-brand-mark">
-                <HeartPulse size={22} strokeWidth={2.4} />
-              </span>
-              <span className="kc-brand-text">
-                <span className="kc-brand-title">
-                  <b style={{ color: "#ffffff" }}>Klinik</b>
-                  <b className="kc-brand-accent">Care</b>
-                </span>
-                <small style={{ color: "#9ca3af" }}>Klinik Pratama Terpadu</small>
-              </span>
-            </Link>
-            <p className="kc-footer-summary">
-              Sistem informasi pelayanan klinik modern: pendaftaran mandiri, antrean bersuara multi-ruang,
-              rekam medis SOAP terstandar, dan instalasi farmasi terintegrasi.
-            </p>
-            <div className="kc-footer-shield-pill">
-              <ShieldCheck size={14} />
-              <span>Simulasi Produk Layanan Kesehatan Terpadu</span>
-            </div>
-          </div>
-
-          {/* Quick Navigation Column */}
-          <div className="kc-footer-col">
-            <h3>Navigasi Layanan</h3>
-            <a href="#demo">Simulasi 4 Role Demo</a>
-            <a href="#poli">Direktori Layanan Poli</a>
-            <a href="#dokter">Jadwal & Profil Dokter</a>
-            <a href="#tentang">Standar Operasional</a>
-            <a href="#alur">Alur Kunjungan Pasien</a>
-            <a href="#faq">Tanya Jawab (FAQ)</a>
-          </div>
-
-          {/* Operating Information Column */}
-          <div className="kc-footer-col">
-            <h3>Informasi Fasilitas</h3>
-            <p>
-              <MapPin size={16} className="text-emerald-400 flex-shrink-0" />
-              <span>Jl. Kesehatan Raya No. 12, Bandung (Simulasi)</span>
-            </p>
-            <p>
-              <Clock3 size={16} className="text-emerald-400 flex-shrink-0" />
-              <span>Senin–Jumat: 08.00–21.00 WIB<br />Sabtu: 08.00–14.00 WIB</span>
-            </p>
-            <p>
-              <Phone size={16} className="text-emerald-400 flex-shrink-0" />
-              <span>(022) 8765-4321</span>
-            </p>
-          </div>
-
-          {/* Access & Test Portals Column */}
-          <div className="kc-footer-col">
-            <h3>Akses & Pengujian</h3>
-            <Link href="/login#demo">Masuk Role Demo Instan</Link>
-            <Link href="/register">Pendaftaran Pasien Baru</Link>
-            <Link href="/login">Portal Staf Medis & Kasir</Link>
-            <Link href="/forgot-password">Simulasi Reset Password</Link>
-          </div>
+    <footer id="kontak" className="canva-footer bg-[#0B2D45] text-white px-5 pt-14">
+      <div className="wrap grid sm:grid-cols-2 lg:grid-cols-4 gap-9 pb-10">
+        <div>
+          <p className="font-extrabold text-xl text-white">RS Cakrawala Medika</p>
+          <p className="mt-4 text-white/80 text-sm leading-relaxed">
+            Jl. Kesehatan Raya No. 18, Jakarta Selatan
+          </p>
+          <p className="mt-3 text-white/70 text-xs">
+            Pelayanan kesehatan terintegrasi berbasis rekam medis digital.
+          </p>
         </div>
 
-        {/* Footer Bottom Bar */}
-        <div className="kc-footer-bottom">
-          <span>
-            © {new Date().getFullYear()} KlinikCare. Seluruh hak cipta dilindungi.
-          </span>
-          <span className="kc-footer-tagline">
-            Dirancang dengan empati untuk kenyamanan pasien dan ketelitian tim medis.
-          </span>
+        <div>
+          <h3 className="font-bold text-lg text-white">Kontak</h3>
+          <a href="tel:+62215557788" className="block mt-4 text-white/80 hover:text-white text-sm">
+            +62 21 555 7788
+          </a>
+          <a href="mailto:halo@cakrawalamedika.id" className="block mt-2 text-white/80 hover:text-white text-sm break-words">
+            halo@cakrawalamedika.id
+          </a>
+          <a
+            href="https://wa.me/628112345678"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block mt-2 text-white/80 hover:text-white text-sm"
+          >
+            WhatsApp: +62 811 2345 678
+          </a>
+          <a href="tel:+62215557799" className="block mt-2 text-white font-bold text-sm">
+            IGD: +62 21 555 7799
+          </a>
+        </div>
+
+        <div>
+          <h3 className="font-bold text-lg text-white">Jam Pelayanan</h3>
+          <p className="mt-4 text-white/80 text-sm">
+            Senin–Sabtu, 08.00–20.00
+          </p>
+          <p className="mt-2 text-white/80 text-sm">
+            IGD buka 24 jam setiap hari.
+          </p>
+          <a href="#dokter" className="block mt-3 text-[#2F80C0] font-bold text-sm hover:underline">
+            Direktori Dokter
+          </a>
+        </div>
+
+        <div>
+          <h3 className="font-bold text-lg text-white">Ikuti Kami</h3>
+          <a
+            href="https://www.instagram.com/cakrawalamedika/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block mt-4 text-white/80 hover:text-white text-sm"
+          >
+            @cakrawalamedika
+          </a>
+          <a
+            href="https://www.facebook.com/cakrawalamedika/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block mt-2 text-white/80 hover:text-white text-sm"
+          >
+            RS Cakrawala Medika
+          </a>
+        </div>
+      </div>
+
+      <div className="wrap border-t border-white/20 py-6">
+        <p className="text-white/60 text-xs text-center leading-relaxed">
+          Situs ilustratif: identitas rumah sakit, dokter, jadwal, statistik, testimonial, dan kontak bersifat simulasi produk. Foto stok bukan identitas dokter nyata.
+        </p>
+        <p className="mt-3 text-white/60 text-xs text-center">
+          © 2026 RS Cakrawala Medika / KlinikCare. Semua hak dilindungi.
+        </p>
+
+        <div className="flex justify-center gap-6 mt-4 pb-4 text-xs text-white/70">
+          <a href="#beranda" className="hover:underline">Beranda</a>
+          <a href="#layanan" className="hover:underline">Layanan</a>
+          <a href="#dokter" className="hover:underline">Dokter</a>
+          <a href="#demo" className="hover:underline">Simulasi</a>
         </div>
       </div>
     </footer>
