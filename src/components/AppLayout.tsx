@@ -210,7 +210,7 @@ export default function AppLayout({ children, activeNav, breadcrumbTitle }: AppL
           </div>
         </header>
 
-        {role && <label className="mobile-navigation">Menu halaman<select value={activeNav || pathname} onChange={e => router.push(e.target.value)}><option value={activeNav || pathname} hidden>{breadcrumbTitle || "Pilih halaman"}</option>{navGroups.flatMap(group => group.items).map(item => <option key={item.href} value={item.href}>{item.label}</option>)}</select></label>}
+        {role && <label className="mobile-navigation">Menu halaman<select value={activeNav || pathname} onChange={e => router.push(e.target.value)}><option value={activeNav || pathname} hidden>{breadcrumbTitle || "Pilih halaman"}</option>{navGroups.flatMap(group => group.items).filter(item => canAccessPath(item.href, roleToEnum[role])).map(item => <option key={item.href} value={item.href}>{item.label}</option>)}</select></label>}
         {children}
       </section>
     </main>

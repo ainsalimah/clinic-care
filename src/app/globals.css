@@ -1450,3 +1450,139 @@ input:checked + .slider:before { transform:translateX(22px); }
   color: white;
   border-color: #0B2D45;
 }
+
+/* Authenticated workspace: match the public medical-blue system while keeping
+   operational screens dense enough for daily clinic work. */
+:root {
+  --ink: #0B2D45;
+  --muted: #5B7284;
+  --line: #D5E2EB;
+  --teal: #2F80C0;
+  --pale: #F2F7FB;
+  --navy: #0B2D45;
+  --field-border: #BFD2E0;
+}
+
+.app-shell {
+  min-height: 100dvh;
+  background: #F4F8FB;
+  color: var(--ink);
+  font-family: "Work Sans", "DM Sans", system-ui, sans-serif;
+  font-size: 0.9375rem;
+  line-height: 1.55;
+}
+
+.app-shell .sidebar {
+  width: 264px;
+  padding: 24px 16px 18px;
+  background: linear-gradient(180deg, #0B2D45 0%, #082338 100%);
+  color: #DCEBF5;
+}
+
+.app-shell .brand {
+  padding: 0 10px 32px;
+  font: 800 20px "Plus Jakarta Sans", sans-serif;
+}
+
+.app-shell .brand span span { color: #79C7F7; }
+.app-shell .brand-mark { background: #2F80C0; box-shadow: 0 8px 18px rgba(0, 0, 0, .16); }
+.app-shell .sidebar-label { color: #8DB3CB; }
+.app-shell .nav-item { border: 1px solid transparent; color: #C5DBE9; border-radius: 10px; }
+.app-shell .nav-item:hover { background: #123F5D; color: #FFF; }
+.app-shell .nav-item.active { background: #174D70; box-shadow: inset 3px 0 #69C3F6; color: #FFF; }
+.app-shell .help { background: #123F5D; border-color: #2A6288; color: #BCE7FF; }
+.app-shell .profile { border-top-color: rgba(197, 219, 233, .2); }
+.app-shell .avatar { background: #D9EEFC; color: #0B4E78; }
+
+.app-shell .topbar {
+  height: 76px;
+  padding: 0 40px;
+  background: rgba(255, 255, 255, .96);
+  border-bottom-color: #DCE7EE;
+}
+
+.app-shell .crumb { color: #718596; font-size: 0.8125rem; }
+.app-shell .crumb b { color: #0B2D45; font-family: "Plus Jakarta Sans", sans-serif; }
+.topbar-context { display: flex; align-items: center; gap: 7px; color: #587286; font-size: .75rem; font-weight: 600; }
+.topbar-context-dot { width: 7px; height: 7px; border-radius: 50%; background: #35A97C; box-shadow: 0 0 0 4px rgba(53, 169, 124, .12); }
+.topbar-user { display: flex; align-items: center; gap: 9px; padding-left: 15px; border-left: 1px solid #DCE7EE; }
+.topbar-user-avatar { width: 32px; height: 32px; display: grid; place-items: center; border-radius: 50%; background: #E2F2FC; color: #145B88; font-size: 10px; font-weight: 800; }
+.topbar-user b, .topbar-user small { display: block; }
+.topbar-user b { color: #163E58; font-size: 11px; }.topbar-user small { color: #738A9A; font-size: 10px; }
+
+.app-shell .page { max-width: 1420px; padding: 36px 40px 52px; }
+.app-shell .panel, .app-shell .form-panel { border-color: #D5E2EB; border-radius: 16px; box-shadow: 0 5px 20px rgba(11, 45, 69, .045); }
+.app-shell .panel:hover { border-color: #B9D6E8; }
+.app-shell .hero h1, .app-shell h1, .app-shell h2, .app-shell h3 { font-family: "Plus Jakarta Sans", sans-serif; color: #0B2D45; }
+.app-shell .hero p, .app-shell .eyebrow { color: #2F80C0; }
+.app-shell .page-title { font-size: clamp(1.45rem, 2vw, 1.85rem); letter-spacing: -.035em; }
+.app-shell .page-subtitle { color: #5B7284; font-size: .9375rem; line-height: 1.6; }
+.app-shell .stat-card { border-color: #D5E2EB; border-radius: 14px; box-shadow: 0 4px 16px rgba(11, 45, 69, .035); }
+.app-shell .stat-card strong { color: #0B2D45; font-family: "Plus Jakarta Sans", sans-serif; }
+.app-shell .stat-icon.teal { background: #E1F1FB; color: #2474AE; }
+.app-shell .stat-icon.blue { background: #E7F3FC; color: #2F80C0; }
+.app-shell .btn-primary-action, .app-shell .btn-submit, .app-shell .btn-search { background: #2F80C0; }
+.app-shell .btn-primary-action:hover, .app-shell .btn-submit:hover:not(:disabled), .app-shell .btn-search:hover { background: #2671AA; }
+.app-shell .btn-secondary { border-color: #C8DCE9; background: #F4F8FB; color: #164762; }
+.app-shell .btn-refresh { border-color: #C8DCE9; background: #FFF; color: #246A99; }
+.app-shell .today { border-color: #D5E2EB; color: #2F80C0; }
+
+.app-shell :is(input, select, textarea) { font-size: .9375rem; }
+.app-shell :is(.form-group label, .patient-booking-form label, .patient-register-form label) { color: #31566E; font-size: .8125rem; }
+.app-shell .table-wrap { border-radius: 10px; }
+.app-shell th { color: #6F8798; font-size: .6875rem; }.app-shell td { color: #466174; font-size: .8125rem; }
+.app-shell .status-pill { font-size: .6875rem; }
+
+@media (max-width: 1050px) {
+  .app-shell .sidebar { width: 224px; }
+  .app-shell .page, .app-shell .topbar { padding-left: 28px; padding-right: 28px; }
+}
+
+@media (max-width: 720px) {
+  .app-shell .sidebar { display: none; }
+  .app-shell .topbar { height: 62px; padding: 0 18px; }
+  .app-shell .topbar-context, .app-shell .topbar-user { display: none; }
+  .app-shell .crumb { max-width: calc(100vw - 94px); }
+  .app-shell .btn-topbar-logout { display: inline-flex; height: 38px; border-radius: 10px; }
+  .app-shell .page { padding: 22px 16px 36px; }
+  .mobile-navigation { display: grid; gap: 6px; margin: 14px 16px 0; color: #31566E; font-size: .75rem; font-weight: 700; }
+  .mobile-navigation select { min-height: 44px; width: 100%; padding: 10px 12px; border-color: #BFD2E0; border-radius: 10px; color: #0B2D45; font-size: .9375rem; }
+  .app-shell .hero, .app-shell .section-header-flex { align-items: flex-start; flex-direction: column; gap: 14px; }
+  .app-shell .hero { margin-bottom: 22px; }
+  .app-shell .hero h1, .app-shell .page-title { font-size: 1.45rem; line-height: 1.25; }
+  .app-shell .hero span, .app-shell .page-subtitle { font-size: .875rem; }
+  .app-shell .today, .app-shell .header-actions-group { width: 100%; }
+  .app-shell .header-actions-group { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+  .app-shell .header-actions-group > * { justify-content: center; min-height: 42px; }
+  .app-shell .stats { grid-template-columns: 1fr; gap: 10px; }
+  .app-shell .stat-card { min-height: auto; padding: 15px; }
+  .app-shell .stat-card strong { font-size: 1.35rem; }
+  .app-shell .panel, .app-shell .form-panel { padding: 16px; border-radius: 14px; }
+  .app-shell .panel-head { gap: 12px; flex-wrap: wrap; }
+  .app-shell .panel-head h2 { font-size: 1.05rem; }
+  .app-shell .table-wrap { margin-right: -4px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .app-shell table { min-width: 640px; }
+  .app-shell th, .app-shell td { padding: 12px 9px; }
+  .app-shell .current-patient-banner { padding: 17px; }
+  .app-shell .current-content, .app-shell .current-info { align-items: flex-start; flex-direction: column; }
+  .app-shell .btn-examine-now { width: 100%; justify-content: center; }
+  .patient-portal-hero { align-items: flex-start; flex-direction: column; padding: 20px; }
+  .patient-portal-hero h1 { font-size: 1.45rem; }
+  .patient-rm-card { width: 100%; }
+  .patient-portal-grid { grid-template-columns: 1fr; gap: 14px; }
+  .patient-booking-panel, .patient-visits-panel, .online-request-panel { padding: 16px; }
+  .patient-panel-intro, .booking-info, .booking-hint { font-size: .8125rem; }
+  .patient-booking-form { gap: 15px; }
+  .patient-booking-form :is(input, select, textarea) { min-height: 44px; }
+  .patient-submit { min-height: 46px; font-size: .9375rem; }
+  .online-appointment-card, .online-appointment-main { align-items: stretch; flex-direction: column; }
+  .online-appointment-card { gap: 14px; padding: 14px; }
+  .appointment-date-tile { min-width: 0; width: 100%; }
+  .online-patient-info h3 { font-size: 1rem; }.online-patient-info p, .appointment-doctor-line, .appointment-note { font-size: .8125rem; }
+  .online-appointment-actions { display: grid; grid-template-columns: 1fr; width: 100%; }
+  .online-appointment-actions button, .online-appointment-card > button { min-height: 44px; width: 100%; font-size: .875rem; }
+  .app-shell .form-row-2, .app-shell .patient-form-grid { grid-template-columns: 1fr !important; }
+  .app-shell .form-actions { align-items: stretch; flex-direction: column-reverse; }
+  .app-shell .form-actions > * { width: 100%; justify-content: center; min-height: 44px; }
+  .app-shell .modal-card { width: calc(100vw - 24px); max-height: calc(100dvh - 24px); overflow-y: auto; }
+}
