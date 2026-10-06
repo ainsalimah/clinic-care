@@ -167,11 +167,12 @@ export default function MedicinesPage() {
 
         {/* Filter & Search Bar */}
         <div className="filter-bar" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "12px" }}>
-          <form onSubmit={handleSearch} className="search-form" style={{ flex: 1, minWidth: "260px" }}>
+          <form onSubmit={handleSearch} className="search-form" style={{ flex: 1, minWidth: 0 }}>
             <Search size={18} />
             <input
               type="text"
               placeholder="Cari nama obat atau bentuk sediaan (misal: Paracetamol, Sirup)..."
+              aria-label="Cari nama obat atau bentuk sediaan"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -185,6 +186,7 @@ export default function MedicinesPage() {
             <button
               type="button"
               className={`tab-btn ${filterStock === "ALL" ? "active" : ""}`}
+              aria-pressed={filterStock === "ALL"}
               onClick={() => setFilterStock("ALL")}
             >
               Semua ({totalItems})
@@ -192,6 +194,7 @@ export default function MedicinesPage() {
             <button
               type="button"
               className={`tab-btn tab-pending ${filterStock === "LOW" ? "active" : ""}`}
+              aria-pressed={filterStock === "LOW"}
               onClick={() => setFilterStock("LOW")}
             >
               Stok Menipis ({lowStockCount})
@@ -199,6 +202,7 @@ export default function MedicinesPage() {
             <button
               type="button"
               className={`tab-btn ${filterStock === "OUT" ? "active" : ""}`}
+              aria-pressed={filterStock === "OUT"}
               onClick={() => setFilterStock("OUT")}
               style={filterStock === "OUT" ? { color: "#dc2626" } : {}}
             >
@@ -244,17 +248,17 @@ export default function MedicinesPage() {
                           <Pill size={16} color="var(--teal)" />
                           <div>
                             <b style={{ color: "var(--ink)", display: "block" }}>{med.name}</b>
-                            <span style={{ fontSize: "11px", color: "var(--muted)" }}>
+                            <span style={{ fontSize: ".8125rem", color: "var(--muted)" }}>
                               {med.form || "Sediaan Standar"}
                             </span>
                           </div>
                         </div>
                       </td>
                       <td>
-                        <span style={{ fontSize: "12px", color: "#476170" }}>{med.unit}</span>
+                        <span style={{ fontSize: ".875rem", color: "#476170" }}>{med.unit}</span>
                       </td>
                       <td>
-                        <b style={{ fontSize: "12px", color: "var(--ink)" }}>
+                        <b style={{ fontSize: ".875rem", color: "var(--ink)" }}>
                           Rp {med.price.toLocaleString("id-ID")}
                         </b>
                       </td>
@@ -269,7 +273,7 @@ export default function MedicinesPage() {
                         </b>
                       </td>
                       <td>
-                        <span style={{ fontSize: "12px", color: "var(--muted)" }}>
+                        <span style={{ fontSize: ".875rem", color: "var(--muted)" }}>
                           {med.minimumStock} {med.unit}
                         </span>
                       </td>

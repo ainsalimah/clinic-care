@@ -4,15 +4,13 @@ import { useState } from "react";
 import { PublicHeader } from "./PublicHeader";
 import { HeroSection } from "./HeroSection";
 import { QuickMeshSection } from "./QuickMeshSection";
+import { EmergencySection } from "./EmergencySection";
 import { ServicesSection } from "./ServicesSection";
-import { FacilitiesSection } from "./FacilitiesSection";
-import { AboutSection } from "./AboutSection";
 import { DoctorDirectorySection } from "./DoctorDirectorySection";
-import { StepsSection } from "./StepsSection";
-import { TrustSection } from "./TrustSection";
-import { DemoExperienceSection } from "./DemoExperienceSection";
+import { PaymentSection } from "./PaymentSection";
+import { PatientGuideSection } from "./PatientGuideSection";
+import { FacilitiesSection } from "./FacilitiesSection";
 import { AppointmentFormSection } from "./AppointmentFormSection";
-import { QuickCtaBanner } from "./QuickCtaBanner";
 import { LocationSection } from "./LocationSection";
 import { PublicFooter } from "./PublicFooter";
 import type { PublicDoctor } from "./DoctorDirectorySection";
@@ -39,15 +37,13 @@ export default function PublicHomePage({ departments, doctors }: PublicHomePageP
       <main id="main-content">
         <HeroSection />
         <QuickMeshSection />
+        <EmergencySection />
         <ServicesSection departments={departments} />
-        <FacilitiesSection />
-        <AboutSection />
         <DoctorDirectorySection doctors={doctors} onSelectDoctor={handleSelectDoctor} />
-        <StepsSection />
-        <TrustSection />
-        <DemoExperienceSection />
+        <PaymentSection />
+        <PatientGuideSection />
+        <FacilitiesSection />
         <AppointmentFormSection doctors={doctors} preselectedService={selectedDoctorForForm} />
-        <QuickCtaBanner />
         <LocationSection />
       </main>
       <PublicFooter />

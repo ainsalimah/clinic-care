@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import AppLayout from "@/components/AppLayout";
+import DataFeedback from "@/components/DataFeedback";
 import {
   ClipboardList,
   Search,
@@ -59,18 +60,23 @@ export default function MedicalRecordsPage() {
   const [records, setRecords] = useState<MedicalRecordItem[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
+  const [updatedAt, setUpdatedAt] = useState<Date | null>(null);
+  const [appliedQuery, setAppliedQuery] = useState("");
   const [expandedRecordId, setExpandedRecordId] = useState<string | null>(null);
 
   const fetchRecords = async (q = "") => {
     setLoading(true);
+    setAppliedQuery(q);
     try {
       const res = await fetch(`/api/records?q=${encodeURIComponent(q)}`);
       const data = await res.json();
-      if (data.records) {
-        setRecords(data.records);
-      }
+      if (!res.ok || !Array.isArray(data.records)) throw new Error("Arsip rekam medis belum berhasil dimuat.");
+      setRecords(data.records);
+      setLoadError("");
+      setUpdatedAt(new Date());
     } catch {
-      // ignore
+      setLoadError("Arsip rekam medis belum berhasil dimuat.");
     } finally {
       setLoading(false);
     }
@@ -101,6 +107,7 @@ export default function MedicalRecordsPage() {
   return (
     <AppLayout breadcrumbTitle="Arsip Rekam Medis" activeNav="/records">
       <div className="page">
+        <DataFeedback loading={loading} error={loadError} updatedAt={updatedAt} onRetry={() => fetchRecords(appliedQuery)} refreshHint={false} />
         {/* Header */}
         <div className="section-header-flex">
           <div>
@@ -122,11 +129,12 @@ export default function MedicalRecordsPage() {
             <input
               type="text"
               placeholder="Cari berdasarkan Nama Pasien, No. RM, Diagnosis (contoh: Gastritis, ISPA)..."
+              aria-label="Cari rekam medis berdasarkan nama pasien, nomor RM, atau diagnosis"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
-            <button type="submit" className="btn-search">
-              Cari Rekam Medis
+            <button type="submit" className="btn-search" disabled={loading}>
+              {loading ? "Mencari..." : "Cari Rekam Medis"}
             </button>
           </form>
         </div>
@@ -138,6 +146,8 @@ export default function MedicalRecordsPage() {
               <Loader2 size={24} className="spinner" />
               <p>Memuat arsip rekam medis...</p>
             </div>
+          ) : loadError && !updatedAt ? (
+            <div className="table-empty"><p>Arsip belum dapat ditampilkan.</p></div>
           ) : records.length === 0 ? (
             <div className="table-empty">
               <ClipboardList size={36} />
@@ -172,7 +182,7 @@ export default function MedicalRecordsPage() {
                       <span className="record-doc">
                         {rec.doctor.fullName} ({rec.doctor.department.name})
                       </span>
-                      <button type="button" className="btn-expand-icon">
+                      <button type="button" className="btn-expand-icon" aria-label={`${isExpanded ? "Tutup" : "Buka"} rekam medis ${rec.patient.fullName}`} aria-expanded={isExpanded} aria-controls={`record-details-${rec.id}`}>
                         {isExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
                       </button>
                     </div>
@@ -193,7 +203,7 @@ export default function MedicalRecordsPage() {
 
                   {/* Expanded SOAP Details */}
                   {isExpanded && (
-                    <div className="record-details-box">
+                    <div className="record-details-box" id={`record-details-${rec.id}`}>
                       <div className="soap-grid">
                         <div className="soap-box">
                           <b>S (Subjective) — Keluhan:</b>
@@ -226,7 +236,7 @@ export default function MedicalRecordsPage() {
                             </span>
                           </div>
 
-                          <table className="rx-table">
+                          <div className="rx-table-scroll" role="region" aria-label="Rincian resep" tabIndex={0}><table className="rx-table">
                             <thead>
                               <tr>
                                 <th>Nama Obat</th>
@@ -247,7 +257,7 @@ export default function MedicalRecordsPage() {
                                 </tr>
                               ))}
                             </tbody>
-                          </table>
+                          </table></div>
                           {rec.prescription.notes && (
                             <small className="rx-note-text">
                               Catatan Apoteker: {rec.prescription.notes}

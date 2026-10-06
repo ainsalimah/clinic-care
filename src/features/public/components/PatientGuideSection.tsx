@@ -1,125 +1,106 @@
-import {
-  CalendarDays,
-  Clock,
-  DoorOpen,
-  HeartHandshake,
-  Pill,
-  ShieldCheck,
-  Sparkles,
-  Stethoscope,
-  Volume2,
-} from "lucide-react";
+import { CalendarDays, Clock, DoorOpen, FileText, HeartHandshake, Pill, ShieldCheck, Stethoscope, Volume2 } from "lucide-react";
 
 const steps = [
   {
     step: "01",
     icon: CalendarDays,
     title: "Daftar & Pilih Jadwal",
-    desc: "Pasien memilih poli, dokter spesialis, dan tanggal periksa secara online atau mendaftar langsung di meja klinik.",
-    tag: "Online / Walk-in",
-    duration: "2-3 Menit",
+    description: "Pilih poli, dokter, dan tanggal periksa secara online atau daftar langsung di meja penerimaan.",
+    detail: "Online / Walk-in",
+    duration: "2-3 menit",
   },
   {
     step: "02",
     icon: DoorOpen,
     title: "Check-in Kedatangan",
-    desc: "Petugas resepsionis memverifikasi identitas pasien via NIK atau No. RM dan menerbitkan nomor antrean resmi.",
-    tag: "Meja Resepsionis",
-    duration: "1 Menit",
+    description: "Petugas memverifikasi identitas Anda dan menerbitkan nomor antrean untuk poli yang dituju.",
+    detail: "Meja penerimaan",
+    duration: "1 menit",
   },
   {
     step: "03",
     icon: Volume2,
-    title: "Panggilan Antrean Suara",
-    desc: "Sistem audio otomatis memanggil nomor antrean menuju ruangan dokter spesialis yang sedang bertugas.",
-    tag: "Speaker Multi-Ruang",
-    duration: "Real-time",
+    title: "Tunggu Panggilan Antrean",
+    description: "Nomor antrean dipanggil menuju ruang dokter. Silakan perhatikan display dan pengumuman di ruang tunggu.",
+    detail: "Ruang tunggu",
+    duration: "Sesuai antrean",
   },
   {
     step: "04",
     icon: Stethoscope,
-    title: "Pemeriksaan Dokter (SOAP)",
-    desc: "Dokter memeriksa fisik, mencatat anamnesis terstruktur, diagnosa ICD-10, lalu mengirimkan e-resep ke farmasi.",
-    tag: "Ruang Konsultasi",
-    duration: "15-20 Menit",
+    title: "Pemeriksaan Dokter",
+    description: "Dokter melakukan pemeriksaan dan menjelaskan rencana perawatan sesuai kebutuhan Anda.",
+    detail: "Ruang konsultasi",
+    duration: "15-20 menit",
   },
   {
     step: "05",
     icon: Pill,
-    title: "Penyerahan Obat & Kasir",
-    desc: "Apoteker meracik obat, menempelkan etiket dosis pemakaian, dan menyelesaikan administrasi tagihan terpadu.",
-    tag: "Instalasi Farmasi",
-    duration: "5-10 Menit",
+    title: "Obat & Administrasi",
+    description: "Bila ada resep, ambil obat di farmasi dan selesaikan administrasi kunjungan di kasir.",
+    detail: "Farmasi & kasir",
+    duration: "5-10 menit",
   },
 ];
 
 export function PatientGuideSection() {
   return (
-    <section className="kc-journey-section" id="alur">
-      <div className="kc-shell">
-        <div className="kc-section-head-center kc-reveal">
-          <p className="kc-eyebrow">
-            <Sparkles size={13} />
-            <span>Alur Pelayanan Pasien</span>
-          </p>
-          <h2 className="kc-heading">
-            Dari kedatangan hingga obat di tangan,<br />
-            <em>seluruh alur terstruktur dengan tenang.</em>
+    <section id="panduan" className="pad mesh" aria-labelledby="guide-title">
+      <div className="wrap">
+        <div className="max-w-2xl">
+          <p className="eyebrow mb-3 text-[#2F80C0]">PANDUAN KUNJUNGAN</p>
+          <h2 id="guide-title" className="text-[#0B2D45] font-extrabold text-2xl sm:text-3xl">
+            Alur Pelayanan Pasien
           </h2>
-          <p className="kc-lead-p-center">
-            Setiap tahap kunjungan dirancang terhubung sehingga pasien memahami urutan layanan dari
-            langkah pertama saat tiba hingga obat dan edukasi diserahkan.
+          <p className="mt-4 text-[#315066] text-base leading-relaxed">
+            Ketahui langkah kunjungan Anda sejak mendaftar hingga menyelesaikan administrasi dengan tenang.
           </p>
         </div>
 
-        {/* Step Track Cards */}
-        <div className="kc-journey-track kc-reveal">
-          <div className="kc-steps-grid">
-            {steps.map((item) => {
-              const Icon = item.icon;
-              return (
-                <article key={item.step} className="kc-step-card">
-                  <div className="kc-step-top">
-                    <span className="kc-step-num">{item.step}</span>
-                    <div className="kc-step-icon">
-                      <Icon size={20} />
-                    </div>
-                  </div>
+        <ol className="mt-9 grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
+          {steps.map(({ step, icon: Icon, title, description, detail, duration }) => (
+            <li key={step} className="rounded-3xl border border-[#d5e2eb] bg-white p-6 shadow-sm">
+              <div className="flex items-start justify-between gap-3">
+                <span className="text-sm font-extrabold text-[#2F80C0]">{step}</span>
+                <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#E8EEF2] text-[#0B2D45]">
+                  <Icon size={20} aria-hidden="true" />
+                </span>
+              </div>
+              <p className="mt-5 text-xs font-bold uppercase tracking-wide text-[#2F80C0]">{detail}</p>
+              <h3 className="mt-2 font-bold text-lg leading-snug text-[#0B2D45]">{title}</h3>
+              <p className="mt-3 text-sm leading-relaxed text-[#315066]">{description}</p>
+              <p className="mt-5 flex items-center gap-1.5 text-xs font-semibold text-[#4c6475]">
+                <Clock size={14} aria-hidden="true" />
+                {duration}
+              </p>
+            </li>
+          ))}
+        </ol>
 
-                  <div className="kc-step-meta-row">
-                    <span className="kc-step-tag">{item.tag}</span>
-                    <span className="kc-step-duration">
-                      <Clock size={11} />
-                      <span>{item.duration}</span>
-                    </span>
-                  </div>
-
-                  <h3 className="kc-step-title">{item.title}</h3>
-                  <p className="kc-step-desc">{item.desc}</p>
-                </article>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Inclusive Reassurance Box */}
-        <div className="kc-journey-notice kc-reveal">
-          <div className="kc-notice-icon">
-            <HeartHandshake size={26} />
-          </div>
-          <div className="kc-notice-content">
-            <div className="kc-notice-head-row">
-              <b>Pendampingan Khusus Pasien Lansia & Prioritas</b>
-              <span className="kc-priority-pill">
-                <ShieldCheck size={13} />
-                <span>Tanpa Wajib Smartphone</span>
-              </span>
+        <div className="mt-6 grid gap-5 lg:grid-cols-2">
+          <aside className="flex gap-4 rounded-3xl border border-[#bcdcf2] bg-[#edf7fd] p-6">
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#2F80C0] text-white">
+              <HeartHandshake size={22} aria-hidden="true" />
+            </span>
+            <div>
+              <h3 className="font-bold text-lg text-[#0B2D45]">Pendampingan Lansia & Pasien Prioritas</h3>
+              <p className="mt-2 text-sm leading-relaxed text-[#315066]">Staf kami siap membantu pendaftaran manual dan check-in. Anda tidak wajib menggunakan smartphone.</p>
             </div>
-            <p>
-              Staf resepsionis kami siap mendampingi pendaftaran manual langsung di meja penerimaan,
-              membacakan nomor antrean fisik, dan memfasilitasi keluarga tanpa hambatan teknologi.
-            </p>
-          </div>
+          </aside>
+
+          <aside className="flex gap-4 rounded-3xl border border-[#d5e2eb] bg-white p-6 shadow-sm">
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#E8EEF2] text-[#0B2D45]">
+              <FileText size={22} aria-hidden="true" />
+            </span>
+            <div>
+              <h3 className="font-bold text-lg text-[#0B2D45]">Yang Perlu Dibawa</h3>
+              <p className="mt-2 text-sm leading-relaxed text-[#315066]">Bawa KTP, kartu pasien bila sudah terdaftar, kartu BPJS atau asuransi, serta surat rujukan bila diperlukan.</p>
+              <p className="mt-3 flex items-center gap-1.5 text-sm font-semibold text-[#0B2D45]">
+                <ShieldCheck size={16} aria-hidden="true" />
+                Datang 15 menit sebelum jadwal.
+              </p>
+            </div>
+          </aside>
         </div>
       </div>
     </section>

@@ -24,11 +24,11 @@ export function QuickMeshSection() {
           Lokasi Rumah Sakit
         </a>
         <a
-          href="#demo"
+          href="#pembiayaan"
           className="bg-white rounded-2xl p-5 font-bold text-[#2F80C0] shadow-sm hover:shadow-md transition-shadow flex items-center justify-between"
         >
-          <span>Mode Demo (4 Role)</span>
-          <span className="text-xs bg-blue-100 text-[#2F80C0] px-2 py-1 rounded-full">Simulasi</span>
+          <span>BPJS, Asuransi & Pembayaran</span>
+          <span className="text-xs bg-blue-100 text-[#2F80C0] px-2 py-1 rounded-full">Informasi</span>
         </a>
       </div>
     </section>

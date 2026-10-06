@@ -109,6 +109,7 @@ export default function PharmacyPage() {
             <button
               type="button"
               className="btn-refresh"
+              disabled={loading}
               onClick={fetchPrescriptions}
               title="Perbarui daftar resep"
             >
@@ -122,7 +123,6 @@ export default function PharmacyPage() {
           </div>
         </div>
 
-        <BillingPanel revision={billingRevision} onPaid={fetchPrescriptions} />
         {/* Stats */}
         <div className="stats">
           <div className="stat-card">
@@ -170,13 +170,16 @@ export default function PharmacyPage() {
           </div>
         </div>
 
+        <BillingPanel revision={billingRevision} onPaid={fetchPrescriptions} />
+        <div className="workflow-section-head"><h2>Daftar resep</h2><p>Cari pasien dan pilih status untuk menyiapkan atau menyerahkan obat.</p></div>
         {/* Filter & Search Bar */}
         <div className="filter-bar" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "12px" }}>
-          <form onSubmit={handleSearch} className="search-form" style={{ flex: 1, minWidth: "260px" }}>
+          <form onSubmit={handleSearch} className="search-form" style={{ flex: 1, minWidth: 0 }}>
             <Search size={18} />
             <input
               type="text"
               placeholder="Cari berdasarkan Nama Pasien, No. RM, atau Dokter..."
+              aria-label="Cari resep berdasarkan nama pasien, nomor rekam medis, atau dokter"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -190,6 +193,7 @@ export default function PharmacyPage() {
             <button
               type="button"
               className={`tab-btn ${statusFilter === "ALL" ? "active" : ""}`}
+              aria-pressed={statusFilter === "ALL"}
               onClick={() => setStatusFilter("ALL")}
             >
               Semua ({prescriptions.length})
@@ -197,6 +201,7 @@ export default function PharmacyPage() {
             <button
               type="button"
               className={`tab-btn tab-pending ${statusFilter === "PENDING" ? "active" : ""}`}
+              aria-pressed={statusFilter === "PENDING"}
               onClick={() => setStatusFilter("PENDING")}
             >
               Menunggu ({countPending})
@@ -204,6 +209,7 @@ export default function PharmacyPage() {
             <button
               type="button"
               className={`tab-btn tab-proc ${statusFilter === "PROCESSING" ? "active" : ""}`}
+              aria-pressed={statusFilter === "PROCESSING"}
               onClick={() => setStatusFilter("PROCESSING")}
             >
               Disiapkan ({countProcessing})
@@ -211,6 +217,7 @@ export default function PharmacyPage() {
             <button
               type="button"
               className={`tab-btn tab-ready ${statusFilter === "READY" ? "active" : ""}`}
+              aria-pressed={statusFilter === "READY"}
               onClick={() => setStatusFilter("READY")}
             >
               Siap Diambil ({countReady})
@@ -218,6 +225,7 @@ export default function PharmacyPage() {
             <button
               type="button"
               className={`tab-btn ${statusFilter === "COMPLETED" ? "active" : ""}`}
+              aria-pressed={statusFilter === "COMPLETED"}
               onClick={() => setStatusFilter("COMPLETED")}
             >
               Selesai ({countCompleted})
@@ -270,7 +278,7 @@ export default function PharmacyPage() {
                       <span className="record-doc">
                         {rx.doctor.fullName} ({rx.doctor.department.name})
                       </span>
-                      <span style={{ fontSize: "11px", color: "var(--muted)" }}>
+                      <span style={{ fontSize: ".8125rem", color: "var(--muted)" }}>
                         {new Date(rx.createdAt).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })} WIB
                       </span>
                     </div>
@@ -282,12 +290,12 @@ export default function PharmacyPage() {
                       {rx.medicalRecord.appointment.bill.paidAt ? "Tagihan lunas. Obat siap diserahkan setelah persiapan selesai." : "Tagihan belum dibayar. Terima pembayaran melalui Kasir Apotek sebelum menyerahkan obat."}
                     </p>}
                     {rx.medicalRecord.diagnosis && (
-                      <p style={{ margin: "0 0 12px", fontSize: "12px", color: "var(--ink)" }}>
+                      <p style={{ margin: "0 0 12px", fontSize: ".875rem", color: "var(--ink)" }}>
                         Diagnosis Medis: <b>{rx.medicalRecord.diagnosis}</b>
                       </p>
                     )}
 
-                    <table className="rx-table">
+                    <div className="rx-table-scroll" role="region" aria-label={`Rincian obat ${rx.patient.fullName}`} tabIndex={0}><table className="rx-table">
                       <thead>
                         <tr>
                           <th>Nama Obat & Sediaan</th>
@@ -322,7 +330,7 @@ export default function PharmacyPage() {
                           );
                         })}
                       </tbody>
-                    </table>
+                    </table></div>
 
                     {rx.notes && (
                       <p className="rx-note-text" style={{ marginTop: "10px", margin: "10px 0 0" }}>
@@ -342,7 +350,7 @@ export default function PharmacyPage() {
                         <Printer size={14} /> Cetak Etiket Obat
                       </button>
 
-                      <div style={{ display: "flex", gap: "8px", marginLeft: "auto" }}>
+                      <div className="rx-toolbar-actions">
                         {/* If PENDING -> Mulai Siapkan */}
                         {rx.status === "PENDING" && (
                           <button

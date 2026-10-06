@@ -6,6 +6,7 @@ import { Role } from "@prisma/client";
 import { getSessionSecret, SESSION_COOKIE_NAME } from "./session-config";
 import { getUserFromToken } from "./session-store";
 import { randomUUID } from "node:crypto";
+import { DEMO_ACCOUNTS } from "./demo-accounts";
 
 
 export interface SessionUser {
@@ -109,12 +110,11 @@ export async function authenticateWithCredentials(email: string, passwordPlain: 
  * Quick Login as Demo Role (for testing & demo purposes)
  */
 export async function authenticateAsDemoRole(targetRole: Role) {
-  const user = await prisma.user.findFirst({
-    where: { role: targetRole, isActive: true },
-    orderBy: { createdAt: "asc" },
+  const user = await prisma.user.findUnique({
+    where: { email: DEMO_ACCOUNTS[targetRole] },
   });
 
-  if (!user) {
+  if (!user || !user.isActive || user.role !== targetRole) {
     return { success: false, error: `Akun demo untuk role ${targetRole} tidak ditemukan.` };
   }
 

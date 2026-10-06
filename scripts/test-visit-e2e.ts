@@ -43,8 +43,10 @@ async function setup() {
   const medicine = await db.medicine.create({ data: { name: "E2E medicine " + runId, price: 9500, stock: 10, unit: "tablet" } }); medicineId = medicine.id;
 }
 
-async function visit(withRx: boolean) {
-  const patient = await db.patient.findFirstOrThrow({ where: { fullName: patientName } });
+async function visit(withRx: boolean, patientId?: string) {
+  const patient = patientId
+    ? await db.patient.findUniqueOrThrow({ where: { id: patientId } })
+    : await db.patient.findFirstOrThrow({ where: { fullName: patientName } });
   const result = await api<{ queue: { id: string; appointmentId: string } }>("RECEPTIONIST", "/api/queues/check-in", "POST", { patientId: patient.id, doctorId, departmentId }, 201);
   const queueId = result.queue.id;
   await api("DOCTOR", "/api/queues", "PATCH", { queueId, status: "CALLED" });
@@ -127,7 +129,10 @@ async function run() {
   assert.equal(received.consultation, 100000); assert.equal(received.medicines, 19000); assert.equal(received.corrections, -9000);
   const returned = await api<{ gross: number; refunded: number; net: number }>("ADMIN", "/api/payment-reports?from=2040-01-03&to=2040-01-03");
   assert.equal(returned.gross, 0); assert.equal(returned.refunded, 5000); assert.equal(returned.net, -5000);
-  const plain = await visit(false);
+  // A patient can only check in once per clinic day, even after completing a visit.
+  await api("RECEPTIONIST", "/api/queues/check-in", "POST", { patientId: recoveryPatient.id, doctorId, departmentId }, 409);
+  const plainPatient = await api<{ patient: { id: string } }>("RECEPTIONIST", "/api/patients", "POST", { fullName: patientName, dateOfBirth: "1992-01-01", gender: "UNKNOWN" }, 201);
+  const plain = await visit(false, plainPatient.patient.id);
   await api("PHARMACIST", "/api/bills/" + plain.bill.id + "/pay", "POST", { method: "QRIS", receivedAmount: 100000, expectedTotal: 100000, confirmed: true });
   assert.ok((await db.bill.findUniqueOrThrow({ where: { id: plain.bill.id } })).completedAt);
   const today = getClinicDateKey();

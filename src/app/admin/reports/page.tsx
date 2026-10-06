@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import AppLayout from "@/components/AppLayout";
 import { getClinicDateKey } from "@/lib/clinic-time";
+import type { ReportSummary } from "@/features/reports/types";
 import {
   Users,
   CalendarDays,
@@ -19,22 +20,7 @@ import {
 } from "lucide-react";
 
 interface ReportData {
-  summary: {
-    totalPatients: number;
-    registeredPatientsCount: number;
-    elderlyPatientsCount: number;
-    totalDoctors: number;
-    totalDepartments: number;
-    totalMedicines: number;
-    totalMedicalRecords: number;
-    visitsCount: number;
-    activeQueuesCount: number;
-    completedQueuesCount: number;
-    pendingPrescriptionsCount: number;
-    completedPrescriptionsCount: number;
-    lowStockCount: number;
-    outOfStockCount: number;
-  };
+  summary: ReportSummary;
   departments: {
     id: string;
     name: string;
@@ -74,18 +60,20 @@ interface ReportData {
 export default function AdminReportsPage() {
   const [data, setData] = useState<ReportData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [from, setFrom] = useState(getClinicDateKey);
   const [to, setTo] = useState(getClinicDateKey);
 
   const fetchReports = async (nextFrom = from, nextTo = to) => {
     setLoading(true);
+    setError("");
     try {
       const res = await fetch(`/api/admin/reports?from=${nextFrom}&to=${nextTo}`);
       if (!res.ok) throw new Error("Laporan gagal dimuat.");
       const result = await res.json();
       setData(result);
     } catch {
-      // ignore
+      setError("Laporan gagal dimuat. Silakan coba lagi menggunakan tombol Refresh.");
     } finally {
       setLoading(false);
     }
@@ -96,7 +84,7 @@ export default function AdminReportsPage() {
     fetch(`/api/admin/reports?from=${initialDate}&to=${initialDate}`)
       .then(res => res.ok ? res.json() : Promise.reject(new Error("Laporan gagal dimuat.")))
       .then(result => setData(result))
-      .catch(() => setData(null))
+      .catch(() => setError("Laporan gagal dimuat. Silakan coba lagi menggunakan tombol Refresh."))
       .finally(() => setLoading(false));
   }, []);
 
@@ -112,7 +100,7 @@ export default function AdminReportsPage() {
 
   return (
     <AppLayout breadcrumbTitle="Laporan Operasional" activeNav="/admin/reports">
-      <div className="page printable">
+      <div className="page printable admin-report-page">
         <header className="report-print-header">
           <div><b>KLINIKCARE</b><span>Rawat Jalan & Farmasi</span></div>
           <div><strong>LAPORAN OPERASIONAL</strong><span>Periode: {selectedPeriod}</span><span>Dicetak: {reportGeneratedAt} WIB</span></div>
@@ -120,7 +108,8 @@ export default function AdminReportsPage() {
         {/* Header */}
         <div className="section-header-flex">
           <div>
-            <h1 className="page-title">Laporan & Rekapitulasi Operasional Klinik</h1>
+            <p className="eyebrow">Ringkasan operasional</p>
+            <h1 className="page-title">Laporan Operasional Klinik</h1>
             <p className="page-subtitle">
               Ringkasan kunjungan, antrean, resep, dan inventaris untuk periode {selectedPeriod}.
             </p>
@@ -129,6 +118,7 @@ export default function AdminReportsPage() {
             <button
               type="button"
               className="btn-refresh"
+              disabled={loading}
               onClick={() => void fetchReports()}
               title="Perbarui data laporan"
             >
@@ -153,12 +143,13 @@ export default function AdminReportsPage() {
         </form>
 
         {/* Executive KPI Stats */}
-        {loading || !data ? (
-          <div className="table-loading" style={{ margin: "40px 0" }}>
+        {error && <p className="data-error" role="alert">{error}</p>}
+        {loading ? (
+          <div className="table-loading" role="status" style={{ margin: "40px 0" }}>
             <Loader2 size={28} className="spinner" />
             <p>Menghitung data agregat operasional klinik...</p>
           </div>
-        ) : (
+        ) : data ? (
           <>
             <div className="stats">
               <div className="stat-card">
@@ -559,7 +550,7 @@ export default function AdminReportsPage() {
               </div>
             </div>
           </>
-        )}
+        ) : null}
         <footer className="report-print-footer"><span>Dokumen internal KlinikCare</span><span>Dicetak: {reportGeneratedAt} WIB</span></footer>
       </div>
     </AppLayout>

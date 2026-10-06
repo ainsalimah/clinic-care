@@ -32,6 +32,7 @@ export default function PatientPortalPage() {
 
   const refresh = useCallback(async () => {
     setLoading(true);
+    setError("");
     try {
       const [patientRes, catalogRes] = await Promise.all([fetch("/api/patient/appointments"), fetch("/api/public/catalog")]);
       const [patientData, catalogData] = await Promise.all([patientRes.json(), catalogRes.json()]);
@@ -104,7 +105,7 @@ export default function PatientPortalPage() {
 
         {welcome && <div className="portal-notice"><span>Akun berhasil dibuat.</span> Data pasien sudah tercatat. Silakan ajukan jadwal kunjungan Anda.</div>}
         {error && <div className="patient-form-error" role="alert">{error}</div>}
-        {notice && <div className="portal-notice"><span>{notice}</span></div>}
+        {notice && <div className="portal-notice" role="status"><span>{notice}</span></div>}
 
         <div className="patient-portal-grid">
           <section className="panel patient-booking-panel">
@@ -123,7 +124,7 @@ export default function PatientPortalPage() {
           </section>
 
           <section className="panel patient-visits-panel">
-            <div className="panel-head"><div><p className="eyebrow">RIWAYAT & STATUS</p><h2>Kunjungan saya</h2></div><button className="btn-refresh" type="button" onClick={refresh} aria-label="Perbarui kunjungan"><RefreshCw size={15} className={loading ? "spinner" : ""} /></button></div>
+            <div className="panel-head"><div><p className="eyebrow">RIWAYAT & STATUS</p><h2>Kunjungan saya</h2></div><button className="btn-refresh" type="button" disabled={loading} onClick={refresh} aria-label="Perbarui kunjungan"><RefreshCw size={15} className={loading ? "spinner" : ""} /></button></div>
             {loading ? <div className="table-loading"><Loader2 size={22} className="spinner" /><p>Memuat kunjungan…</p></div> : !patient?.appointments.length ? <div className="table-empty"><Stethoscope size={27} /><p>Belum ada kunjungan. Ajukan jadwal pertama Anda.</p></div> : <div className="patient-visit-list">
               {patient.appointments.map((appointment) => <article className="patient-visit-card" key={appointment.id}>
                 <div className="visit-card-top"><span className={`appointment-status status-${appointment.status.toLowerCase()}`}>{appointment.record?.prescription?.stockHeldAt && !appointment.record.prescription.stockResumedAt ? "Obat ditunda — menunggu stok tersedia" : appointment.bill && !appointment.bill.completedAt ? (appointment.bill.paidAt ? "Menunggu penyerahan obat" : "Menunggu pembayaran di apotek") : appointmentStatus[appointment.status] || appointment.status}</span>{appointment.queue && <b className="queue-num">{appointment.queue.queueNumber}</b>}</div>

@@ -4,6 +4,84 @@ Portfolio full-stack untuk **klinik rawat jalan dan apotek**. Pasien bisa mengaj
 
 Demo production: [clinic-care-zeta.vercel.app](https://clinic-care-zeta.vercel.app)
 
+Proyek ini adalah **demo portofolio dengan data fiktif**, bukan layanan klinik nyata. Demo publik menggunakan akun bersama; perubahan bisa terlihat oleh pengunjung lain. Jangan memasukkan identitas atau informasi kesehatan nyata.
+
+## Mencoba demo
+
+Buka bagian **Demo berdasarkan peran** di beranda, pilih peran, lalu tekan tombol masuk. Empat peran publik tersedia tanpa mengetik kredensial: pasien, resepsionis, dokter, dan apoteker. Admin tidak tersedia melalui login demo publik.
+
+| Peran | Hal yang dapat dicoba |
+| --- | --- |
+| Pasien | Lihat jadwal, ajukan kunjungan, pantau status dan tagihan. |
+| Resepsionis | Tinjau pengajuan online, check-in pasien, pantau dan panggil antrean. |
+| Dokter | Mulai pemeriksaan dari antrean, isi SOAP, tambahkan resep, selesaikan kunjungan. |
+| Apoteker | Siapkan resep, terima pembayaran, cetak struk/etiket, serahkan obat. |
+| Admin (lokal) | Lihat laporan, atur tarif konsultasi, kelola staf dan koreksi pembayaran. |
+
+### Skenario demonstrasi dari awal hingga selesai
+
+1. **Pasien:** ajukan kunjungan pada jadwal yang tersedia. Catat nama pasien dan dokter yang dipilih.
+2. **Resepsionis:** buka Pengajuan Kunjungan Online, konfirmasi pengajuan tersebut, lalu lakukan check-in sesuai tanggal kunjungan. Untuk demo hari ini, gunakan pasien walk-in pada Daftar Pasien.
+3. **Dokter:** masuk sebagai dokter yang menangani pasien, mulai pemeriksaan, isi diagnosis dan SOAP dengan data fiktif, lalu tambahkan obat yang stoknya tersedia. Login demo dokter menggunakan dr. Hendra; gunakan jadwal beliau agar skenario dapat diteruskan.
+4. **Apoteker:** temukan resep/tagihan pasien yang sama, siapkan resep, catat pembayaran simulasi, kemudian serahkan obat. Pembayaran dan penyerahan adalah tindakan terpisah.
+5. **Pasien:** masuk kembali dan perbarui halaman untuk melihat status terakhir.
+
+Untuk berpindah peran, keluar lalu kembali ke bagian demo di beranda. Dashboard dan antrean menampilkan waktu pemuatan terakhir; tekan **Refresh** setelah ada perubahan dari peran lain. QRIS hanya simulasi verifikasi manual dan tidak menerima pembayaran sungguhan.
+
+### Akun seed lokal
+
+Kredensial berikut hanya berlaku setelah seed pada database development disposable; bukan kredensial deployment publik. Kata sandi seed: `password123`.
+
+| Peran | Email |
+| --- | --- |
+| Admin | `admin@klinikcare.com` |
+| Resepsionis | `resepsionis@klinikcare.com` |
+| Dokter | `dokter.hendra@klinikcare.com` |
+| Apoteker | `apoteker@klinikcare.com` |
+| Pasien | `pasien.sari@gmail.com` |
+
+## Tampilan aplikasi
+
+Screenshot menggunakan data contoh dan menggambarkan tampilan desktop; tata letak juga menyesuaikan layar mobile.
+
+| Portal pasien | Meja resepsionis |
+| --- | --- |
+| ![Portal pasien](docs/screenshots/patient.png) | ![Daftar pasien resepsionis](docs/screenshots/receptionist.png) |
+
+| Ruang praktik dokter | Kasir apotek |
+| --- | --- |
+| ![Antrean dokter](docs/screenshots/doctor.png) | ![Kasir apotek](docs/screenshots/pharmacy.png) |
+
+## Alur dan keputusan teknis
+
+```mermaid
+flowchart LR
+  A[Pasien mengajukan kunjungan] --> B[Resepsionis meninjau]
+  B --> C[Check-in dan nomor antrean]
+  W[Pasien walk-in] --> C
+  C --> D[Dokter memeriksa dan mencatat SOAP]
+  D --> E[Tagihan konsultasi dan obat]
+  E --> F[Pembayaran simulasi]
+  F --> G[Penyerahan obat jika ada resep]
+  G --> H[Status selesai di portal pasien]
+```
+
+- **Next.js App Router + TypeScript:** halaman dan endpoint API berada dalam satu proyek; kontrak ringkasan laporan digunakan bersama frontend dan API.
+- **PostgreSQL + Prisma:** transaksi menjaga perubahan kunjungan, tagihan, dan stok; advisory lock melindungi penomoran antrean.
+- **Sesi tersimpan di database:** sesi dapat dicabut saat akun dinonaktifkan atau kata sandi diganti. Kebijakan peran digunakan sidebar dan middleware.
+- **Snapshot tagihan:** harga dan identitas pada tagihan tidak berubah mengikuti perubahan katalog.
+- **CSS bersama dan Tailwind:** tipografi, card, navigasi, dan tabel menyesuaikan kebutuhan desktop maupun mobile tanpa menambah library komponen.
+
+## Batasan MVP
+
+- Pengaitan akun online ke data pasien lama belum tersedia. Gunakan akun pasien demo atau buat pasien baru dengan data fiktif yang unik.
+- Portal pasien menampilkan kunjungan dan tagihan; rekam medis dan resep belum dibuka untuk pasien.
+- Pembatalan/reschedule mandiri, amandemen rekam medis, batch/kedaluwarsa obat, dan retur fisik belum tersedia.
+- Tidak ada payment gateway, OTP/email verification, laboratorium, radiologi, rawat inap, atau integrasi layanan eksternal.
+- Login demo hanya memilih identitas seed tertentu. Deployment demo harus memakai database khusus berisi data fiktif.
+
+Fokus portofolio adalah memperlihatkan satu alur rawat jalan yang utuh, pembagian akses tiap peran, integritas transaksi, dan UI responsif.
+
 ## Menjalankan lokal
 
 1. Salin `.env.example` menjadi `.env` dan isi `DATABASE_URL` PostgreSQL serta `AUTH_SECRET` yang acak.
@@ -25,7 +103,7 @@ Jalankan `npm run lint`, `npm run typecheck`, dan `npm test` sebelum menggabungk
 
 Website publik tersedia di `/` dengan informasi poli, dokter, jadwal praktik, dan FAQ. Pasien dapat membuat akun di `/register`, masuk ke `/login`, lalu mengajukan jadwal dari `/patient`. Dashboard staf tersedia di `/app` setelah login.
 
-Database seed hanya untuk development disposable. Kredensial demo tidak boleh dipakai pada produksi; login cepat dan pemilih role staf hanya tersedia saat development.
+Database seed hanya untuk development disposable. Untuk deployment portofolio dengan database fiktif khusus, set `NEXT_PUBLIC_DEMO_MODE=true` agar login demo publik tersedia. Tanpa flag tersebut, endpoint demo dinonaktifkan pada produksi. Admin tidak tersedia pada demo publik; akun seed lokal tidak mewakili kata sandi deployment.
 
 ## Panggilan antrean bersuara
 
@@ -41,7 +119,7 @@ Petugas membuka `/queue/speaker` pada satu komputer yang tersambung ke speaker r
 - **Apoteker:** resep masuk, obat, stok, dan penyerahan.
 - **Admin:** pemantauan operasional, laporan, tarif, dan akun staf.
 
-Pengajuan jadwal online tidak langsung membuat antrean. Pasien lama perlu meminta resepsionis memverifikasi dan menghubungkan akun ke data yang sudah ada. Akun baru memakai NIK dan telepon untuk pendaftaran online; resepsionis tetap dapat mendaftarkan pasien tanpa telepon. Portal pasien menampilkan jadwal, status kunjungan, dan ringkasan tagihan; rekam medis dan resep belum dibuka di portal. Rawat inap, laboratorium, radiologi, verifikasi OTP/email, dan integrasi eksternal belum termasuk MVP.
+Pengajuan jadwal online tidak langsung membuat antrean. Akun baru memakai NIK dan telepon fiktif untuk pendaftaran demo; resepsionis tetap dapat mendaftarkan pasien tanpa telepon. Pengaitan akun ke pasien lama belum tersedia. Portal pasien menampilkan jadwal, status kunjungan, dan ringkasan tagihan; rekam medis dan resep belum dibuka di portal.
 
 ## Kasir apotek dan tagihan kunjungan
 
@@ -64,6 +142,8 @@ Admin dapat membuat dan menonaktifkan akun staf di **Akun Staf**. Pembuatan atau
 Jika email pemulihan belum dapat digunakan, admin membuka **Pemulihan Pasien**, mencari akun, lalu mencocokkan NIK, tanggal lahir, dan nomor telepon yang disebutkan pasien. Setelah verifikasi, admin dapat memberitahukan email akun atau membuat password sementara. Reset mencabut seluruh sesi dan tautan reset lama; pasien wajib mengganti password sementara saat login.
 
 Verifikasi: `npm test` dan `npm run test:billing:integration`. Uji integrasi membutuhkan database yang sudah dimigrasikan; semua data sintetis berada dalam transaksi yang di-rollback.
+
+GitHub Actions menjalankan lint, typecheck, dan unit test pada push/pull request. Integration test dan E2E dijalankan terpisah pada database pengujian; workflow CI tidak mengakses database demo publik.
 
 Uji alur endpoint lengkap: jalankan server lokal, lalu `npm run test:visit:e2e`. Skrip menolak alamat server nonlokal, membuat data sintetis unik untuk seluruh role, menguji pendaftaran sampai refund/laporan, lalu membersihkan hanya data run tersebut. Gunakan database pengujian terpisah bila menjalankan di luar lingkungan demo.
 

@@ -27,7 +27,7 @@ export function AppointmentBanner() {
             </p>
 
             <div className="kc-cta-actions">
-              <Link href="/login#demo" className="kc-btn-cta-light">
+              <Link href="/#demo" className="kc-btn-cta-light">
                 <Sparkles size={17} />
                 <span>Buka Mode Demo 4-Role</span>
                 <ArrowRight size={17} />

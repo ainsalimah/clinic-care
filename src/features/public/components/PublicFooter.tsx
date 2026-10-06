@@ -81,7 +81,7 @@ export function PublicFooter() {
           <a href="#beranda" className="hover:underline">Beranda</a>
           <a href="#layanan" className="hover:underline">Layanan</a>
           <a href="#dokter" className="hover:underline">Dokter</a>
-          <a href="#demo" className="hover:underline">Simulasi</a>
+          <a href="#pembiayaan" className="hover:underline">Pembiayaan</a>
         </div>
       </div>
     </footer>

@@ -44,8 +44,8 @@ export default function StaffPage() {
     <div className="section-header-flex staff-page-header"><div><p className="eyebrow">Administrasi akses</p><h1 className="page-title">Akun staf</h1><p className="page-subtitle">Kelola akses petugas tanpa menghapus riwayat pelayanan klinik.</p></div><span className="page-status"><span /> Sinkronisasi aman</span></div>
     <section className="staff-metrics" aria-label="Ringkasan akun staf">
       <article><span className="staff-metric-icon teal"><ShieldCheck size={17} /></span><div><small>Total staf</small><strong>{count}</strong><span>akun terdaftar</span></div></article>
-      <article><span className="staff-metric-icon green"><CheckCircle2 size={17} /></span><div><small>Aktif</small><strong>{activeCount}</strong><span>siap bertugas</span></div></article>
-      <article><span className="staff-metric-icon amber"><Clock3 size={17} /></span><div><small>Perlu tindakan</small><strong>{pendingPasswordCount}</strong><span>ganti password awal</span></div></article>
+      <article><span className="staff-metric-icon green"><CheckCircle2 size={17} /></span><div><small>Aktif di halaman ini</small><strong>{loading ? "—" : activeCount}</strong><span>siap bertugas</span></div></article>
+      <article><span className="staff-metric-icon amber"><Clock3 size={17} /></span><div><small>Perlu tindakan di halaman ini</small><strong>{loading ? "—" : pendingPasswordCount}</strong><span>ganti password awal</span></div></article>
     </section>
     {error && <p role="alert" className="data-error">{error}</p>}{message && <p role="status" className="portal-notice">{message}</p>}
     <details className="panel billing-panel staff-create-panel"><summary><span className="staff-create-icon"><UserPlus size={17} /></span><span><b>Tambah staf baru</b><small>Buat akses untuk petugas atau dokter</small></span><span className="staff-create-arrow">+</span></summary><form className="account-form" onSubmit={e => submit(e, true)}>

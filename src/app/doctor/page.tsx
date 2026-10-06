@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import AppLayout from "@/components/AppLayout";
+import DataFeedback from "@/components/DataFeedback";
 import {
   Stethoscope,
   Clock,
@@ -46,6 +47,8 @@ export default function DoctorDashboardPage() {
   const router = useRouter();
   const [queues, setQueues] = useState<QueueItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
+  const [updatedAt, setUpdatedAt] = useState<Date | null>(null);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [actionError, setActionError] = useState("");
 
@@ -54,11 +57,12 @@ export default function DoctorDashboardPage() {
     try {
       const res = await fetch("/api/queues");
       const data = await res.json();
-      if (data.queues) {
-        setQueues(data.queues);
-      }
+      if (!res.ok || !Array.isArray(data.queues)) throw new Error("Antrean dokter belum berhasil dimuat.");
+      setQueues(data.queues);
+      setLoadError("");
+      setUpdatedAt(new Date());
     } catch {
-      // ignore
+      setLoadError("Antrean dokter belum berhasil dimuat.");
     } finally {
       setLoading(false);
     }
@@ -122,6 +126,7 @@ export default function DoctorDashboardPage() {
   return (
     <AppLayout breadcrumbTitle="Ruang Praktik Dokter" activeNav="/doctor">
       <div className="page">
+        <DataFeedback loading={loading} error={loadError} updatedAt={updatedAt} onRetry={fetchDoctorQueue} />
         {actionError && <div className="data-error" role="alert">{actionError}</div>}
         {/* Header */}
         <div className="section-header-flex">
@@ -132,7 +137,7 @@ export default function DoctorDashboardPage() {
             </p>
           </div>
           <div className="header-actions-group">
-            <button type="button" className="btn-refresh" onClick={fetchDoctorQueue}>
+            <button type="button" className="btn-refresh" disabled={loading} onClick={fetchDoctorQueue}>
               <RefreshCw size={15} className={loading ? "spinner" : ""} />
               <span>Refresh Antrean</span>
             </button>
@@ -144,14 +149,14 @@ export default function DoctorDashboardPage() {
         </div>
 
         {/* Stats */}
-        <div className="stats">
+        <div className="stats stats-three">
           <div className="stat-card">
             <div className="stat-icon amber">
               <Clock size={19} />
             </div>
             <div>
               <p>Pasien Menunggu</p>
-              <strong>{waitingPatients.length}</strong>
+              <strong>{loading ? <Loader2 size={16} className="spinner" /> : updatedAt ? waitingPatients.length : "—"}</strong>
               <small className="warn">Menunggu dipanggil atau masuk ruang</small>
             </div>
           </div>
@@ -162,8 +167,8 @@ export default function DoctorDashboardPage() {
             </div>
             <div>
               <p>Sedang di Ruang Periksa</p>
-              <strong>{currentPatient ? 1 : 0}</strong>
-              <small className="positive">{currentPatient ? currentPatient.appointment.patient.fullName : "Ruang siap"}</small>
+              <strong>{loading ? <Loader2 size={16} className="spinner" /> : updatedAt ? (currentPatient ? 1 : 0) : "—"}</strong>
+              <small className="positive">{!updatedAt ? "Status ruang belum tersedia" : currentPatient ? currentPatient.appointment.patient.fullName : "Ruang siap"}</small>
             </div>
           </div>
 
@@ -173,8 +178,8 @@ export default function DoctorDashboardPage() {
             </div>
             <div>
               <p>Selesai Hari Ini</p>
-              <strong>{completedPatients.length}</strong>
-              <small className="positive">Resep terkirim ke apotek</small>
+              <strong>{loading ? <Loader2 size={16} className="spinner" /> : updatedAt ? completedPatients.length : "—"}</strong>
+              <small className="positive">Kunjungan yang sudah diperiksa</small>
             </div>
           </div>
         </div>
@@ -218,7 +223,7 @@ export default function DoctorDashboardPage() {
           <div className="panel-head">
             <div>
               <p className="eyebrow">ANTREAN HARI INI</p>
-              <h2>Pasien Menunggu Pemeriksaan ({waitingPatients.length})</h2>
+              <h2>Pasien Menunggu Pemeriksaan ({updatedAt ? waitingPatients.length : "—"})</h2>
             </div>
           </div>
 
@@ -228,6 +233,8 @@ export default function DoctorDashboardPage() {
                 <Loader2 size={24} className="spinner" />
                 <p>Memuat antrean dokter...</p>
               </div>
+            ) : loadError && !updatedAt ? (
+              <div className="table-empty"><p>Antrean belum dapat ditampilkan.</p></div>
             ) : waitingPatients.length === 0 ? (
               <div className="table-empty">
                 <CheckCircle2 size={32} />
@@ -278,7 +285,7 @@ export default function DoctorDashboardPage() {
                           <span className="dept-tag">{q.department.name}</span>
                         </td>
                         <td>
-                          <span style={{ fontSize: "12px", color: "var(--ink)" }}>
+                          <span style={{ fontSize: ".875rem", color: "var(--ink)" }}>
                             {q.appointment.notes || "Pemeriksaan umum"}
                           </span>
                         </td>

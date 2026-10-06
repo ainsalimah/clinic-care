@@ -64,81 +64,84 @@ export default function PatientRegistrationPage() {
   return (
     <main className="min-h-screen grid grid-cols-1 lg:grid-cols-[440px_1fr] bg-white">
       {/* Sisi Kiri: Branding & Informasi */}
-      <aside className="bg-gradient-to-br from-[#12394a] via-[#104b4f] to-[#0b605a] text-white p-8 sm:p-12 lg:p-14 flex flex-col justify-between relative overflow-hidden">
+      <aside className="bg-gradient-to-br from-[#0B2D45] via-[#123F5D] to-[#2F80C0] text-white p-8 sm:p-12 lg:p-14 flex flex-col justify-between relative overflow-hidden">
         {/* Dekorasi halus */}
-        <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 rounded-full bg-teal-400/10 blur-3xl pointer-events-none" />
+        <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 rounded-full bg-sky-300/15 blur-3xl pointer-events-none" />
 
         <div className="relative z-10">
           <Link
             href="/"
             className="inline-flex items-center gap-2.5 text-white font-extrabold text-xl tracking-tight font-jakarta"
           >
-            <span className="w-9 h-9 rounded-xl bg-[#27a994] flex items-center justify-center text-white shadow-sm">
+            <span className="w-9 h-9 rounded-xl bg-[#2F80C0] flex items-center justify-center text-white shadow-sm">
               <HeartPulse size={20} />
             </span>
             <span>
-              Klinik<span className="text-[#68ddc4]">Care</span>
+              Klinik<span className="text-[#9DD8FF]">Care</span>
             </span>
           </Link>
 
           <div className="mt-14 max-w-sm">
-            <span className="inline-block text-[11px] font-bold tracking-widest text-[#7ce2ce] uppercase mb-3">
+            <span className="inline-block text-[11px] font-bold tracking-widest text-[#9DD8FF] uppercase mb-3">
               MULAI DARI SINI
             </span>
             <h1 className="font-jakarta text-3xl sm:text-4xl font-extrabold text-white leading-tight tracking-tight mb-4">
               Perjalanan sehat Anda, lebih terencana.
             </h1>
-            <p className="text-sm text-[#c2dad9] leading-relaxed mb-8">
+            <p className="text-sm text-[#d5e6f2] leading-relaxed mb-8">
               Buat akun untuk melihat jadwal dokter dan mengajukan kunjungan. Petugas kami akan memeriksa setiap pengajuan dengan cermat.
             </p>
 
-            <div className="flex flex-col gap-4 text-xs sm:text-sm text-[#e2f2ef]">
+            <div className="flex flex-col gap-4 text-xs sm:text-sm text-[#e7f1f8]">
               <div className="flex items-center gap-3">
-                <span className="w-7 h-7 rounded-lg bg-teal-800/40 flex items-center justify-center text-[#73dfca] shrink-0">
+                <span className="w-7 h-7 rounded-lg bg-white/10 flex items-center justify-center text-[#9DD8FF] shrink-0">
                   <CalendarDays size={16} />
                 </span>
                 <span>Ajukan jadwal dokter dari rumah</span>
               </div>
               <div className="flex items-center gap-3">
-                <span className="w-7 h-7 rounded-lg bg-teal-800/40 flex items-center justify-center text-[#73dfca] shrink-0">
+                <span className="w-7 h-7 rounded-lg bg-white/10 flex items-center justify-center text-[#9DD8FF] shrink-0">
                   <ShieldCheck size={16} />
                 </span>
-                <span>Pengaitan nomor RM diverifikasi resepsionis</span>
+                <span>Akun baru mendapat nomor rekam medis</span>
               </div>
               <div className="flex items-center gap-3">
-                <span className="w-7 h-7 rounded-lg bg-teal-800/40 flex items-center justify-center text-[#73dfca] shrink-0">
+                <span className="w-7 h-7 rounded-lg bg-white/10 flex items-center justify-center text-[#9DD8FF] shrink-0">
                   <UserRound size={16} />
                 </span>
-                <span>Pasien lama dibantu petugas klinik</span>
+                <span>Portal dapat dicoba dengan akun pasien demo</span>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="relative z-10 pt-10 text-xs text-[#91b3b4]">
+        <div className="relative z-10 pt-10 text-xs text-[#b7d1e3]">
           KlinikCare · Layanan rawat jalan modern & terpadu
         </div>
       </aside>
 
       {/* Sisi Kanan: Formulir Registrasi */}
-      <section className="p-6 sm:p-10 lg:p-16 flex flex-col justify-between bg-[#fafcfb]">
+      <section className="p-6 sm:p-10 lg:p-16 flex flex-col justify-between bg-[#f8fbfd]">
         <div className="w-full max-w-xl mx-auto">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-xs sm:text-sm text-[#5f7478] hover:text-[#0b605a] font-medium transition-colors mb-8"
+            className="inline-flex items-center gap-2 text-xs sm:text-sm text-[#5e7588] hover:text-[#2F80C0] font-medium transition-colors mb-8"
           >
             <ArrowLeft size={16} /> Kembali ke beranda
           </Link>
 
           <div>
-            <span className="inline-block text-[11px] font-bold tracking-widest text-[#0f8779] uppercase mb-1.5">
+            <span className="inline-block text-[11px] font-bold tracking-widest text-[#2F80C0] uppercase mb-1.5">
               AKUN PASIEN
             </span>
-            <h2 className="font-jakarta text-2xl sm:text-3xl font-extrabold text-[#173c38] tracking-tight mb-2">
+            <h2 className="font-jakarta text-2xl sm:text-3xl font-extrabold text-[#0B2D45] tracking-tight mb-2">
               Buat akun pasien
             </h2>
-            <p className="text-xs sm:text-sm text-[#637975] leading-relaxed mb-6">
-              Isi data sesuai identitas resmi. Jika data Anda sudah tercatat, hubungi resepsionis untuk verifikasi dan pengaitan akun.
+            <p className="text-xs sm:text-sm text-[#5e7588] leading-relaxed mb-6">
+              Gunakan data fiktif untuk mencoba pendaftaran. Pengaitan akun ke pasien lama belum tersedia pada versi demo ini.
+            </p>
+            <p className="text-sm text-[#5e7588] leading-relaxed mb-6">
+              Sudah punya akun? <Link href="/login" className="font-semibold text-[#2F80C0] underline">Masuk di sini</Link>. Untuk mencoba tanpa mendaftar, <Link href="/#demo" className="font-semibold text-[#2F80C0] underline">pilih peran Pasien di demo</Link>.
             </p>
 
             {error && (
@@ -152,7 +155,7 @@ export default function PatientRegistrationPage() {
 
             <form onSubmit={submit} className="flex flex-col gap-4">
               <div>
-                <label htmlFor="fullName" className="block text-xs font-bold text-[#1f4a42] uppercase tracking-wider mb-1.5">
+                <label htmlFor="fullName" className="block text-xs font-bold text-[#0B2D45] uppercase tracking-wider mb-1.5">
                   Nama lengkap
                 </label>
                 <input
@@ -162,13 +165,13 @@ export default function PatientRegistrationPage() {
                   required
                   maxLength={120}
                   placeholder="Sesuai kartu identitas (KTP / KK)"
-                  className="w-full h-11 px-3.5 rounded-lg border border-[#cadad4] bg-white text-sm text-[#143c34] placeholder:text-[#94a8a2] focus:outline-none focus:ring-2 focus:ring-[#0f8779]/20 focus:border-[#0f8779] transition-all"
+                  className="w-full h-11 px-3.5 rounded-lg border border-[#c7d9e7] bg-white text-sm text-[#0B2D45] placeholder:text-[#8aa1b1] focus:outline-none focus:ring-2 focus:ring-[#2F80C0]/20 focus:border-[#2F80C0] transition-all"
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label htmlFor="email" className="block text-xs font-bold text-[#1f4a42] uppercase tracking-wider mb-1.5">
+                  <label htmlFor="email" className="block text-xs font-bold text-[#0B2D45] uppercase tracking-wider mb-1.5">
                     Email
                   </label>
                   <input
@@ -178,11 +181,11 @@ export default function PatientRegistrationPage() {
                     onChange={(e) => update("email", e.target.value)}
                     required
                     placeholder="nama@email.com"
-                    className="w-full h-11 px-3.5 rounded-lg border border-[#cadad4] bg-white text-sm text-[#143c34] placeholder:text-[#94a8a2] focus:outline-none focus:ring-2 focus:ring-[#0f8779]/20 focus:border-[#0f8779] transition-all"
+                    className="w-full h-11 px-3.5 rounded-lg border border-[#c7d9e7] bg-white text-sm text-[#0B2D45] placeholder:text-[#8aa1b1] focus:outline-none focus:ring-2 focus:ring-[#2F80C0]/20 focus:border-[#2F80C0] transition-all"
                   />
                 </div>
                 <div>
-                  <label htmlFor="phone" className="block text-xs font-bold text-[#1f4a42] uppercase tracking-wider mb-1.5">
+                  <label htmlFor="phone" className="block text-xs font-bold text-[#0B2D45] uppercase tracking-wider mb-1.5">
                     Nomor telepon (WhatsApp)
                   </label>
                   <input
@@ -192,14 +195,14 @@ export default function PatientRegistrationPage() {
                     onChange={(e) => update("phone", e.target.value)}
                     required
                     placeholder="08xxxxxxxxxx"
-                    className="w-full h-11 px-3.5 rounded-lg border border-[#cadad4] bg-white text-sm text-[#143c34] placeholder:text-[#94a8a2] focus:outline-none focus:ring-2 focus:ring-[#0f8779]/20 focus:border-[#0f8779] transition-all"
+                    className="w-full h-11 px-3.5 rounded-lg border border-[#c7d9e7] bg-white text-sm text-[#0B2D45] placeholder:text-[#8aa1b1] focus:outline-none focus:ring-2 focus:ring-[#2F80C0]/20 focus:border-[#2F80C0] transition-all"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label htmlFor="nik" className="block text-xs font-bold text-[#1f4a42] uppercase tracking-wider mb-1.5">
+                  <label htmlFor="nik" className="block text-xs font-bold text-[#0B2D45] uppercase tracking-wider mb-1.5">
                     NIK (16 Digit)
                   </label>
                   <input
@@ -211,11 +214,11 @@ export default function PatientRegistrationPage() {
                     }
                     required
                     placeholder="16 digit NIK"
-                    className="w-full h-11 px-3.5 rounded-lg border border-[#cadad4] bg-white text-sm text-[#143c34] placeholder:text-[#94a8a2] focus:outline-none focus:ring-2 focus:ring-[#0f8779]/20 focus:border-[#0f8779] transition-all"
+                    className="w-full h-11 px-3.5 rounded-lg border border-[#c7d9e7] bg-white text-sm text-[#0B2D45] placeholder:text-[#8aa1b1] focus:outline-none focus:ring-2 focus:ring-[#2F80C0]/20 focus:border-[#2F80C0] transition-all"
                   />
                 </div>
                 <div>
-                  <label htmlFor="dateOfBirth" className="block text-xs font-bold text-[#1f4a42] uppercase tracking-wider mb-1.5">
+                  <label htmlFor="dateOfBirth" className="block text-xs font-bold text-[#0B2D45] uppercase tracking-wider mb-1.5">
                     Tanggal lahir
                   </label>
                   <input
@@ -224,20 +227,20 @@ export default function PatientRegistrationPage() {
                     onChange={(e) => update("dateOfBirth", e.target.value)}
                     required
                     max={getClinicDateKey()}
-                    className="w-full h-11 px-3.5 rounded-lg border border-[#cadad4] bg-white text-sm text-[#143c34] placeholder:text-[#94a8a2] focus:outline-none focus:ring-2 focus:ring-[#0f8779]/20 focus:border-[#0f8779] transition-all"
+                    className="w-full h-11 px-3.5 rounded-lg border border-[#c7d9e7] bg-white text-sm text-[#0B2D45] placeholder:text-[#8aa1b1] focus:outline-none focus:ring-2 focus:ring-[#2F80C0]/20 focus:border-[#2F80C0] transition-all"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label htmlFor="gender" className="block text-xs font-bold text-[#1f4a42] uppercase tracking-wider mb-1.5">
+                  <label htmlFor="gender" className="block text-xs font-bold text-[#0B2D45] uppercase tracking-wider mb-1.5">
                     Jenis kelamin
                   </label>
                   <select id="gender"
                     value={form.gender}
                     onChange={(e) => update("gender", e.target.value)}
-                    className="w-full h-11 px-3.5 rounded-lg border border-[#cadad4] bg-white text-sm text-[#143c34] focus:outline-none focus:ring-2 focus:ring-[#0f8779]/20 focus:border-[#0f8779] transition-all"
+                    className="w-full h-11 px-3.5 rounded-lg border border-[#c7d9e7] bg-white text-sm text-[#0B2D45] focus:outline-none focus:ring-2 focus:ring-[#2F80C0]/20 focus:border-[#2F80C0] transition-all"
                   >
                     <option value="UNKNOWN">Pilih jenis kelamin</option>
                     <option value="FEMALE">Perempuan</option>
@@ -245,7 +248,7 @@ export default function PatientRegistrationPage() {
                   </select>
                 </div>
                 <div>
-                  <label htmlFor="password" className="block text-xs font-bold text-[#1f4a42] uppercase tracking-wider mb-1.5">
+                  <label htmlFor="password" className="block text-xs font-bold text-[#0B2D45] uppercase tracking-wider mb-1.5">
                     Kata sandi
                   </label>
                   <input
@@ -256,19 +259,19 @@ export default function PatientRegistrationPage() {
                     required
                     minLength={8}
                     placeholder="Minimal 8 karakter"
-                    className="w-full h-11 px-3.5 rounded-lg border border-[#cadad4] bg-white text-sm text-[#143c34] placeholder:text-[#94a8a2] focus:outline-none focus:ring-2 focus:ring-[#0f8779]/20 focus:border-[#0f8779] transition-all"
+                    className="w-full h-11 px-3.5 rounded-lg border border-[#c7d9e7] bg-white text-sm text-[#0B2D45] placeholder:text-[#8aa1b1] focus:outline-none focus:ring-2 focus:ring-[#2F80C0]/20 focus:border-[#2F80C0] transition-all"
                   />
                 </div>
               </div>
 
-              <div className="p-3.5 rounded-lg bg-[#edf6f3] border border-[#d6eae2] text-xs text-[#31584e] leading-relaxed">
-                <span className="font-semibold">Catatan Keamanan:</span> NIK digunakan untuk mencegah duplikasi rekam medis. Pengajuan kunjungan dokter tetap akan diverifikasi langsung oleh tim resepsionis klinik.
+              <div className="p-3.5 rounded-lg bg-[#edf7fd] border border-[#bcdcf2] text-xs text-[#315066] leading-relaxed">
+                <span className="font-semibold">Verifikasi data:</span> NIK digunakan untuk memastikan data rekam medis tidak tercatat ganda. Permintaan kunjungan Anda akan dikonfirmasi oleh tim pendaftaran.
               </div>
 
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full h-12 rounded-lg bg-[#0b605a] hover:bg-[#084843] active:bg-[#063834] text-white font-bold text-sm sm:text-base flex items-center justify-center gap-2 shadow-sm transition-all disabled:opacity-60 disabled:cursor-not-allowed mt-2"
+                className="w-full h-12 rounded-lg bg-[#2F80C0] hover:bg-[#2671AA] active:bg-[#1F5E91] text-white font-bold text-sm sm:text-base flex items-center justify-center gap-2 shadow-sm transition-all disabled:opacity-60 disabled:cursor-not-allowed mt-2"
               >
                 {loading ? (
                   <>
@@ -284,11 +287,11 @@ export default function PatientRegistrationPage() {
               </button>
             </form>
 
-            <p className="text-center text-xs sm:text-sm text-[#637975] mt-5">
+            <p className="text-center text-xs sm:text-sm text-[#5e7588] mt-5">
               Sudah memiliki akun?{" "}
               <Link
                 href="/login"
-                className="text-[#0b605a] font-bold hover:underline"
+                className="text-[#2F80C0] font-bold hover:underline"
               >
                 Masuk di sini
               </Link>
@@ -296,8 +299,8 @@ export default function PatientRegistrationPage() {
           </div>
         </div>
 
-        <div className="flex items-center justify-center gap-2 text-xs text-[#7d938f] mt-10 pt-4 border-t border-[#e2ece8]">
-          <LockKeyhole size={14} className="text-[#0b605a]" />
+        <div className="flex items-center justify-center gap-2 text-xs text-[#71899b] mt-10 pt-4 border-t border-[#dce8f0]">
+          <LockKeyhole size={14} className="text-[#2F80C0]" />
           <span>Informasi kesehatan Anda dilindungi dan hanya digunakan untuk layanan medis internal.</span>
         </div>
       </section>

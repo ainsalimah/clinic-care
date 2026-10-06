@@ -3,6 +3,7 @@ import prisma from "@/lib/prisma";
 import { getClinicDateKey } from "@/lib/clinic-time";
 import { getSession } from "@/lib/auth";
 import { reportRange } from "@/lib/payment-report";
+import type { ReportSummary } from "@/features/reports/types";
 
 export async function GET(req: Request) {
   try {
@@ -133,7 +134,7 @@ export async function GET(req: Request) {
         completedPrescriptionsCount,
         lowStockCount: lowStockMedicines.length,
         outOfStockCount,
-      },
+      } satisfies ReportSummary,
       departments: departments.map((d) => ({
         id: d.id,
         name: d.name,

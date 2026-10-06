@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { ArrowRight, CheckCircle2, ShieldCheck, Sparkles, Stethoscope, UserCheck, Users, Pill } from "lucide-react";
 
 const roles = [
@@ -11,7 +11,7 @@ const roles = [
     desc: "Admisi Pasien & Antrean Audio",
     icon: Users,
     badge: "Pintu Depan",
-    href: "/login#demo",
+    role: "RECEPTIONIST",
     summary: "Check-in pasien mandiri/walk-in, cetak nomor antrean, dan panggil suara otomatis multi-poli.",
     bullets: [
       "Check-in janji temu & terbitkan nomor tiket poli",
@@ -25,7 +25,7 @@ const roles = [
     desc: "SOAP & E-Prescription",
     icon: Stethoscope,
     badge: "Klinis",
-    href: "/login#demo",
+    role: "DOCTOR",
     summary: "Akses rekam medis terpadu, input diagnosa SOAP terstandar, dan kirim resep digital langsung ke farmasi.",
     bullets: [
       "Pemeriksaan riwayat medis & alergi pasien",
@@ -39,10 +39,10 @@ const roles = [
     desc: "Dispensing & Billing",
     icon: Pill,
     badge: "Instalasi Farmasi",
-    href: "/login#demo",
+    role: "PHARMACIST",
     summary: "Terima resep seketika, cek ketersediaan stok, racik obat, dan cetak etiket aturan pakai tanpa resep manual.",
     bullets: [
-      "Antrean resep real-time langsung dari ruang periksa",
+      "Resep terhubung dengan hasil pemeriksaan dokter",
       "Pengurangan stok obat otomatis saat dispensasi",
       "Kuitansi pembayaran kasir obat terintegrasi",
     ],
@@ -53,7 +53,7 @@ const roles = [
     desc: "Portal Mandiri",
     icon: UserCheck,
     badge: "Pasien",
-    href: "/login#demo",
+    role: "PATIENT",
     summary: "Reservasi jadwal dokter online, pantau status nomor antrean langsung dari smartphone, dan cek riwayat kontrol.",
     bullets: [
       "Pendaftaran janji temu dokter 24/7",
@@ -64,9 +64,31 @@ const roles = [
 ];
 
 export function DemoExperienceSection() {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState(0);
+  const [isStartingDemo, setIsStartingDemo] = useState(false);
+  const [demoError, setDemoError] = useState("");
   const current = roles[activeTab];
   const Icon = current.icon;
+
+  const startDemo = async () => {
+    setDemoError("");
+    setIsStartingDemo(true);
+    try {
+      const response = await fetch("/api/auth/demo", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ role: current.role }),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Mode demo belum dapat dimulai.");
+      router.push(data.user?.role === "PATIENT" ? "/patient" : "/app");
+      router.refresh();
+    } catch (error) {
+      setDemoError(error instanceof Error ? error.message : "Mode demo belum dapat dimulai.");
+      setIsStartingDemo(false);
+    }
+  };
 
   return (
     <section id="demo" className="pad mesh" aria-label="Simulasi peran sistem klinik">
@@ -131,16 +153,19 @@ export function DemoExperienceSection() {
           <div className="mt-8 pt-6 border-t border-[#E8EEF2] flex flex-wrap gap-4 items-center justify-between">
             <div className="flex items-center gap-2 text-xs text-[#4c6475]">
               <ShieldCheck size={16} className="text-[#2F80C0]" />
-              <span>Simulasi aman: Data uji terisolasi tanpa risiko</span>
+              <span>Demo portofolio bersama. Gunakan data fiktif; perubahan dapat terlihat oleh pengunjung lain.</span>
             </div>
-            <Link
-              href={current.href}
+            <button
+              type="button"
+              onClick={startDemo}
+              disabled={isStartingDemo}
               className="btn !py-2.5 !px-5 text-sm sm:text-base font-bold text-white flex items-center gap-2"
             >
-              <span>Masuk Mode {current.title}</span>
+              <span>{isStartingDemo ? "Menyiapkan Demo..." : `Masuk Mode ${current.title}`}</span>
               <ArrowRight size={16} />
-            </Link>
+            </button>
           </div>
+          {demoError && <p className="mt-4 text-sm font-semibold text-red-700" role="alert">{demoError}</p>}
         </div>
       </div>
     </section>

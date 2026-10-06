@@ -22,13 +22,7 @@ export function HeroSection() {
               Buat Janji Sekarang
             </a>
             <a href="tel:+62215557799" className="btn border-btn" aria-label="Hubungi IGD 24 jam">
-              Hubungi IGD
-            </a>
-            <a href="#dokter" className="btn border-btn">
-              Cari Dokter
-            </a>
-            <a href="#demo" className="btn border-btn">
-              Coba Mode Demo
+              Telepon IGD
             </a>
           </div>
 

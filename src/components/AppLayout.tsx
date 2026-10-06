@@ -16,6 +16,10 @@ import {
   Pill,
   Stethoscope,
   Users,
+  BadgeDollarSign,
+  Wallet,
+  KeyRound,
+  UserCog,
 } from "lucide-react";
 import { canAccessPath, type AppRole } from "@/lib/access";
 
@@ -99,7 +103,7 @@ export default function AppLayout({ children, activeNav, breadcrumbTitle }: AppL
       { label: "Ringkasan", items: [{ href: "/app", label: "Dashboard", icon: LayoutDashboard }] },
       { label: "Pelayanan", items: [{ href: "/patients", label: "Data Pasien", icon: Users }, { href: "/queue", label: "Kunjungan & Antrean", icon: CalendarDays }] },
       { label: "Operasional", items: [{ href: "/medicines", label: "Obat & Stok", icon: Package }] },
-      { label: "Administrasi", items: [{ href: "/admin/reports", label: "Laporan Operasional", icon: BarChart3 }, { href: "/admin/fees", label: "Tarif Konsultasi", icon: BarChart3 }, { href: "/admin/finance", label: "Pembayaran & Koreksi", icon: BarChart3 }] },
+      { label: "Administrasi", items: [{ href: "/admin/reports", label: "Laporan Operasional", icon: BarChart3 }, { href: "/admin/fees", label: "Tarif Konsultasi", icon: BadgeDollarSign }, { href: "/admin/finance", label: "Pembayaran & Koreksi", icon: Wallet }] },
     ],
     RECEPTIONIST: [
       { label: "Ringkasan", items: [{ href: "/app", label: "Dashboard", icon: LayoutDashboard }] },
@@ -117,10 +121,11 @@ export default function AppLayout({ children, activeNav, breadcrumbTitle }: AppL
       { label: "Ringkasan", items: [{ href: "/patient", label: "Portal Saya", icon: LayoutDashboard }] },
     ],
   };
-  const navGroups = role ? [...menuByRole[roleToEnum[role]], { label: "Akun", items: [{ href: "/account/password", label: "Ganti Password", icon: Users }, ...(role === "Admin" ? [{ href: "/admin/patient-accounts", label: "Pemulihan Pasien", icon: Users }, { href: "/admin/staff", label: "Akun Staf", icon: Users }] : [])] }] : [];
+  const navGroups = role ? [...menuByRole[roleToEnum[role]], { label: "Akun", items: [{ href: "/account/password", label: "Ganti Password", icon: KeyRound }, ...(role === "Admin" ? [{ href: "/admin/patient-accounts", label: "Pemulihan Pasien", icon: KeyRound }, { href: "/admin/staff", label: "Akun Staf", icon: UserCog }] : [])] }] : [];
 
   return (
-    <main className="app-shell">
+    <main className={`app-shell workspace-ui${role === "Admin" || pathname.startsWith("/admin/") ? " admin-shell" : ""}${role === "Pasien" || pathname === "/patient" ? " patient-shell" : ""}`}>
+      <a className="skip-content" href="#app-content">Langsung ke konten</a>
       <aside className="sidebar">
         <Link href={role === "Pasien" ? "/patient" : "/app"} style={{ textDecoration: "none" }}>
           <div className="brand">
@@ -133,7 +138,7 @@ export default function AppLayout({ children, activeNav, breadcrumbTitle }: AppL
           </div>
         </Link>
 
-        <nav>
+        <nav aria-label="Navigasi utama">
           {role ? navGroups.map((group) => {
             const visibleItems = group.items.filter((item) => canAccessPath(item.href, roleToEnum[role]));
             if (!visibleItems.length) return null;
@@ -144,7 +149,7 @@ export default function AppLayout({ children, activeNav, breadcrumbTitle }: AppL
                 const isActive = activeNav
                   ? activeNav === item.href
                   : pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href + "/"));
-                return <Link key={item.href} href={item.href} className={`nav-item ${isActive ? "active" : ""}`}>
+                return <Link key={item.href} href={item.href} aria-current={isActive ? "page" : undefined} className={`nav-item ${isActive ? "active" : ""}`}>
                   <Icon size={18} /><span>{item.label}</span>
                 </Link>;
               })}
@@ -167,7 +172,7 @@ export default function AppLayout({ children, activeNav, breadcrumbTitle }: AppL
             </div>
             <div>
               <b>{currentUser ? currentUser.name : "Pengguna Klinik"}</b>
-              <small>{currentUser ? currentUser.role : "Memuat sesi..."}</small>
+              <small>{role || "Memuat sesi..."}</small>
             </div>
             <button
               className="btn-logout"
@@ -196,7 +201,7 @@ export default function AppLayout({ children, activeNav, breadcrumbTitle }: AppL
             </div>
             <div className="topbar-user">
               <span className="topbar-user-avatar">{currentUser ? getInitials(currentUser.name) : "KP"}</span>
-              <span><b>{currentUser?.name || "Pengguna Klinik"}</b><small>{currentUser?.role || "Memuat sesi..."}</small></span>
+              <span><b>{currentUser?.name || "Pengguna Klinik"}</b><small>{role || "Memuat sesi..."}</small></span>
             </div>
             <button
               className="btn-topbar-logout"
@@ -210,8 +215,29 @@ export default function AppLayout({ children, activeNav, breadcrumbTitle }: AppL
           </div>
         </header>
 
-        {role && <label className="mobile-navigation">Menu halaman<select value={activeNav || pathname} onChange={e => router.push(e.target.value)}><option value={activeNav || pathname} hidden>{breadcrumbTitle || "Pilih halaman"}</option>{navGroups.flatMap(group => group.items).filter(item => canAccessPath(item.href, roleToEnum[role])).map(item => <option key={item.href} value={item.href}>{item.label}</option>)}</select></label>}
-        {children}
+        {role && (
+          <label className="mobile-navigation">
+            <span>Navigasi halaman</span>
+            <select
+              value={activeNav || pathname}
+              onChange={(event) => router.push(event.target.value)}
+              aria-label="Pilih halaman"
+            >
+              <option value={activeNav || pathname} hidden>
+                {breadcrumbTitle || "Pilih halaman"}
+              </option>
+              {navGroups
+                .flatMap((group) => group.items)
+                .filter((item) => canAccessPath(item.href, roleToEnum[role]))
+                .map((item) => (
+                  <option key={item.href} value={item.href}>
+                    {item.label}
+                  </option>
+                ))}
+            </select>
+          </label>
+        )}
+        <div id="app-content" tabIndex={-1}>{children}</div>
       </section>
     </main>
   );

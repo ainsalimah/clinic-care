@@ -15,75 +15,57 @@ export function EmergencySection() {
   ];
 
   return (
-    <section className="kc-emergency-section kc-reveal" id="darurat">
-      <div className="kc-shell">
-        <div className="kc-emergency-card">
-          <div className="kc-emergency-ambient" aria-hidden="true" />
-
-          <div className="kc-emergency-grid">
-            {/* Left Column: Urgent Contact */}
-            <div className="kc-emergency-left">
-              <div className="kc-emergency-kicker">
-                <span className="kc-live-beacon">
-                  <span className="kc-beacon-ring" />
-                  <span className="kc-beacon-dot" />
-                </span>
-                <span>Unit Gawat Darurat (UGD / IGD) · Siaga 24 Jam</span>
-              </div>
-
-              <h2 className="kc-emergency-title">
-                Butuh Penanganan Cepat?<br />
-                <em>Tim Medis Siaga 24/7.</em>
-              </h2>
-
-              <p className="kc-emergency-desc">
+    <section id="darurat" className="pad bg-[#0B2D45]" aria-labelledby="emergency-title">
+      <div className="wrap">
+        <div className="grid gap-8 rounded-3xl border border-white/20 bg-white/5 p-6 text-white shadow-xl sm:p-9 lg:grid-cols-[1.1fr_.9fr] lg:gap-12">
+          <div>
+            <p className="inline-flex items-center gap-2 rounded-full bg-red-500/20 px-3 py-1.5 text-xs font-bold tracking-wide text-red-100">
+              <span className="h-2 w-2 rounded-full bg-red-400" aria-hidden="true" />
+              UNIT GAWAT DARURAT · SIAGA 24 JAM
+            </p>
+            <h2 id="emergency-title" className="mt-5 font-extrabold text-3xl leading-tight tracking-tight sm:text-4xl">
+              Butuh Penanganan Cepat?
+              <span className="mt-1 block text-[#9DD8FF]">Tim Medis Siaga 24/7.</span>
+            </h2>
+            <p className="mt-5 max-w-xl text-base leading-relaxed text-white/85 sm:text-lg">
                 Bagi kondisi darurat medis, jangan tunda. Hubungi nomor siaga gawat darurat kami atau segera
-                menuju lobi timur IGD KlinikCare untuk penanganan triage langsung.
-              </p>
-
-              <div className="kc-emergency-actions">
-                <a href="tel:02287654321" className="kc-btn-emergency">
-                  <PhoneCall size={18} />
-                  <span>Telepon Darurat: (022) 8765-4321</span>
-                </a>
-                <a href="#lokasi" className="kc-btn-emergency-ghost">
-                  <MapPin size={17} />
-                  <span>Petunjuk Arah IGD</span>
-                </a>
-              </div>
-            </div>
-
-            {/* Right Column: Triage Checklist & Ambulance Dispatch */}
-            <div className="kc-emergency-right">
-              <div className="kc-triage-box">
-                <div className="kc-triage-head">
-                  <div className="kc-triage-icon">
-                    <Ambulance size={22} />
-                  </div>
-                  <div>
-                    <h4>Indikasi Penanganan Gawat Darurat Segera</h4>
-                    <p>Prioritas penanganan triage tanpa antre reguler</p>
-                  </div>
-                </div>
-
-                <ul className="kc-triage-list">
-                  {triagePoints.map((item) => (
-                    <li key={item}>
-                      <AlertCircle size={15} className="text-rose-600 flex-shrink-0" />
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                <div className="kc-ambulance-notice">
-                  <HeartPulse size={16} className="text-rose-600 flex-shrink-0" />
-                  <span>
-                    Armada ambulans siaga penjemputan wilayah Bandung dan sekitarnya.
-                  </span>
-                </div>
-              </div>
+                menuju IGD RS Cakrawala Medika untuk penanganan triage langsung.
+            </p>
+            <div className="mt-7 flex flex-wrap gap-3">
+              <a href="tel:+62215557799" className="btn bg-red-600 text-white hover:bg-red-700">
+                <PhoneCall size={18} aria-hidden="true" />
+                Telepon IGD: +62 21 555 7799
+              </a>
+              <a href="#lokasi" className="btn border-btn">
+                <MapPin size={17} aria-hidden="true" />
+                Petunjuk Arah IGD
+              </a>
             </div>
           </div>
+
+          <aside className="rounded-2xl bg-white p-6 text-[#0B2D45] sm:p-7">
+            <div className="flex gap-4">
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-red-50 text-red-600">
+                <Ambulance size={22} aria-hidden="true" />
+              </span>
+              <div>
+                <h3 className="font-bold text-lg">Indikasi Gawat Darurat</h3>
+                <p className="mt-1 text-sm leading-relaxed text-[#4c6475]">Prioritas penanganan triage tanpa antre reguler.</p>
+              </div>
+            </div>
+            <ul className="mt-6 space-y-3">
+              {triagePoints.map((item) => (
+                <li key={item} className="flex items-start gap-3 text-sm leading-relaxed text-[#315066]">
+                  <AlertCircle size={17} className="mt-0.5 shrink-0 text-red-600" aria-hidden="true" />
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+            <p className="mt-6 flex items-start gap-3 rounded-xl bg-red-50 p-4 text-sm font-semibold leading-relaxed text-[#7f1d1d]">
+              <HeartPulse size={18} className="mt-0.5 shrink-0 text-red-600" aria-hidden="true" />
+              Ambulans siaga untuk koordinasi transportasi medis darurat.
+            </p>
+          </aside>
         </div>
       </div>
     </section>

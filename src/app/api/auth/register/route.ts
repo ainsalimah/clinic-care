@@ -36,7 +36,7 @@ export async function POST(req: Request) {
 
       const existingPatient = await tx.patient.findUnique({ where: { nik } });
       if (existingPatient) {
-        return { error: "Data mungkin sudah terdaftar. Hubungi resepsionis untuk menghubungkan akun dengan nomor rekam medis yang sudah ada." };
+        return { error: "NIK sudah terdaftar. Jika sudah memiliki akun, silakan masuk. Pengaitan akun ke pasien lama belum tersedia pada demo ini; gunakan akun pasien demo untuk mencoba portal." };
       }
 
       const user = await tx.user.create({

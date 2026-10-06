@@ -303,7 +303,7 @@ export default function DoctorExaminationPage({
         )}
 
         {/* 2 Column Layout */}
-        <div className="patient-form-grid" style={{ gridTemplateColumns: "360px 1fr" }}>
+        <div className="patient-form-grid examination-grid">
           {/* Left Column: Patient Profile & Allergies & Past History */}
           <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
             {/* Allergy Banner (Crucial Safety Feature) */}
@@ -374,7 +374,7 @@ export default function DoctorExaminationPage({
                 <h3>Riwayat Kunjungan Terdahulu</h3>
               </div>
               {patient.records.length === 0 ? (
-                <p style={{ color: "var(--muted)", fontSize: "12px", margin: "8px 0" }}>
+                <p style={{ color: "var(--muted)", fontSize: ".875rem", margin: "8px 0" }}>
                   Ini adalah kunjungan pertama pasien di sistem KlinikCare.
                 </p>
               ) : (
@@ -434,8 +434,9 @@ export default function DoctorExaminationPage({
                 </label>
                 <div className="vitals-grid">
                   <div className="vital-field">
-                    <small>Tekanan Darah</small>
+                    <label htmlFor="vital-pressure">Tekanan darah</label>
                     <input
+                      id="vital-pressure"
                       type="text"
                       placeholder="120/80"
                       value={vitalBloodPressure}
@@ -444,8 +445,9 @@ export default function DoctorExaminationPage({
                     <span>mmHg</span>
                   </div>
                   <div className="vital-field">
-                    <small>Detak Jantung</small>
+                    <label htmlFor="vital-heart-rate">Detak jantung</label>
                     <input
+                      id="vital-heart-rate"
                       type="text"
                       placeholder="78"
                       value={vitalHeartRate}
@@ -454,8 +456,9 @@ export default function DoctorExaminationPage({
                     <span>bpm</span>
                   </div>
                   <div className="vital-field">
-                    <small>Suhu Tubuh</small>
+                    <label htmlFor="vital-temperature">Suhu tubuh</label>
                     <input
+                      id="vital-temperature"
                       type="text"
                       placeholder="36.6"
                       value={vitalTemperature}
@@ -466,6 +469,7 @@ export default function DoctorExaminationPage({
                 </div>
 
                 <textarea
+                  aria-label="Hasil pemeriksaan fisik"
                   style={{ marginTop: "10px" }}
                   rows={2}
                   placeholder="Hasil pemeriksaan kepala, toraks, abdomen, ekstremitas, dsb."
@@ -514,7 +518,7 @@ export default function DoctorExaminationPage({
                 <button
                   type="button"
                   className="btn-secondary"
-                  style={{ padding: "6px 12px", fontSize: "12px", display: "inline-flex", alignItems: "center", gap: "6px" }}
+                  style={{ padding: "6px 12px", fontSize: ".875rem", display: "inline-flex", alignItems: "center", gap: "6px" }}
                   onClick={handleAddMedicine}
                 >
                   <Plus size={14} /> Tambah Obat
@@ -528,7 +532,7 @@ export default function DoctorExaminationPage({
                   <button
                     type="button"
                     className="btn-secondary"
-                    style={{ fontSize: "12px", padding: "6px 14px" }}
+                    style={{ fontSize: ".875rem", padding: "6px 14px" }}
                     onClick={handleAddMedicine}
                   >
                     + Klik untuk Tambah Obat
@@ -547,9 +551,10 @@ export default function DoctorExaminationPage({
                       <div key={index} className="rx-item-card">
                         <div className="rx-item-row">
                           {/* Medicine selection */}
-                          <div style={{ flex: 1.5 }}>
-                            <label>Nama Obat:</label>
+                          <div className="rx-medicine-field">
+                            <label htmlFor={`medicine-${index}`}>Nama obat</label>
                             <select
+                              id={`medicine-${index}`}
                               value={item.medicineId}
                               onChange={(e) => handleItemChange(index, "medicineId", e.target.value)}
                             >
@@ -568,9 +573,10 @@ export default function DoctorExaminationPage({
                           </div>
 
                           {/* Dosage */}
-                          <div style={{ flex: 1 }}>
-                            <label>Dosis:</label>
+                          <div className="rx-dosage-field">
+                            <label htmlFor={`dosage-${index}`}>Dosis</label>
                             <input
+                              id={`dosage-${index}`}
                               type="text"
                               placeholder="500mg / 1 tablet"
                               value={item.dosage}
@@ -579,9 +585,10 @@ export default function DoctorExaminationPage({
                           </div>
 
                           {/* Quantity */}
-                          <div style={{ width: "90px" }}>
-                            <label>Jumlah:</label>
+                          <div className="rx-quantity-field">
+                            <label htmlFor={`quantity-${index}`}>Jumlah</label>
                             <input
+                              id={`quantity-${index}`}
                               type="number"
                               min={1}
                               value={item.quantity}
@@ -602,8 +609,9 @@ export default function DoctorExaminationPage({
 
                         {/* Instructions */}
                         <div style={{ marginTop: "8px" }}>
-                          <label>Aturan Pakai & Signa:</label>
+                          <label htmlFor={`instruction-${index}`}>Aturan pakai dan signa</label>
                           <input
+                            id={`instruction-${index}`}
                             type="text"
                             placeholder="Contoh: 3x sehari 1 tablet sesudah makan"
                             value={item.instruction}

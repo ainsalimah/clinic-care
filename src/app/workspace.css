@@ -1,0 +1,384 @@
+/* Shared UI foundation for authenticated clinic workspaces. */
+.workspace-ui {
+  --ink: #17344a;
+  --muted: #526b7d;
+  --line: #dce6ee;
+  --teal: #236b9f;
+  --field-border: #b6c9d8;
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 1rem;
+  line-height: 1.6;
+  background: #f5f7fa;
+}
+.skip-content { position: fixed; top: 12px; left: 12px; z-index: 100; padding: 10px 16px; border-radius: 8px; background: #fff; color: #17344a; transform: translateY(-160%); }
+.skip-content:focus { transform: translateY(0); outline: 3px solid #236b9f; }
+.app-shell.workspace-ui :is(h1, h2, h3, .crumb b, .stat-card strong, .staff-metrics strong) { font-family: 'Figtree', system-ui, sans-serif; }
+.workspace-ui :is(button, a, input, select, textarea, summary):focus-visible { outline: 3px solid #236b9f; outline-offset: 3px; }
+.workspace-ui :is(button, input, select, textarea):disabled { opacity: .55; cursor: not-allowed; }
+.app-shell.workspace-ui .sidebar { width: 256px; position: sticky; top: 0; height: 100dvh; overflow-y: auto; padding: 28px 16px 20px; }
+.app-shell.workspace-ui .brand { padding-bottom: 28px; }
+.app-shell.workspace-ui .nav-group { margin-bottom: 20px; }
+.app-shell.workspace-ui .sidebar-label { font-size: .75rem; letter-spacing: .08em; }
+.app-shell.workspace-ui .nav-item { min-height: 44px; gap: 10px; padding: 10px 12px; font-size: .875rem; font-weight: 500; }
+.workspace-ui .nav-item svg { flex: none; }
+.app-shell.workspace-ui .profile { font-size: .875rem; }
+.workspace-ui .profile > div:not(.avatar) { min-width: 0; flex: 1; }
+.workspace-ui .profile b { display: block; overflow-wrap: anywhere; }
+.app-shell.workspace-ui :is(.profile small, .help small) { font-size: .75rem; }
+.app-shell.workspace-ui .topbar { padding-inline: 32px; gap: 16px; }
+.app-shell.workspace-ui .crumb { font-size: .875rem; }
+.workspace-ui .topbar-context { font-size: .8125rem; }
+.workspace-ui .topbar-user b { max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.workspace-ui .topbar-user small { font-size: .75rem; }
+.app-shell.workspace-ui .page { max-width: 1480px; padding: 32px 32px 48px; }
+.app-shell.workspace-ui :is(.hero, .section-header-flex) { gap: 24px; margin-bottom: 28px; }
+.app-shell.workspace-ui .hero { background: transparent; overflow: visible; }
+.app-shell.workspace-ui .hero::before, .app-shell.workspace-ui .hero::after { content: none; }
+.workspace-ui .page > .page-subtitle { margin-bottom: 28px; }
+.workspace-ui .billing-panel { margin-bottom: 28px; }
+.app-shell.workspace-ui :is(.hero h1, .page-title) { font-size: clamp(1.5rem, 2.3vw, 2rem); font-weight: 700; line-height: 1.25; letter-spacing: -.03em; text-wrap: balance; }
+.app-shell.workspace-ui :is(.hero span, .page-subtitle) { max-width: 70ch; font-size: .9375rem; line-height: 1.65; color: var(--muted); margin-top: 10px; }
+.app-shell.workspace-ui :is(.hero p, .eyebrow) { font-size: .75rem; letter-spacing: .08em; font-weight: 600; }
+.app-shell.workspace-ui .today { flex: none; align-items: center; padding: 12px 16px; border-radius: 12px; }
+.app-shell.workspace-ui .today b { font-size: .875rem; }
+.app-shell.workspace-ui .today small { font-size: .75rem; }
+.workspace-ui .header-actions-group { flex-wrap: wrap; gap: 10px; }
+.app-shell.workspace-ui :is(.btn-primary-action, .btn-secondary, .btn-refresh, .btn-search, .btn-print, .row-btn) { min-height: 44px; padding: 10px 16px; border-radius: 10px; font-size: .875rem; font-weight: 600; justify-content: center; line-height: 1.4; }
+.app-shell.workspace-ui .btn-primary-action { background: #236b9f; }
+.app-shell.workspace-ui .btn-primary-action:hover:not(:disabled) { background: #185781; }
+.app-shell.workspace-ui .text-btn { min-height: 40px; font-size: .8125rem; flex-shrink: 0; }
+.app-shell.workspace-ui :is(.panel, .form-panel) { min-width: 0; padding: 24px; border: 1px solid var(--line); border-radius: 16px; box-shadow: 0 2px 8px rgba(23, 52, 74, .025); }
+.app-shell.workspace-ui .panel:hover { border-color: #c6d7e3; }
+.app-shell.workspace-ui :is(.panel h2, .staff-list-head h2, .billing-panel > h2) { font-size: 1.125rem; font-weight: 650; line-height: 1.4; letter-spacing: -.015em; }
+.app-shell.workspace-ui .panel-head { flex-wrap: wrap; align-items: flex-start; gap: 12px; margin-bottom: 20px; }
+.app-shell.workspace-ui .stats { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin-bottom: 28px; }
+.app-shell.workspace-ui .stat-card { min-width: 0; min-height: 154px; position: relative; padding: 20px; gap: 12px; border-radius: 14px; border-color: var(--line); box-shadow: none; }
+.workspace-ui .stat-card > div:last-child { min-width: 0; }
+.app-shell.workspace-ui .stat-icon { width: 40px; height: 40px; flex: none; border-radius: 12px; }
+.app-shell.workspace-ui .stat-card p { font-size: .8125rem; font-weight: 500; line-height: 1.45; }
+.app-shell.workspace-ui .stat-card strong { font-size: clamp(1.5rem, 2vw, 1.875rem); font-weight: 700; line-height: 1.25; letter-spacing: -.035em; margin: 10px 0 8px; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.app-shell.workspace-ui .stat-card small { display: block; font-size: .75rem; line-height: 1.5; }
+.stat-card strong .stat-unit { display: inline; margin-left: 6px; font-size: .75rem; font-weight: 500; letter-spacing: 0; color: var(--muted); }
+.app-shell.workspace-ui .stat-card strong .stat-unit { display: inline; font-size: .875rem; }
+.app-shell.workspace-ui .btn-logout { min-width: 44px; min-height: 44px; }
+.app-shell.workspace-ui .btn-topbar-logout { min-width: 44px; min-height: 44px; }
+.app-shell.workspace-ui .dashboard-grid { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 20px; }
+.workspace-ui .admin-report-page .dashboard-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.app-shell.workspace-ui .table-wrap { max-width: 100%; overflow-x: auto; border: 1px solid #e7edf2; border-radius: 12px; }
+.app-shell.workspace-ui th { padding: 12px 14px; color: #526b7d; background: #f7f9fc; font-size: .75rem; font-weight: 600; letter-spacing: .025em; }
+.app-shell.workspace-ui td { padding: 14px; color: #435d70; font-size: .875rem; line-height: 1.5; }
+.workspace-ui tbody tr:hover { background: #f8fbfd; }
+.app-shell.workspace-ui :is(td small, .patient b, .queue-num) { font-size: .8125rem; }
+.app-shell.workspace-ui .status-pill { font-size: .75rem; padding: 5px 10px; }
+.app-shell.workspace-ui .quick { gap: 12px; padding: 14px; border-radius: 12px; box-shadow: none; }
+.app-shell.workspace-ui .quick b { font-size: .9375rem; }
+.app-shell.workspace-ui .quick small { display: block; margin-top: 3px; color: var(--muted); font-size: .8125rem; line-height: 1.5; }
+.workspace-ui .quick > svg { flex: none; }
+.app-shell.workspace-ui .elder-note { font-size: .875rem; padding: 16px; }
+.app-shell.workspace-ui .elder-note p { font-size: .8125rem; line-height: 1.6; }
+.app-shell.workspace-ui :is(input:not([type='checkbox']):not([type='radio']), select, textarea) { min-width: 0; min-height: 44px; padding: 10px 12px; font-size: 1rem; border-radius: 10px; }
+.app-shell.workspace-ui :is(.form-group, .account-form, .patient-booking-form, .patient-register-form) { gap: 16px; }
+.app-shell.workspace-ui .form-group label { display: inline-block; margin-bottom: 7px; color: var(--ink); font-size: .875rem; font-weight: 600; }
+.app-shell.workspace-ui :is(.form-group, .account-form) :is(input, select, textarea) { border-color: var(--field-border); background: #fff; }
+.app-shell.workspace-ui :is(.form-group, .account-form) :is(input, select, textarea)::placeholder { color: #7b91a0; opacity: 1; }
+.app-shell.workspace-ui :is(.form-group, .account-form) :is(input, select, textarea):focus { border-color: #236b9f; box-shadow: 0 0 0 3px rgba(35, 107, 159, .12); outline: 0; }
+.workspace-ui .field-hint { margin-top: 6px; color: var(--muted); font-size: .8125rem; line-height: 1.5; }
+.workspace-ui .data-error, .workspace-ui .queue-call-notice { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 20px; padding: 14px 16px; border-radius: 12px; font-size: .875rem; line-height: 1.5; }
+.workspace-ui .data-error { border-color: #f1c4bf; background: #fff6f5; color: #9d332a; }
+.workspace-ui .data-feedback { justify-content: space-between; flex-wrap: wrap; border: 1px solid #f1c4bf; }
+.workspace-ui .data-feedback p { margin: 4px 0 0; }
+.workspace-ui .data-feedback .btn-refresh { flex-shrink: 0; }
+.workspace-ui .data-updated { margin: 0 0 16px; color: var(--muted); font-size: .8125rem; line-height: 1.6; }
+.workspace-ui .data-feedback { justify-content: space-between; flex-wrap: wrap; border: 1px solid #f1c4bf; }
+.workspace-ui .data-feedback p { margin: 4px 0 0; }
+.workspace-ui .data-feedback .btn-refresh { flex-shrink: 0; }
+.workspace-ui .data-updated { margin: 0 0 16px; color: var(--muted); font-size: .8125rem; line-height: 1.6; }
+.workspace-ui .queue-call-notice { border: 1px solid #bedcec; background: #f2f9fd; color: #1d5f89; }
+.app-shell.workspace-ui .queue-filter-row { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; padding: 16px; border: 1px solid var(--line); border-radius: 14px; background: #fff; }
+.app-shell.workspace-ui .filter-group { min-height: 44px; flex: 1 1 220px; gap: 10px; padding: 0 12px; border-color: #d5e2eb; border-radius: 10px; background: #fafcfe; }
+.app-shell.workspace-ui .filter-group label { flex: none; color: var(--ink); font-size: .8125rem; font-weight: 600; }
+.app-shell.workspace-ui .filter-group select { width: 100%; min-width: 0; min-height: 38px; padding-block: 6px; border: 0; background-color: transparent; font-size: .875rem; }
+.app-shell.workspace-ui .filter-group select:focus { box-shadow: none; }
+.workspace-ui .page-status { display: inline-flex; align-items: center; gap: 8px; padding: 8px 11px; border: 1px solid #cbe4d6; border-radius: 999px; background: #f4fbf7; color: #287050; font-size: .8125rem; font-weight: 600; white-space: nowrap; }
+.workspace-ui .page-status > span { width: 7px; height: 7px; border-radius: 50%; background: #37a675; box-shadow: 0 0 0 4px rgba(55, 166, 117, .12); }
+.app-shell.workspace-ui .speaker-room-row { grid-template-columns: minmax(220px, 1.15fr) minmax(200px, 1fr) auto; padding: 16px; border-color: #dbe7ee; background: #fbfdfe; }
+.app-shell.workspace-ui .speaker-room-row label strong { font-size: .9375rem; }.app-shell.workspace-ui .speaker-room-row label span { font-size: .8125rem; }
+.app-shell.workspace-ui :is(.billing-filters, .report-period-filter) { max-width: none; display: flex; flex-wrap: wrap; align-items: end; gap: 16px; margin: 24px 0; padding: 20px; background: #fff; border: 1px solid var(--line); border-radius: 14px; }
+.app-shell.workspace-ui :is(.billing-filters, .report-period-filter) label { min-width: 160px; flex: 1; display: grid; gap: 8px; color: var(--ink); font-size: .875rem; font-weight: 600; }
+.workspace-ui .report-period-filter input { width: 100%; }
+.app-shell.workspace-ui :is(.account-form > label, .billing-row label, .billing-payment label) { font-size: .875rem; font-weight: 600; }
+.app-shell.workspace-ui .account-form small { font-size: .8125rem; }
+.app-shell.workspace-ui .account-form { max-width: 800px; gap: 20px; }
+.workspace-ui .account-form > button { justify-self: start; }
+.app-shell.workspace-ui .staff-metrics { gap: 16px; }
+.app-shell.workspace-ui .staff-metrics > article { padding: 20px; border-color: var(--line); box-shadow: none; }
+.app-shell.workspace-ui .staff-metrics :is(small, span) { font-size: .8125rem; }
+.app-shell.workspace-ui .staff-metrics strong { margin: 3px 0; font-size: 1.875rem; line-height: 1.3; font-variant-numeric: tabular-nums; }
+.app-shell.workspace-ui .staff-card { grid-template-columns: minmax(180px, 1.5fr) minmax(90px, .6fr) minmax(130px, 1fr) minmax(120px, .9fr) auto; gap: 16px; padding: 20px; }
+.app-shell.workspace-ui .staff-person h2 { font-size: 1rem; }
+.app-shell.workspace-ui .staff-person > div { min-width: 0; }
+.app-shell.workspace-ui .staff-person p { font-size: .8125rem; white-space: normal; overflow-wrap: anywhere; color: var(--muted); }
+.app-shell.workspace-ui :is(.staff-role small, .staff-schedule small, .staff-attention, .staff-list-head span, .staff-create-panel summary small) { font-size: .8125rem; line-height: 1.5; }
+.app-shell.workspace-ui :is(.staff-role b, .staff-schedule span) { font-size: .875rem; }
+.app-shell.workspace-ui .patient-account-card { grid-template-columns: minmax(180px, 1.3fr) minmax(100px, .6fr) minmax(160px, 1fr) auto; }
+.app-shell.workspace-ui .staff-list { max-width: none; }
+.app-shell.workspace-ui .billing-row { grid-template-columns: minmax(0, 1fr) minmax(160px, .6fr) auto; gap: 20px; padding: 20px 0; }
+.workspace-ui .bill-receipt .billing-row { grid-template-columns: minmax(0, 1fr) auto; }
+.workspace-ui .bill-receipt .billing-row strong { text-align: right; font-variant-numeric: tabular-nums; }
+.workspace-ui .finance-review { margin: 12px 0; overflow-wrap: anywhere; }
+.workspace-ui .finance-review p { margin: 10px 0; font-size: .9375rem; }
+.workspace-ui .finance-review small { color: var(--muted); font-size: .8125rem; }
+.app-shell.workspace-ui .billing-pagination { max-width: none; flex-wrap: wrap; font-size: .875rem; }
+.app-shell.workspace-ui .recovery-admin-panel { max-width: 840px; }
+.workspace-ui .recovery-admin-panel h2 + p { margin: 8px 0 24px; color: var(--muted); font-size: .9375rem; }
+.workspace-ui .recovery-result { overflow-wrap: anywhere; }
+.app-shell.workspace-ui :is(.table-loading, .table-empty, .staff-loading, .admin-empty-state) { padding: 32px 20px; border: 1px dashed #c8d6e1; border-radius: 12px; background: #fafcfe; color: var(--muted); font-size: .9375rem; text-align: center; }
+@media (max-width: 1279px) {
+  .app-shell.workspace-ui .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .app-shell.workspace-ui .dashboard-grid { grid-template-columns: minmax(0, 1fr); }
+  .app-shell.workspace-ui .staff-card { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .workspace-ui .staff-person { grid-column: 1 / -1; }
+  .workspace-ui .staff-action { grid-column: 1 / -1; justify-self: start; }
+  .app-shell.workspace-ui .patient-account-card { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .app-shell.workspace-ui .hero { align-items: flex-start; flex-direction: column; }
+}
+@media (max-width: 1050px) {
+  .app-shell.workspace-ui .sidebar { width: 224px; }
+  .app-shell.workspace-ui :is(.page, .topbar) { padding-inline: 24px; }
+  .workspace-ui .topbar-context { display: none; }
+}
+@media (max-width: 720px) {
+  .app-shell.workspace-ui .page { padding: 24px 16px 36px; }
+  .app-shell.workspace-ui .topbar { padding-inline: 16px; }
+  .app-shell.workspace-ui :is(.panel, .form-panel) { padding: 18px; }
+  .app-shell.workspace-ui :is(.hero h1, .page-title) { font-size: 1.5rem; }
+  .app-shell.workspace-ui .stats { gap: 12px; }
+  .app-shell.workspace-ui .stat-card { flex-direction: column; padding: 16px; }
+  .app-shell.workspace-ui .stat-card strong { font-size: 1.75rem; }
+  .app-shell.workspace-ui .staff-metrics { grid-template-columns: 1fr; }
+  .app-shell.workspace-ui :is(.billing-filters, .report-period-filter) { flex-direction: column; align-items: stretch; padding: 16px; gap: 14px; }
+  .app-shell.workspace-ui :is(.billing-filters, .report-period-filter) label { min-width: 0; }
+  .app-shell.workspace-ui .staff-card { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 18px; }
+  .workspace-ui .staff-action { justify-self: stretch; }
+  .app-shell.workspace-ui .header-actions-group { display: flex; flex-wrap: wrap; }
+  .workspace-ui .header-actions-group > * { flex: 1 1 160px; }
+  .app-shell.workspace-ui .billing-row { grid-template-columns: 1fr; gap: 12px; }
+  .workspace-ui .bill-receipt .billing-row { grid-template-columns: 1fr; }
+  .workspace-ui .bill-receipt .billing-row strong { text-align: left; }
+  .workspace-ui .account-form > button { justify-self: stretch; }
+  .app-shell.workspace-ui .billing-pagination { gap: 10px; }
+  .workspace-ui .billing-pagination > span { order: -1; width: 100%; text-align: center; }
+  .workspace-ui .billing-pagination > button { flex: 1; }
+  .app-shell.workspace-ui table { min-width: 580px; }
+  .app-shell.workspace-ui .table-wrap { margin-right: 0; }
+  .app-shell.workspace-ui .queue-filter-row { padding: 14px; }.app-shell.workspace-ui .filter-group { flex-basis: 100%; }
+  .app-shell.workspace-ui .speaker-room-row { grid-template-columns: 1fr; }
+}
+@media (max-width: 380px) {
+  .app-shell.workspace-ui .stats { grid-template-columns: 1fr; }
+  .app-shell.workspace-ui .stat-card { flex-direction: row; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .workspace-ui *, .workspace-ui *::before, .workspace-ui *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
+@media print {
+  .workspace-ui .skip-content { display: none; }
+  .app-shell.workspace-ui .page { max-width: none; padding: 0; }
+  .app-shell.workspace-ui :is(.panel, .stat-card) { box-shadow: none; break-inside: avoid; }
+  .app-shell.workspace-ui .table-wrap { overflow: visible; }
+  .app-shell.workspace-ui table { min-width: 0; white-space: normal; }
+}
+
+/* Role-specific surfaces and clinical workflows. */
+.app-shell.workspace-ui .section-header-flex { flex-wrap: wrap; align-items: flex-start; }
+.workspace-ui .section-header-flex > div:first-child { min-width: 0; flex: 1 1 280px; }
+.app-shell.workspace-ui .section-header-flex { flex-wrap: wrap; align-items: flex-start; }
+.workspace-ui .section-header-flex > div:first-child { min-width: 0; flex: 1 1 280px; }
+.app-shell.workspace-ui .stats-three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.workspace-ui :is(.filter-bar, .table-card, .record-card, .success-box) { min-width: 0; border-color: var(--line); border-radius: 14px; box-shadow: 0 2px 8px rgba(23, 52, 74, .025); }
+.workspace-ui .filter-bar { padding: 16px; }
+.workspace-ui .search-form { min-width: 0; }
+.workspace-ui :is(.search-form input, .billing-filters > input, .billing-filters > select) { flex: 1 1 180px; width: 100%; min-width: 0; }
+.workspace-ui .table-card { max-width: 100%; overflow-x: auto; }
+.app-shell.workspace-ui :is(.data-table th, .rx-table th) { font-size: .75rem; }
+.app-shell.workspace-ui :is(.data-table td, .rx-table td) { font-size: .875rem; }
+.workspace-ui :is(.patient-name, .record-patient) { font-size: .9375rem; font-weight: 600; }
+.workspace-ui :is(.patient-meta, .doc-name, .time-text, .record-date, .record-doc, .record-rm, .rx-note-text, .no-phone, .no-allergy, .stock-safe, .stock-danger) { font-size: .8125rem; line-height: 1.5; }
+.workspace-ui :is(.badge-elderly, .badge-nophone, .badge-allergy-micro, .stock-danger-badge, .stock-warning-badge, .stock-safe-badge, .allergy-badge, .allergy-warn-badge, .dept-tag) { font-size: .75rem; line-height: 1.5; }
+.workspace-ui :is(.btn-primary, .btn-checkin, .btn-action-call, .btn-action-enter, .btn-action-done, .btn-action-skip, .btn-action-print, .btn-restock, .btn-proc-action, .btn-ready-action, .btn-dispense-action, .btn-submit-patient, .btn-submit-consultation, .btn-examine-now) { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 10px 14px; border-radius: 10px; font-size: .875rem; font-weight: 600; line-height: 1.4; }
+.workspace-ui :is(.btn-examine-now, .btn-submit-consultation):hover { transform: none; }
+.workspace-ui :is(.btn-close-modal, .btn-expand-icon, .btn-trash) { min-width: 44px; min-height: 44px; flex: none; }
+.workspace-ui :is(.btn-primary, .btn-submit-patient, .btn-submit-consultation) { background: #236b9f; }
+.workspace-ui :is(.btn-primary, .btn-submit-patient, .btn-submit-consultation):hover:not(:disabled) { background: #185781; }
+.workspace-ui .rx-status-tabs { gap: 6px; padding: 6px; background: #eef3f7; }
+.workspace-ui .tab-btn { min-height: 44px; padding: 10px 14px; font-size: .875rem; }
+.workspace-ui .action-buttons-group { flex-wrap: wrap; gap: 8px; }
+.workspace-ui :is(.form-panel, .form-group, .patient-form-grid, .form-row-2) { min-width: 0; }
+.workspace-ui .form-row-2, .workspace-ui .patient-form-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+.workspace-ui .form-col-span { grid-column: 1 / -1; }
+.workspace-ui .panel-title { gap: 10px; padding-bottom: 16px; }
+.workspace-ui .panel-title h3 { font-size: 1.0625rem; line-height: 1.45; }
+.workspace-ui :is(.form-group, .vital-field, .rx-item-card) :is(input:not([type='checkbox']):not([type='radio']), select, textarea) { width: 100%; padding: 10px 12px; }
+.workspace-ui .form-group textarea { resize: vertical; min-height: 100px; }
+.workspace-ui .optional-patient-details summary { min-height: 44px; }
+.workspace-ui .optional-patient-details summary span { font-size: .875rem; }
+.workspace-ui :is(.checkbox-container, .elderly-title p, .elderly-info-note) { font-size: .875rem; line-height: 1.6; }
+.workspace-ui .toggle-switch input:focus-visible + .slider { outline: 3px solid #236b9f; outline-offset: 4px; }
+.workspace-ui :is(.portal-notice, .patient-form-error, .login-alert) { padding: 14px 16px; border-radius: 12px; font-size: .9375rem; line-height: 1.6; }
+
+/* Patient portal: comfortable reading and an obvious booking flow. */
+.workspace-ui.patient-shell { --teal: #176d62; --field-border: #b4cec7; }
+.app-shell.workspace-ui .patient-portal-page { max-width: 1320px; }
+.workspace-ui .patient-portal-hero { padding: 28px; gap: 24px; border-color: #d6e8e2; background: #eef7f4; border-radius: 16px; }
+.workspace-ui .patient-portal-hero h1 { font-family: inherit; font-size: clamp(1.5rem, 2.5vw, 2rem); line-height: 1.25; letter-spacing: -.03em; }
+.workspace-ui .patient-portal-hero p { margin-top: 10px; color: var(--muted); font-size: 1rem; line-height: 1.65; }
+.workspace-ui .public-eyebrow { font-size: .75rem; color: #176d62; letter-spacing: .08em; }
+.workspace-ui .patient-rm-card { flex: none; padding: 16px 20px; border-color: #cfe0d9; border-radius: 12px; }
+.workspace-ui .patient-rm-card span { font-size: .8125rem; color: var(--muted); }
+.workspace-ui .patient-rm-card b { font-family: inherit; font-size: 1.125rem; font-variant-numeric: tabular-nums; }
+.workspace-ui .patient-portal-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+.workspace-ui .patient-panel-intro { margin: 0 0 24px; color: var(--muted); font-size: .9375rem; line-height: 1.7; }
+.workspace-ui .patient-booking-form { gap: 20px; }
+.workspace-ui .patient-booking-form label { gap: 8px; color: var(--ink); font-size: .9375rem; font-weight: 600; }
+.workspace-ui .patient-booking-form :is(input, select, textarea) { border-color: var(--field-border); padding: 12px; min-height: 48px; }
+.workspace-ui :is(.booking-hint, .booking-info) { color: #526b7d; font-size: .875rem; line-height: 1.6; }
+.workspace-ui .booking-info { padding: 14px; gap: 10px; }
+.workspace-ui .optional-label { color: #526b7d; font-size: .8125rem; }
+.workspace-ui .patient-submit { min-height: 48px; padding: 12px 18px; border-radius: 10px; font-size: 1rem; background: #176d62; }
+.workspace-ui .patient-submit:hover:not(:disabled) { background: #10564d; }
+.workspace-ui .patient-visit-list { gap: 16px; }
+.workspace-ui .patient-visit-card { padding: 20px; border-color: var(--line); border-radius: 12px; background: #fcfdfe; }
+.workspace-ui .visit-card-top { flex-wrap: wrap; gap: 10px; }
+.workspace-ui .appointment-status { max-width: 100%; font-size: .8125rem; padding: 6px 10px; line-height: 1.45; }
+.workspace-ui .patient-visit-card h3 { font-family: inherit; font-size: 1.0625rem; margin: 16px 0 6px; }
+.workspace-ui .patient-visit-card p { font-size: .9375rem; color: var(--muted); line-height: 1.6; }
+.workspace-ui .patient-visit-card > small { flex-wrap: wrap; gap: 8px; color: var(--muted); font-size: .875rem; line-height: 1.6; }
+.workspace-ui .patient-visit-card > small svg { flex: none; }
+
+/* Receptionist: appointment context stays beside the available actions. */
+.workspace-ui .online-request-panel { margin-bottom: 24px; }
+.workspace-ui .online-appointment-list { gap: 16px; }
+.workspace-ui .online-appointment-card { padding: 20px; gap: 20px; border-color: var(--line); border-radius: 12px; }
+.workspace-ui .online-appointment-main { flex: 1; min-width: 0; }
+.workspace-ui .online-patient-info { min-width: 0; overflow-wrap: anywhere; }
+.workspace-ui .online-patient-info h3 { font-family: inherit; font-size: 1.0625rem; }
+.workspace-ui .online-patient-info p { margin-top: 4px; color: var(--muted); font-size: .875rem; line-height: 1.5; }
+.workspace-ui .appointment-date-tile { min-width: 144px; flex: none; padding: 14px; border-radius: 10px; }
+.workspace-ui .appointment-date-tile b { font-size: .875rem; line-height: 1.5; }
+.workspace-ui .appointment-date-tile small { color: var(--muted); font-size: .8125rem; }
+.workspace-ui :is(.appointment-doctor-line, .appointment-note, .pending-count-badge) { font-size: .8125rem; line-height: 1.6; }
+.workspace-ui .appointment-doctor-line { align-items: flex-start; }
+.workspace-ui .appointment-doctor-line svg { flex: none; margin-top: 4px; }
+.workspace-ui .online-appointment-actions { flex-wrap: wrap; justify-content: flex-end; }
+.workspace-ui :is(.online-appointment-actions button, .online-appointment-card > button) { min-height: 44px; font-size: .875rem; }
+
+/* Doctor: SOAP, vitals and prescription fields adapt to the available width. */
+.app-shell.workspace-ui .examination-grid { grid-template-columns: minmax(250px, .7fr) minmax(0, 1.5fr); align-items: start; }
+.workspace-ui .examination-grid > * { min-width: 0; }
+.workspace-ui .current-patient-banner { padding: 24px; border-radius: 16px; }
+.app-shell.workspace-ui .current-info h2 { color: #fff; font-size: 1.375rem; }
+.workspace-ui .current-info p { font-size: .9375rem; line-height: 1.65; }
+.workspace-ui .current-badge { font-size: .75rem; letter-spacing: .04em; padding: 6px 10px; }
+.workspace-ui .queue-big-pill { font-family: inherit; font-size: 1.75rem; }
+.workspace-ui :is(.allergy-alert-card, .allergy-safe-card) { padding: 16px; border-radius: 12px; font-size: .875rem; line-height: 1.6; }
+.workspace-ui .allergy-alert-card p { font-size: 1rem; }
+.workspace-ui :is(.allergy-alert-card small, .allergy-warn-pill, .rx-allergy-warn) { font-size: .8125rem; line-height: 1.6; }
+.workspace-ui .info-list { gap: 12px; font-size: .875rem; }
+.workspace-ui .info-row { gap: 12px; }
+.workspace-ui .info-row b, .workspace-ui .info-row span:last-child { min-width: 0; overflow-wrap: anywhere; }
+.workspace-ui .history-item { padding: 14px; font-size: .875rem; }
+.workspace-ui .history-date { font-size: .8125rem; }
+.workspace-ui .history-item b { font-size: .9375rem; }
+.workspace-ui :is(.history-item p, .history-rx) { font-size: .875rem; line-height: 1.6; }
+.workspace-ui .vitals-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.workspace-ui .vital-field { min-width: 0; padding: 12px; }
+.workspace-ui .vital-field small, .workspace-ui .vital-field span { font-size: .8125rem; }
+.workspace-ui .vital-field label { font-size: .8125rem; }
+.workspace-ui .workflow-section-head { margin: 28px 0 16px; }
+.workspace-ui .workflow-section-head h2 { margin: 0; font-size: 1.125rem; font-weight: 600; }
+.workspace-ui .workflow-section-head p { margin: 6px 0 0; color: var(--muted); font-size: .9375rem; line-height: 1.6; }
+.workspace-ui .vital-field span { align-self: flex-start; margin-top: 4px; }
+.workspace-ui .rx-item-card { padding: 16px; border-radius: 12px; background: #f7fafc; border-color: var(--line); }
+.workspace-ui .rx-item-row { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr) minmax(80px, .5fr) auto; gap: 12px; }
+.workspace-ui .rx-item-row > div { min-width: 0; }
+.workspace-ui .rx-item-card label { display: block; margin-bottom: 8px; font-size: .875rem; color: var(--ink); font-weight: 600; }
+.workspace-ui .record-header { gap: 16px; flex-wrap: wrap; padding: 20px; }
+.workspace-ui .record-meta { min-width: 0; gap: 10px; }
+.workspace-ui .record-summary-bar { gap: 12px; flex-wrap: wrap; padding: 16px 20px; }
+.workspace-ui .summary-diagnosis small { font-size: .75rem; }
+.workspace-ui .summary-diagnosis b { font-size: 1rem; }
+.workspace-ui .record-details-box { padding: 20px; }
+.workspace-ui .soap-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.workspace-ui .soap-box { padding: 16px; border-radius: 10px; font-size: .9375rem; overflow-wrap: anywhere; }
+.workspace-ui .soap-box b { font-size: .875rem; }
+.workspace-ui .soap-box p { line-height: 1.65; }
+
+/* Pharmacy: readable prescriptions, payment details and modal controls. */
+.workspace-ui .rx-header { gap: 12px; flex-wrap: wrap; font-size: .9375rem; }
+.workspace-ui .record-rx-box { padding: 20px; border-radius: 12px; }
+.workspace-ui :is(.rx-table-scroll, .billing-table-scroll) { max-width: 100%; overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; }
+.workspace-ui .rx-table { margin: 0; }
+.workspace-ui .rx-action-toolbar { gap: 12px; padding-top: 20px; margin-top: 20px; }
+.workspace-ui .rx-toolbar-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-left: auto; }
+.workspace-ui .dispensed-stamp { font-size: .8125rem; }
+.workspace-ui .billing-panel > .section-header-flex p { margin: 8px 0 0; color: var(--muted); font-size: .9375rem; line-height: 1.6; }
+.workspace-ui .billing-list .billing-row { grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; }
+.workspace-ui .billing-list .billing-row small { font-size: .8125rem; color: var(--muted); }
+.workspace-ui .billing-payment { display: grid; gap: 16px; margin-top: 24px; }
+.workspace-ui .billing-payment label { display: grid; gap: 8px; }
+.workspace-ui .billing-payment .billing-confirm { display: flex; align-items: flex-start; gap: 10px; line-height: 1.6; }
+.workspace-ui .billing-confirm input { flex: none; width: 20px; height: 20px; margin-top: 3px; accent-color: #236b9f; }
+.workspace-ui .bill-receipt { overflow-wrap: anywhere; }
+.workspace-ui .bill-receipt p { font-size: .9375rem; line-height: 1.6; }
+.workspace-ui .bill-receipt small { font-size: .8125rem; color: var(--muted); }
+.workspace-ui .modal-card { max-width: min(680px, calc(100vw - 32px)); width: 100%; max-height: calc(100dvh - 32px); overflow-y: auto; border-radius: 16px; }
+.workspace-ui .modal-header { gap: 12px; padding: 20px 24px; align-items: flex-start; }
+.workspace-ui .modal-header :is(h2, h3) { font-size: 1.25rem; line-height: 1.4; }
+.workspace-ui .modal-header p { color: var(--muted); font-size: .875rem; line-height: 1.6; }
+.workspace-ui .modal-body { padding: 24px; }
+.workspace-ui .modal-footer { display: flex; gap: 12px; flex-wrap: wrap; }
+@media (max-width: 1279px) {
+  .workspace-ui .online-appointment-card { flex-direction: column; align-items: stretch; }
+  .workspace-ui .online-appointment-actions { justify-content: flex-start; }
+  .app-shell.workspace-ui .examination-grid { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 1050px) {
+  .workspace-ui .patient-portal-grid { grid-template-columns: minmax(0, 1fr); }
+  .workspace-ui .patient-portal-hero { align-items: flex-start; flex-direction: column; }
+  .app-shell.workspace-ui .stats-three { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 720px) {
+  .workspace-ui .section-header-flex > div:first-child { flex-basis: auto; }
+  .workspace-ui .billing-filters > input, .workspace-ui .billing-filters > select { flex: none; }
+  .workspace-ui .search-form { flex-wrap: wrap; gap: 10px; }
+  .workspace-ui .search-form input { flex: 1; }
+  .workspace-ui .search-form .btn-search { width: 100%; }
+  .workspace-ui .section-header-flex > div:first-child { flex-basis: auto; }
+  .workspace-ui .billing-filters > input, .workspace-ui .billing-filters > select { flex: none; }
+  .workspace-ui .search-form { flex-wrap: wrap; gap: 10px; }
+  .workspace-ui .search-form input { flex: 1; }
+  .workspace-ui .search-form .btn-search { width: 100%; }
+  .workspace-ui :is(.patient-portal-hero, .patient-visit-card, .online-appointment-card) { padding: 20px; }
+  .workspace-ui .patient-portal-hero h1 { font-size: 1.5rem; }
+  .workspace-ui .patient-portal-grid { gap: 20px; }
+  .workspace-ui :is(.form-row-2, .patient-form-grid, .soap-grid) { grid-template-columns: minmax(0, 1fr); }
+  .workspace-ui .form-col-span { grid-column: 1 / -1; }
+  .workspace-ui .rx-item-row { grid-template-columns: minmax(0, 1fr) minmax(80px, .6fr) auto; }
+  .workspace-ui .rx-medicine-field { grid-column: 1 / -1; }
+  .workspace-ui .online-appointment-main { align-items: stretch; flex-direction: column; }
+  .workspace-ui .appointment-date-tile { width: 100%; }
+  .workspace-ui .online-appointment-actions > button { flex: 1 1 140px; }
+  .workspace-ui .rx-toolbar-actions { margin-left: 0; width: 100%; }
+  .workspace-ui .rx-toolbar-actions > * { flex: 1; }
+  .workspace-ui .rx-action-toolbar > .btn-print { width: 100%; }
+  .workspace-ui .billing-list .billing-row { grid-template-columns: minmax(0, 1fr); align-items: stretch; }
+  .workspace-ui .record-header > div:last-child { width: 100%; justify-content: space-between; }
+  .workspace-ui .record-doc { min-width: 0; white-space: normal; }
+  .workspace-ui :is(.modal-header, .modal-body) { padding: 18px; }
+  .workspace-ui .modal-footer > * { flex: 1 1 140px; }
+  .workspace-ui .vitals-grid { grid-template-columns: minmax(0, 1fr); }
+}
+@media print {
+  .workspace-ui :is(.rx-table-scroll, .billing-table-scroll, .table-card) { overflow: visible; }
+  .workspace-ui :is(.rx-table, .data-table) { min-width: 0; }
+}

@@ -34,7 +34,7 @@ function ReviewRow({ entry, admin, refresh }: { entry: Entry; admin: boolean; re
     } catch (err) { setError(err instanceof Error ? err.message : "Gagal menyimpan."); }
     finally { setBusy(false); }
   }
-  return <article className="panel" style={{ padding: 20 }}>
+  return <article className="panel finance-review">
     <strong>{entry.kind === "REFUND" ? "Refund" : "Koreksi biaya"} · {money(entry.amount)} · {labels[entry.status]}</strong>
     <p>{entry.bill.patientName} · {entry.bill.medicalRecordNo}</p><small>Tagihan {entry.billId}</small>
     <p>Alasan: {entry.reason}</p><p>Pengaju: {entry.requestedBy} · {new Date(entry.createdAt).toLocaleString("id-ID", { timeZone: "Asia/Jakarta" })} WIB</p>
@@ -84,8 +84,8 @@ export default function FinancePage({ admin }: { admin: boolean }) {
       {error && <p role="alert" className="data-error">{error}</p>}
       <section className="panel billing-panel"><h2>Laporan pembayaran</h2>
         <form onSubmit={loadReport} className="billing-filters">
-          <label>Dari<input className="form-input" type="date" required value={from} onChange={e => setFrom(e.target.value)} /></label>
-          <label>Sampai<input className="form-input" type="date" required value={to} onChange={e => setTo(e.target.value)} /></label>
+          <label>Dari<input className="form-input" type="date" required max={to} value={from} onChange={e => setFrom(e.target.value)} /></label>
+          <label>Sampai<input className="form-input" type="date" required min={from} max={getClinicDateKey()} value={to} onChange={e => setTo(e.target.value)} /></label>
           <button className="btn-primary-action" disabled={reportBusy}>{reportBusy ? "Memuat…" : "Tampilkan laporan"}</button>
         </form>
         {report && <><div className="printable bill-receipt"><h3>KlinikCare · Laporan Pembayaran</h3><p>{period} · WIB</p>

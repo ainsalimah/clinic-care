@@ -20,7 +20,6 @@ export function FacilitiesSection() {
                 Senin–Sabtu, 08.00–20.00. Membantu kebutuhan obat sesuai resep dan edukasi penggunaan terarah.
               </p>
             </div>
-            <a href="#janji" className="btn !py-2.5 !text-sm mt-5">Buat Janji</a>
           </div>
 
           <div className="bg-white rounded-2xl p-6 shadow-sm flex flex-col justify-between">
@@ -40,7 +39,6 @@ export function FacilitiesSection() {
                 Area berpendingin udara yang bersih dan tertata ramah untuk pasien serta keluarga pendamping.
               </p>
             </div>
-            <a href="#dokter" className="btn outline-btn !py-2.5 !text-sm mt-5">Cek Jadwal</a>
           </div>
 
           <div className="bg-white rounded-2xl p-6 shadow-sm flex flex-col justify-between">
@@ -50,7 +48,7 @@ export function FacilitiesSection() {
                 Hubungi IGD 24 jam untuk informasi dan koordinasi bantuan transportasi medis darurat.
               </p>
             </div>
-            <a href="tel:+62215557799" className="btn !py-2.5 !text-sm mt-5">Hubungi Kami</a>
+            <a href="tel:+62215557799" className="btn !py-2.5 !text-sm mt-5">Hubungi IGD</a>
           </div>
         </div>
       </div>

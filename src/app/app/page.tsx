@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import AppLayout from "@/components/AppLayout";
+import DataFeedback from "@/components/DataFeedback";
+import type { ReportSummary } from "@/features/reports/types";
 import {
   Users,
   CalendarDays,
@@ -23,22 +25,6 @@ import {
   X,
 } from "lucide-react";
 
-interface ReportSummary {
-  totalPatients: number;
-  elderlyPatientsCount: number;
-  totalDoctors: number;
-  totalDepartments: number;
-  totalMedicines: number;
-  totalMedicalRecords: number;
-  todayVisitsCount: number;
-  activeQueuesCount: number;
-  completedQueuesCount: number;
-  pendingPrescriptionsCount: number;
-  completedPrescriptionsCount: number;
-  lowStockCount: number;
-  outOfStockCount: number;
-}
-
 interface QueueItem {
   id: string;
   queueNumber: string;
@@ -55,6 +41,8 @@ export default function Home() {
   const [summary, setSummary] = useState<ReportSummary | null>(null);
   const [recentQueues, setRecentQueues] = useState<QueueItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
+  const [updatedAt, setUpdatedAt] = useState<Date | null>(null);
   const [userRole, setUserRole] = useState<string>("RECEPTIONIST");
   const [unauthorizedMsg, setUnauthorizedMsg] = useState<string | null>(null);
 
@@ -67,19 +55,19 @@ export default function Home() {
       ]);
 
       const data = await reportsRes.json();
-      if (data.summary) {
-        setSummary(data.summary);
-      }
-      if (data.recentQueues) {
-        setRecentQueues(data.recentQueues);
-      }
-
       const authData = await authRes.json();
+      if (!reportsRes.ok || !authRes.ok || !data.summary || !Array.isArray(data.recentQueues)) {
+        throw new Error("Dashboard belum berhasil dimuat.");
+      }
+      setSummary(data.summary);
+      setRecentQueues(data.recentQueues);
+      setLoadError("");
+      setUpdatedAt(new Date());
       if (authData.user?.role) {
         setUserRole(authData.user.role);
       }
     } catch {
-      // fallback
+      setLoadError("Dashboard belum berhasil dimuat.");
     } finally {
       setLoading(false);
     }
@@ -114,6 +102,7 @@ export default function Home() {
   return (
     <AppLayout breadcrumbTitle="Dashboard Utama" activeNav="/app">
       <div className="page">
+        <DataFeedback loading={loading} error={loadError} updatedAt={updatedAt} onRetry={fetchDashboardData} />
         {/* Banner Peringatan jika mengakses rute terlarang */}
         {unauthorizedMsg && (
           <div
@@ -188,10 +177,10 @@ export default function Home() {
             <div>
               <p>Total Pasien Terdaftar</p>
               <strong>
-                {loading ? <Loader2 size={16} className="spinner" /> : `${summary?.totalPatients || 0} Pasien`}
+                {loading ? <Loader2 size={16} className="spinner" /> : <>{summary?.totalPatients ?? "—"}<small className="stat-unit">pasien</small></>}
               </strong>
               <small className="positive">
-                {summary?.elderlyPatientsCount || 0} pasien lansia inklusif
+                {summary?.elderlyPatientsCount ?? "—"} pasien lansia terdaftar hari ini
               </small>
             </div>
           </article>
@@ -203,10 +192,10 @@ export default function Home() {
             <div>
               <p>Antrean Aktif Hari Ini</p>
               <strong>
-                {loading ? <Loader2 size={16} className="spinner" /> : `${summary?.activeQueuesCount || 0} Menunggu`}
+                {loading ? <Loader2 size={16} className="spinner" /> : <>{summary?.activeQueuesCount ?? "—"}<small className="stat-unit">antrean</small></>}
               </strong>
               <small className="neutral">
-                Total {summary?.todayVisitsCount || 0} kunjungan hari ini
+                Total {summary?.visitsCount ?? "—"} kunjungan hari ini
               </small>
             </div>
           </article>
@@ -218,10 +207,10 @@ export default function Home() {
             <div>
               <p>Resep Diproses Apotek</p>
               <strong>
-                {loading ? <Loader2 size={16} className="spinner" /> : `${summary?.pendingPrescriptionsCount || 0} Resep`}
+                {loading ? <Loader2 size={16} className="spinner" /> : <>{summary?.pendingPrescriptionsCount ?? "—"}<small className="stat-unit">resep</small></>}
               </strong>
               <small className="warn">
-                {summary?.completedPrescriptionsCount || 0} selesai terdistribusi
+                {summary?.completedPrescriptionsCount ?? "—"} selesai terdistribusi
               </small>
             </div>
           </article>
@@ -233,10 +222,10 @@ export default function Home() {
             <div>
               <p>Peringatan Stok Obat</p>
               <strong>
-                {loading ? <Loader2 size={16} className="spinner" /> : `${summary?.lowStockCount || 0} Item Menipis`}
+                {loading ? <Loader2 size={16} className="spinner" /> : <>{summary?.lowStockCount ?? "—"}<small className="stat-unit">item menipis</small></>}
               </strong>
               <small className={(summary?.lowStockCount || 0) > 0 ? "danger" : "positive"}>
-                {(summary?.outOfStockCount || 0) > 0
+                {!summary ? "Status stok belum tersedia" : summary.outOfStockCount > 0
                   ? `${summary?.outOfStockCount} obat habis total`
                   : "Stok formularium aman"}
               </small>
@@ -250,14 +239,14 @@ export default function Home() {
           <article className="panel queue-panel">
             <div className="panel-head">
               <div>
-                <p className="eyebrow">MONITOR KUNJUNGAN REAL-TIME</p>
+                <p className="eyebrow">RINGKASAN KUNJUNGAN HARI INI</p>
                 <h2>Antrean Pasien Terkini</h2>
               </div>
               <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
                 <button
                   type="button"
                   className="btn-refresh"
-                  style={{ padding: "4px 8px", fontSize: "11px" }}
+                  disabled={loading}
                   onClick={fetchDashboardData}
                 >
                   <RefreshCw size={12} className={loading ? "spinner" : ""} /> Refresh
@@ -276,6 +265,8 @@ export default function Home() {
                   <Loader2 size={20} className="spinner" />
                   <p>Memuat antrean...</p>
                 </div>
+              ) : loadError && !updatedAt ? (
+                <div className="table-empty"><p>Antrean belum dapat ditampilkan.</p></div>
               ) : recentQueues.length === 0 ? (
                 <div className="table-empty" style={{ padding: "30px" }}>
                   <CheckCircle2 size={28} />
@@ -303,7 +294,7 @@ export default function Home() {
                             <span>{q.patientName[0]}</span>
                             <div>
                               <b>{q.patientName}</b>
-                              <small style={{ display: "block", color: "var(--muted)", fontSize: "10px" }}>
+                              <small style={{ display: "block", color: "var(--muted)" }}>
                                 {q.medicalRecordNo}
                               </small>
                             </div>
@@ -311,7 +302,7 @@ export default function Home() {
                         </td>
                         <td>
                           <span>{q.departmentName}</span>
-                          <small style={{ display: "block", color: "var(--muted)", fontSize: "10px" }}>
+                          <small style={{ display: "block", color: "var(--muted)" }}>
                             {q.doctorName}
                           </small>
                         </td>
