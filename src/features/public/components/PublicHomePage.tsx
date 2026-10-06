@@ -10,6 +10,7 @@ import { DoctorDirectorySection } from "./DoctorDirectorySection";
 import { PaymentSection } from "./PaymentSection";
 import { PatientGuideSection } from "./PatientGuideSection";
 import { FacilitiesSection } from "./FacilitiesSection";
+import { DemoExperienceSection } from "./DemoExperienceSection";
 import { AppointmentFormSection } from "./AppointmentFormSection";
 import { LocationSection } from "./LocationSection";
 import { PublicFooter } from "./PublicFooter";
@@ -43,6 +44,7 @@ export default function PublicHomePage({ departments, doctors }: PublicHomePageP
         <PaymentSection />
         <PatientGuideSection />
         <FacilitiesSection />
+        <DemoExperienceSection />
         <AppointmentFormSection doctors={doctors} preselectedService={selectedDoctorForForm} />
         <LocationSection />
       </main>
